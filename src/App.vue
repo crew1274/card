@@ -15,14 +15,10 @@ export default {
   },
   watch:
   {
-    '$route' (to)
+    '$route'(to)
     {
       document.title = 'CHPT中華精測' + (to.meta.title || '' )
     },
-    errorMessage(msg)
-    {
-      this.$notify.warning({ title: msg.title, message: msg.message})
-    }
   },
 }
 </script>

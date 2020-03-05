@@ -289,24 +289,6 @@ export default {
         moment.locale("zh-tw")
         this.date_range.push(moment().subtract(7,'d').format('YYYY-MM-DD'))
         this.date_range.push(moment().add(1,'d').format('YYYY-MM-DD'))
-        await fetch("http://10.11.0.156:8529/_open/auth",
-        {
-            method: 'POST',
-            body: JSON.stringify({ username: "root", password: "root", })
-        })
-        .then( response => {return response.json()})
-        .then( response =>
-        {
-            if(response["error"])
-            {
-                throw response["errorMessage"]
-            }
-            this.token = 'Bearer ' + response["jwt"]
-        })
-        .catch( err =>
-        {
-            this.$notify.warning({ title: 'Server資料庫存取異常', message: err})
-        })
         await this.CheckData()
     },
     methods: 
@@ -429,62 +411,37 @@ export default {
             this.loading = true
             this.result["ppr_data"] = this.ppr_data
             this.result["datetime"] = moment().format('YYYY-MM-DD HH:mm:ss')
-            await fetch( "http://10.11.0.156:8529/_db/VCP-30/_api/document/History/" + this.row["RANDOMSTRING"] ,
-            {
+            let response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-30/_api/document/History/" + this.row["RANDOMSTRING"],
                 method: "PUT",
-                headers: { 'Accept': 'application/json', 'Authorization': this.token, 'Content-Type': 'application/json'},
-                body: JSON.stringify(this.result)
+                payload: this.result,
             })
-            .then( response => {return response.json()})
-            .then( response =>
+            if(! response )
             {
-                if(response["error"])
-                {
-                    throw response["errorMessage"]
-                }
-                this.$message.success('更新成功')
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: '_db: Arango資料庫存取異常', message: err})
-            })
-            .finally( () =>
-            {
-                this.loading = false
-            })
+                this.$message({ message: "更新成功", type: "success"})
+            }
+            this.loading = false
         },
         async handleCheck(row)
         {
             await this.Qinflux(row["STARTDATETIME"], row["ENDDATETIME"])
             this.loading = true
             this.row = row
-            await fetch("http://10.11.0.156:8529/_db/VCP-30/_api/document/History/" + this.row["RANDOMSTRING"] ,
-            {
+            let response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-30/_api/document/History/" + this.row["RANDOMSTRING"],
                 method: "GET",
-                headers: { 'Accept': 'application/json', 'Authorization': this.token, 'Content-Type': 'application/json'},
+                payload: {},
             })
-            .then( response => {return response.json()})
-            .then( response =>
+            if(response)
             {
-                // console.log(response)
-                if(response["Exception"])
-                {
-                    throw response["Exception"]
-                }
                 this.result = response
                 this.ppr_data = response["ppr_data"]
                 this.lotdata = response["lotdata"]
                 this.ppr_result = response["ppr_result"]
                 this.noteList = response["noteList"]
                 this.recipeDialogVisible = true
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: 'Arango資料庫存取異常', message: err})
-            })
-            .finally( () => {
-                this.loading = false
-            })
+            }
+            this.loading = false
         },
         async Qinflux(start, end)
         {

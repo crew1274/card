@@ -1,5 +1,5 @@
 <template>
-    <el-container>
+    <el-container class="content">
         <el-header height="60px" />
         <el-main>
             <el-row :gutter="20">
@@ -186,7 +186,7 @@
                                 </el-row>
                             </div>
                             <div v-else-if="ppr_data.PPR_or_DC == 'DC'">
-                                <el-form ref="form" :model="ppr_data" size="medium">
+                                <el-form ref="form" :model="ppr_data">
                                     <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="right">
                                         <el-form-item label="板寬(mm):">
                                             <el-input-number v-model="ppr_data.RD05M48" size="large" />
@@ -216,7 +216,12 @@
                                         <el-checkbox-group v-model="noteList">
                                             <el-checkbox label="重工"></el-checkbox>
                                         </el-checkbox-group>
-                                    </el-form-item>                          
+                                    </el-form-item>
+                                    <el-form-item label="是否自動上下料:">
+                                        <el-checkbox-group v-model="noteList">
+                                            <el-checkbox label="重工"></el-checkbox>
+                                        </el-checkbox-group>
+                                    </el-form-item>                             
                                     電鍍電流計算公式:
                                     [電鍍面積(SQIN){{ppr_data.RD05M49}} / 144 / 2 * 8(ASF) * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{this.ppr_result[1].P_PlatingAmp}}
                                 </el-form>
@@ -336,6 +341,7 @@
 
 <script>
 import X2JS from 'x2js'
+
 export default {
     data: function()
     {
@@ -345,9 +351,9 @@ export default {
             dialogVisible: false,
             ProdCheckList: [ {"key": "EDGE", "status": false, "label": "檢查Edge連線"}, {"key": "RFID", "status": false, "label": "檢查RFID連線"},
                 {"key": "PLC", "status": false, "label": "檢查PLC連線"}, {"key": "MES","status": false, "label": "檢查MES連線"} ,{"key": "MES","status": false, "label": "檢查PPR設備連線"}],  
-            LotNO: '',
-            Operator: '',
-            ProcSeq: 0,
+            LotNO: '2019090191-1-1-1',
+            Operator: '2019090191-1-1-1',
+            ProcSeq: 17,
             loading: false,
             prod_step: 0,
             noteList: [],
@@ -388,7 +394,7 @@ export default {
                 PlatingTime_1_offset : "", //電鍍時間(AC用)
                 PlatingTime_2_offset : "", //電鍍時間(AC用)
                 PlatingTime_3_offset : "", //電鍍時間(AC用)
-                PPR_or_DC: "PPR",
+                PPR_or_DC: "DC",
                 carrier: [],
                 cut_tag:[],
             },
@@ -399,7 +405,6 @@ export default {
     {
         getWSmessage(value)
         {
-            console.log(value)
             if(this.prod_step == 1)
             {
                 let payload = value["payload"]
@@ -418,84 +423,79 @@ export default {
     },
     computed:
     {
-        getWSmessage:function ()
+        getWSmessage()
         {
-            return JSON.parse(this.$store.state.socket.message)
+            return this.$store.state._ws_back
         },
-        RD05M134:function ()
+        RD05M134()
         {
             return +this.ppr_data.RD05M134
         },
-        RD05M146:function ()
+        RD05M146()
         {
             return +this.ppr_data.RD05M146
         },
-        RD05M136:function ()
+        RD05M136()
         {
             return +this.ppr_data.RD05M136
         },
-        RD05M49:function ()
+        RD05M49()
         {
             return +this.ppr_data.RD05M49
         },        
-        RD05M47:function ()
+        RD05M47()
         {
             return +this.ppr_data.RD05M47
         },
-        PlatingPnl: function()
+        PlatingPnl()
         {
             return +this.ppr_data.PlatingPnl
         },
-
-        ASF:function ()
+        ASF()
         {
             return 12
         },
-
-        SQIN:function ()
+        SQIN()
         {
             return (Number(this.RD05M49) / 2 * this.PlatingPnl)
         },
-
-        SQFT:function ()
+        SQFT()
         {
             return (Number(this.SQIN) * 0.006944)
         },
-
-        SQFT_Dummy:function ()
+        SQFT_Dummy()
         {
             return (2 * Number(this.RD05M47) * 0.00328 * 230 * 0.00328)
         },
-
-        RD05M136_Compensation: function() //當站板厚補償值
+        RD05M136_Compensation() //當站板厚補償值
         {
-        if(Number(this.RD05M136) <= 5)
-        {
-            return 1
-        }
-        else if(Number(this.RD05M136) > 5 && Number(this.RD05M136) <= 7)
-        {
-            return 1.1
-        }
-        else if(Number(this.RD05M136) > 7 && Number(this.RD05M136) <= 9)
-        {
-            return 1.2
-        }
-        else if(Number(this.RD05M136) > 9 && Number(this.RD05M136) <= 10)
-        {
-            return 1.3
-        }
-        else if(Number(this.RD05M136) > 10)
-        {
-            return 1.4
-        }
-        else
-        {
-            return NaN
-        }
+            if(Number(this.RD05M136) <= 5)
+            {
+                return 1
+            }
+            else if(Number(this.RD05M136) > 5 && Number(this.RD05M136) <= 7)
+            {
+                return 1.1
+            }
+            else if(Number(this.RD05M136) > 7 && Number(this.RD05M136) <= 9)
+            {
+                return 1.2
+            }
+            else if(Number(this.RD05M136) > 9 && Number(this.RD05M136) <= 10)
+            {
+                return 1.3
+            }
+            else if(Number(this.RD05M136) > 10)
+            {
+                return 1.4
+            }
+            else
+            {
+                return NaN
+            }
         },
 
-        RD05M145_Compensation: function() //當站孔徑補償值
+        RD05M145_Compensation() //當站孔徑補償值
         {
             if(Number(this.RD05M146) <= 5)
             {
@@ -518,26 +518,9 @@ export default {
                 return NaN
             }
         },
-
-        ppr_result_convert: function()
+        ppr_result_convert()
         {
             let ppr_result_convert = []
-            if(this.ppr_result.length < 5)
-            {
-                this.ppr_result[4] = this.ppr_result[2]
-                this.ppr_result[2] = {
-                "name" : "",
-                "PlatingTime" : 0,
-                "P_PlatingAmp": 0 ,
-                "N_PlatingAmp": 0 ,
-                }
-                this.ppr_result[3] = {
-                "name" : "",
-                "PlatingTime" : 0,
-                "P_PlatingAmp": 0 ,
-                "N_PlatingAmp": 0 ,
-                }
-            }
             this.ppr_result.forEach((element) =>
             {
                 let item = {
@@ -550,169 +533,166 @@ export default {
                     current_time: element.PlatingTime,
                 }
                 ppr_result_convert.push(item)
-            })
-            // ppr_result_convert.unshift(
-            //     {
-            //         name: "起始電流",
-            //         type: "DC",
-            //         forward_current: 10,
-            //         forward_current_time: 100,
-            //         reverse_current: 0,
-            //         reverse_current_time: 0,
-            //         current_time: 0,
-            //     })  //起始電流
-            // ppr_result_convert.push(
-            //     {
-            //         name: "結束電流",
-            //         type: "DC",
-            //         forward_current: 10,
-            //         forward_current_time: 100,
-            //         reverse_current: 0,
-            //         reverse_current_time: 0,
-            //         current_time: 0,
-            //     }
-            // )   //末端電流
+            })  
             return ppr_result_convert
         },
 
-        ppr_result: function()
+        ppr_result()
         {
-        let result = []
-        let PlatingTime = 0
-        let P_PlatingAmp = 0
-        let N_PlatingAmp = 0
-        let name = ''
-        let times = []
-        if(this.ppr_data.PPR_or_DC == "PPR")
-        {
-            times = [0, 1, 2, 3, 4]
-        }
-        else
-        {
-            times = [0, 1, 2]
-        }
-        for(let i in times)
-        {
-            if(i == 0 || i == times.length-1) //結束 and 起始
+            let result = []
+            let PlatingTime = 0
+            let P_PlatingAmp = 0
+            let N_PlatingAmp = 0
+            let name = ''
+            let times = []
+            if(this.ppr_data.PPR_or_DC == "PPR")
             {
-                i == 0? name = '起始電鍍' : name = '結束電鍍'
-                PlatingTime = 0
-                P_PlatingAmp = 10
-                N_PlatingAmp = 0
+                times = [0, 1, 2, 3, 4]
             }
             else
             {
-                if(this.ppr_data.PPR_or_DC == "DC")
+                times = [0, 1, 2]
+            }
+            for(let i in times)
+            {
+                if(i == 0 || i == times.length-1) //結束 and 起始
                 {
-                    name = '主電鍍'
-                    PlatingTime = this.ppr_data.PlatingTime
-                    let PlatingAmp = this.ppr_data.RD05M49 / 144 / 2 * 8
-                    P_PlatingAmp = (PlatingAmp * this.ppr_data.PlatingPnl) + 10
+                    i == 0? name = '起始電鍍' : name = '結束電鍍'
+                    PlatingTime = 0
+                    P_PlatingAmp = 10
                     N_PlatingAmp = 0
                 }
                 else
                 {
-                    if(i == 1) // 第一段
+                    if(this.ppr_data.PPR_or_DC == "DC")
                     {
-                        name = '第一段'
-                        if(this.RD05M134 <= 0)
-                        {
-                            PlatingTime = 0 + this.ppr_data.PlatingTime_1_offset
-                        }
-                        else if(this.RD05M134 <= 0.6 && this.RD05M134 > 0)
-                        {
-                            PlatingTime = 10 + this.ppr_data.PlatingTime_1_offset
-                        }
-                        else if(this.RD05M134 > 0.6 && this.RD05M134 < 0.8)
-                        {
-                            PlatingTime = 10 + this.ppr_data.PlatingTime_1_offset
-                        }
-                        else if(this.RD05M134 >= 0.8 && this.RD05M134 <= 1)
-                        {
-                            PlatingTime = 10 + this.ppr_data.PlatingTime_1_offset
-                        }
-                        else if(this.RD05M134 > 1.0)
-                        {
-                            PlatingTime = "通知工程人員確認"
-                        }
-                        else
-                        {
-                            PlatingTime = NaN
-                        }
-                        P_PlatingAmp = this.ASF * (this.SQFT + this.SQFT_Dummy)
+                        name = '主電鍍'
+                        PlatingTime = this.ppr_data.PlatingTime
+                        let PlatingAmp = this.ppr_data.RD05M49 / 144 / 2 * 8
+                        P_PlatingAmp = (PlatingAmp * this.ppr_data.PlatingPnl) + 10
                         N_PlatingAmp = 0
                     }
-                    else if(i == 2) // 第二段
+                    else
                     {
-                        name = '第二段'
-                        if(this.RD05M134 <= 0)
+                        if(i == 1) // 第一段
                         {
-                            PlatingTime = 0
+                            name = '第一段'
+                            if(this.RD05M134 <= 0)
+                            {
+                                PlatingTime = 0 + this.ppr_data.PlatingTime_1_offset
+                            }
+                            else if(this.RD05M134 <= 0.6 && this.RD05M134 > 0)
+                            {
+                                PlatingTime = 10 + this.ppr_data.PlatingTime_1_offset
+                            }
+                            else if(this.RD05M134 > 0.6 && this.RD05M134 < 0.8)
+                            {
+                                PlatingTime = 10 + this.ppr_data.PlatingTime_1_offset
+                            }
+                            else if(this.RD05M134 >= 0.8 && this.RD05M134 <= 1)
+                            {
+                                PlatingTime = 10 + this.ppr_data.PlatingTime_1_offset
+                            }
+                            else if(this.RD05M134 > 1.0)
+                            {
+                                PlatingTime = "通知工程人員確認"
+                            }
+                            else
+                            {
+                                PlatingTime = NaN
+                            }
+                            P_PlatingAmp = this.ASF * (this.SQFT + this.SQFT_Dummy)
+                            N_PlatingAmp = 0
                         }
-                        else if(this.RD05M134 <= 0.6 && this.RD05M134 > 0)
+                        else if(i == 2) // 第二段
                         {
-                            PlatingTime = 120 * this.RD05M136_Compensation * this.RD05M145_Compensation + this.ppr_data.PlatingTime_2_offset
+                            name = '第二段'
+                            if(this.RD05M134 <= 0)
+                            {
+                                PlatingTime = 0
+                            }
+                            else if(this.RD05M134 <= 0.6 && this.RD05M134 > 0)
+                            {
+                                PlatingTime = 120 * this.RD05M136_Compensation * this.RD05M145_Compensation + this.ppr_data.PlatingTime_2_offset
+                            }
+                            else if(this.RD05M134 > 0.6 && this.RD05M134 < 0.8)
+                            {
+                                PlatingTime = 140 * this.RD05M136_Compensation * this.RD05M145_Compensation + this.ppr_data.PlatingTime_2_offset
+                            }
+                            else if(this.RD05M134 >= 0.8 && this.RD05M134 <= 1)
+                            {
+                                PlatingTime = 150 * this.RD05M136_Compensation * this.RD05M145_Compensation + this.ppr_data.PlatingTime_2_offset
+                            }
+                            else if(this.RD05M134 > 1)
+                            {
+                                PlatingTime = "通知工程人員確認"
+                            }
+                            else 
+                            {
+                                PlatingTime = NaN
+                            }
+                            P_PlatingAmp = this.ASF * (this.SQFT + this.SQFT_Dummy)
+                            N_PlatingAmp = P_PlatingAmp * - 3.5
                         }
-                        else if(this.RD05M134 > 0.6 && this.RD05M134 < 0.8)
+                        else if(i == 3) // 第三段
                         {
-                            PlatingTime = 140 * this.RD05M136_Compensation * this.RD05M145_Compensation + this.ppr_data.PlatingTime_2_offset
+                            name = '第三段'
+                            if(this.RD05M134 <= 0)
+                            {
+                                PlatingTime = 0 + this.ppr_data.PlatingTime_3_offset 
+                            }
+                            else if(this.RD05M134 <= 0.6 && this.RD05M134 > 0)
+                            {
+                                PlatingTime = 30 + this.ppr_data.PlatingTime_3_offset 
+                            }
+                            else if(this.RD05M134 > 0.6 && this.RD05M134 < 0.8)
+                            {
+                                PlatingTime = 30 + this.ppr_data.PlatingTime_3_offset 
+                            }
+                            else if(this.RD05M134 >= 0.8 && this.RD05M134 <= 1)
+                            {
+                                PlatingTime = 90 + this.ppr_data.PlatingTime_3_offset 
+                            }
+                            else if(this.RD05M134 > 1)
+                            {
+                                PlatingTime = "通知工程人員確認"
+                            }
+                            else 
+                            {
+                                PlatingTime = NaN
+                            }
+                            P_PlatingAmp = this.ASF * (this.SQFT + this.SQFT_Dummy)
+                            N_PlatingAmp = P_PlatingAmp * -1
                         }
-                        else if(this.RD05M134 >= 0.8 && this.RD05M134 <= 1)
-                        {
-                            PlatingTime = 150 * this.RD05M136_Compensation * this.RD05M145_Compensation + this.ppr_data.PlatingTime_2_offset
-                        }
-                        else if(this.RD05M134 > 1)
-                        {
-                            PlatingTime = "通知工程人員確認"
-                        }
-                        else 
-                        {
-                            PlatingTime = NaN
-                        }
-                        P_PlatingAmp = this.ASF * (this.SQFT + this.SQFT_Dummy)
-                        N_PlatingAmp = P_PlatingAmp * - 3.5
-                    }
-                    else if(i == 3) // 第三段
-                    {
-                        name = '第三段'
-                        if(this.RD05M134 <= 0)
-                        {
-                            PlatingTime = 0 + this.ppr_data.PlatingTime_3_offset 
-                        }
-                        else if(this.RD05M134 <= 0.6 && this.RD05M134 > 0)
-                        {
-                            PlatingTime = 30 + this.ppr_data.PlatingTime_3_offset 
-                        }
-                        else if(this.RD05M134 > 0.6 && this.RD05M134 < 0.8)
-                        {
-                            PlatingTime = 30 + this.ppr_data.PlatingTime_3_offset 
-                        }
-                        else if(this.RD05M134 >= 0.8 && this.RD05M134 <= 1)
-                        {
-                            PlatingTime = 90 + this.ppr_data.PlatingTime_3_offset 
-                        }
-                        else if(this.RD05M134 > 1)
-                        {
-                            PlatingTime = "通知工程人員確認"
-                        }
-                        else 
-                        {
-                            PlatingTime = NaN
-                        }
-                        P_PlatingAmp = this.ASF * (this.SQFT + this.SQFT_Dummy)
-                        N_PlatingAmp = P_PlatingAmp * -1
                     }
                 }
+                result[i] = 
+                {
+                    "name" : name,
+                    "PlatingTime" : PlatingTime < 0 ? 0: PlatingTime ,
+                    "P_PlatingAmp": Math.round(P_PlatingAmp * 100) / 100 ,
+                    "N_PlatingAmp": Math.round(N_PlatingAmp * 100) / 100 ,
+                }
             }
-            result[i] = 
+            if(result.length < 5)
             {
-                "name" : name,
-                "PlatingTime" : PlatingTime < 0 ? 0: PlatingTime ,
-                "P_PlatingAmp": Math.round(P_PlatingAmp * 100) / 100 ,
-                "N_PlatingAmp": Math.round(N_PlatingAmp * 100) / 100 ,
+                result[4] = result[2]
+                result[2] =
+                {
+                    "name" : "",
+                    "PlatingTime" : 0,
+                    "P_PlatingAmp": 0 ,
+                    "N_PlatingAmp": 0 ,
+                }
+                result[3] =
+                {
+                    "name" : "",
+                    "PlatingTime" : 0,
+                    "P_PlatingAmp": 0 ,
+                    "N_PlatingAmp": 0 ,
+                }
             }
-        }
-        return result
+            return result
         },
     },
     methods:
@@ -747,7 +727,7 @@ export default {
         async getRD05M136(lotdata)
         {
             let RD05M136 = 0
-            console.log(lotdata)
+            // console.log(lotdata)
             await fetch("http://10.11.30.61:9999/api/getRD05M136", {method: 'POST', body: JSON.stringify(lotdata)})
             .then( response => {return response.json()})
             .then( response =>
@@ -767,7 +747,6 @@ export default {
          
         async getRecipe()
         {
-            let result = false
             this.payload["mfdata"]["lotdata"]["no"] = this.LotNO
             if(this.ProcSeq == 0)
             {
@@ -778,14 +757,14 @@ export default {
                 this.payload["mfdata"]["lotdata"]["procseq"] = this.ProcSeq
             }
             let x2js = new X2JS()
-            let payload_xml = x2js.js2xml(this.payload)
-            return await axios({ method: 'get', url: 'http://mesap/mesws_chpt/wsmes/wsmes.asmx/GetParameter?InXml='+x2js.js2xml(this.payload)})
+            x2js.js2xml(this.payload)
+            return await this.$axios({ method: 'get', url: 'http://mesap/mesws_chpt/wsmes/wsmes.asmx/GetParameter?InXml='+x2js.js2xml(this.payload)})
             .then( response =>
             {
                 let res = response["data"]
                 res = x2js.xml2js(res)
                 res = x2js.xml2js(res["string"]["__text"])
-                console.log(Object.keys(res))
+                // console.log(Object.keys(res))
                 if(! Object.keys(res).includes("mfdata"))
                 {
                     throw "參數返回格式不符合預期"
@@ -839,7 +818,6 @@ export default {
                 {
                     if(await this.getRecipe())
                     {
-                        console.log("call MES Done")
                         this.ppr_data.RD05M136 = await this.getRD05M136(this.lotdata)
                         for(let item of this.procdata.procprams.procpram)
                         {
@@ -851,7 +829,6 @@ export default {
                     }
                     else
                     {
-                        console.log("Failed Call MES")
                         this.$message({ message: "MES回應異常", type: "error"})
                     }
                 }
@@ -887,66 +864,29 @@ export default {
         },
         async RecipeStore()
         {
-            let token
-            await fetch("http://10.11.0.156:8529/_open/auth",
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    username: "root", 
-                    password: "root", })
-            })
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                if(response["error"])
-                {
-                    throw response["errorMessage"]
-                }
-                token = 'Bearer ' + response["jwt"]
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: 'Server資料庫存取異常', message: err})
-            })
-            await fetch("http://10.11.0.156:8529/_db/VCP-30/_api/document/PH",
-            {
+            let response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-30/_api/document/PH",
                 method: "POST",
-                headers: {
-                'Accept': 'application/json',
-                'Authorization': token,
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(
-                    {
-                        _key: this.recipe_name,
-                        ppr_data: this.ppr_data,
-                        lotdata: this.lotdata,
-                        ppr_result: this.ppr_result_convert, 
-                    }
-                ),
-            })
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                console.log(response)
-                if(response["error"])
+                payload:
                 {
-                    throw response["errorMessage"]
-                }
-                this.$message({ message: "儲存成功", type: "success"})
+                    _key: this.recipe_name,
+                    ppr_data: this.ppr_data,
+                    lotdata: this.lotdata,
+                    ppr_result: this.ppr_result_convert, 
+                },
             })
-            .catch( err =>
+            if(! response )
             {
-                this.$notify.warning({ title: 'Server資料庫存取異常', message: err})
-            })
+                this.$message({ message: "儲存成功", type: "success"})
+            }
         },  
         async prod_work()
         {
             this.loading = true
-            console.log(this.ppr_result_convert)
+            // console.log(this.ppr_result_convert)
             for(let i = 3; i>1; i--)
             {
-                console.log(this.ppr_result_convert[i]["current_time"])
+                // console.log(this.ppr_result_convert[i]["current_time"])
                 if( this.ppr_result_convert[i]["current_time"] > 0 && this.ppr_result_convert[i-1]["current_time"] == 0)
                 {
                     this.$message({ message: "電鍍第"+(i-1).toString()+"段電鍍時間不能為0", type: "warning"})
@@ -963,7 +903,7 @@ export default {
                     lotdata: this.lotdata,
                     procdata: this.procdata,
                     noteList: this.noteList,
-                    })
+                })
             })
             .then( response => {return response.json()})
             .then( response =>
@@ -1021,8 +961,12 @@ export default {
 </script>
 
 <style scoped>
-    .el-row
-    {
-        margin-bottom: 20px;
-    }
+.el-row
+{
+    margin-bottom: 20px;
+}
+.content
+{
+    font-size: 24px;
+}
 </style>

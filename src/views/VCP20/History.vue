@@ -205,24 +205,6 @@
     export default {
     async created()
     {
-        await fetch("http://10.11.0.156:8529/_open/auth",
-        {
-            method: 'POST',
-            body: JSON.stringify({ username: "root", password: "root", })
-        })
-        .then( response => {return response.json()})
-        .then( response =>
-        {
-            if(response["error"])
-            {
-                throw response["errorMessage"]
-            }
-            this.token = 'Bearer ' + response["jwt"]
-        })
-        .catch( err =>
-        {
-            this.$notify.warning({ title: 'Server資料庫存取異常', message: err})
-        })
         await this.CheckData()
     },
     data: function()
@@ -347,7 +329,7 @@
             })
             return arr
         },
-        ppr_result: function()
+        ppr_result()
         {
             let result = []
             let PlatingTime = 0
@@ -484,27 +466,29 @@
                     "N_PlatingAmp": Math.round(N_PlatingAmp * 100) / 100 ,
                 }
             }
-            return result
-        },
-        ppr_result_convert: function()
-        {
-            let ppr_result_convert = []
-            if(this.ppr_result.length < 5)
+            if(result.length < 5)
             {
-                this.ppr_result[4] = this.ppr_result[2]
-                this.ppr_result[2] = {
-                "name" : "",
-                "PlatingTime" : 0,
-                "P_PlatingAmp": 0 ,
-                "N_PlatingAmp": 0 ,
+                result[4] = result[2]
+                result[2] =
+                {
+                    "name" : "",
+                    "PlatingTime" : 0,
+                    "P_PlatingAmp": 0 ,
+                    "N_PlatingAmp": 0 ,
                 }
-                this.ppr_result[3] = {
-                "name" : "",
-                "PlatingTime" : 0,
-                "P_PlatingAmp": 0 ,
-                "N_PlatingAmp": 0 ,
+                result[3] =
+                {
+                    "name" : "",
+                    "PlatingTime" : 0,
+                    "P_PlatingAmp": 0 ,
+                    "N_PlatingAmp": 0 ,
                 }
             }
+            return result
+        },
+        ppr_result_convert()
+        {
+            let ppr_result_convert = []
             this.ppr_result.forEach((element) =>
             {
                 let item = {

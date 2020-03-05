@@ -2,7 +2,7 @@
     <div class="login-box">
         <el-card>
             <div slot="header" class="title">
-                <center>產線設備</center>
+                <center>產線設備入口</center>
             </div>
             <el-row>
                 <el-col :span="8">

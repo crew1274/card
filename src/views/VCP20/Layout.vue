@@ -1,8 +1,12 @@
 <template>
   <div id="loyout">
     <el-container>
-        <el-aside width="250px">
-            <el-image :src="img_uri" fit="contain"></el-image>
+        <el-aside width="230px">
+            <el-image :src="img_uri" fit="contain">
+                <div slot="error">
+                    <i class="el-icon-picture-outline"> </i>
+                </div>
+            </el-image>
             <el-menu default-active="Dashboard" router @select="handle" text-color = "#55585c" active-text-color = "#1ababd">
                 <el-menu-item index="Dashboard" route="Dashboard">
                     <h1><i class="el-icon-s-home" />首頁</h1>
@@ -43,7 +47,6 @@
                 </transition>
         </el-container>
     </el-container>
-    <!-- <vue-touch-keyboard v-if="visible" :options="options" :layout="layout" :cancel="hide" :accept="keyboard_accept" :input="input" /> -->
   </div>
 </template>
 
@@ -51,42 +54,46 @@
   export default {
     name: 'layout',
     components: { },
+    async mounted()
+    {
+        await this.get_token()
+        this.timer = await setInterval( () => { this.get_token() }, 5000) //定期更新token
+    },
+    beforeDestroy()
+    {
+        clearInterval(this.timer)
+    },
     data: function()
     {
         return {
-            img_uri: "http://www.cht-pt.com.tw/files/file_pool/1/0g312372164526975026/logo.png",
-            now: 'dashboard',
-            layout: "normal",
-            input: null,
-            options:
-            {
-                useKbEvents: false,
-                preventClickEvent: false
-            },
+            img_uri: require("@/assets/VCP20.png"),
+            timer: undefined,
         }
-    },
-    watch:
-    {
-        getstateisLogin: function (val)
-        {
-            if(val)
-            {
-                console.log("連線成功")
-            }
-            else
-            {
-                console.log("連線異常")
-                this.$store.dispatch('Logout')
-                this.$router.push('/login');
-            }
-        },
     },
     computed:
     {
-        getstateisLogin: function()
+        getstateisLogin()
         {
-            return this.$store.state.isLogin
+            return this.$store.state._ws_isLogin
         },
+        errorMessage()
+        {
+            return this.$store.state.errorMessage
+        },
+    },
+    watch:
+    {
+        getstateisLogin(isLogin)
+        {
+            if(!isLogin)
+            {
+                location.reload()
+            }
+        },
+        errorMessage(msg)
+        {
+            this.$notify.warning({ title: msg.title, message: msg.message})
+        }
     },
     methods:
     {
@@ -94,37 +101,30 @@
         {
             if(index == 'logout')
             {
-                this.$store.dispatch('Logout')
+                location.reload()
             }
         },
-        keyboard_accept()
+        async get_token()
         {
-            this.hide();
-        },
-        hide()
-        {
-            this.visible = false;
-        },
-        show(event) 
-        {
-            if(this.useKeyboard)
+            await fetch("http://10.11.0.156:8529/_open/auth",
             {
-                this.input = event.target;
-                this.layout = event.target.dataset.layout;
-                if(!this.visible )
+                method: 'POST',
+                body: JSON.stringify({ username: "171104", password: "171104", })
+            })
+            .then( response => {return response.json()})
+            .then( response =>
+            {
+                if(response["error"])
                 {
-                    this.visible = true;
+                    throw response["errorMessage"]
                 }
-                this.next_step = event.target.id;
-            }
+                this.$store.commit('update_token', 'Bearer ' + response["jwt"])
+            })
+            .catch( err =>
+            {
+                this.$notify.warning({ title: 'Server資料庫取得token異常', message: err})
+            })
         },
     }
-    // watch:
-    // {
-    //     now: function (val)
-    //     {
-    //         console.log(val)
-    //     },
-    // }
   }
 </script>

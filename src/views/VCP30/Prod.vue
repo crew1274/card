@@ -336,6 +336,7 @@
 
 <script>
 import X2JS from 'x2js'
+
 export default {
     data: function()
     {
@@ -421,77 +422,72 @@ export default {
         {
             return this.$store.state._ws_back
         },
-        RD05M134:function ()
+        RD05M134()
         {
             return +this.ppr_data.RD05M134
         },
-        RD05M146:function ()
+        RD05M146()
         {
             return +this.ppr_data.RD05M146
         },
-        RD05M136:function ()
+        RD05M136()
         {
             return +this.ppr_data.RD05M136
         },
-        RD05M49:function ()
+        RD05M49()
         {
             return +this.ppr_data.RD05M49
         },        
-        RD05M47:function ()
+        RD05M47()
         {
             return +this.ppr_data.RD05M47
         },
-        PlatingPnl: function()
+        PlatingPnl()
         {
             return +this.ppr_data.PlatingPnl
         },
-
-        ASF:function ()
+        ASF()
         {
             return 12
         },
-
-        SQIN:function ()
+        SQIN()
         {
             return (Number(this.RD05M49) / 2 * this.PlatingPnl)
         },
-
-        SQFT:function ()
+        SQFT()
         {
             return (Number(this.SQIN) * 0.006944)
         },
-
-        SQFT_Dummy:function ()
+        SQFT_Dummy()
         {
             return (2 * Number(this.RD05M47) * 0.00328 * 230 * 0.00328)
         },
-
-        RD05M136_Compensation: function() //當站板厚補償值
+        RD05M136_Compensation() //當站板厚補償值
         {
-        if(Number(this.RD05M136) <= 5)
-        {
-            return 1
-        }
-        else if(Number(this.RD05M136) > 5 && Number(this.RD05M136) <= 7)
-        {
-            return 1.1
-        }
-        else if(Number(this.RD05M136) > 7 && Number(this.RD05M136) <= 9)
-        {
-            return 1.2
-        }
-        else if(Number(this.RD05M136) > 9 && Number(this.RD05M136) <= 10)
-        {
-            return 1.3
-        }
-        else if(Number(this.RD05M136) > 10)
-        {
-            return 1.4
-        }
-        else
-        {
-            return NaN
-        }
+            if(Number(this.RD05M136) <= 5)
+            {
+                return 1
+            }
+            else if(Number(this.RD05M136) > 5 && Number(this.RD05M136) <= 7)
+            {
+                return 1.1
+            }
+            else if(Number(this.RD05M136) > 7 && Number(this.RD05M136) <= 9)
+            {
+                return 1.2
+            }
+            else if(Number(this.RD05M136) > 9 && Number(this.RD05M136) <= 10)
+            {
+                return 1.3
+            }
+            else if(Number(this.RD05M136) > 10)
+            {
+                return 1.4
+            }
+            else
+            {
+                return NaN
+            }
         },
 
         RD05M145_Compensation() //當站孔徑補償值
@@ -532,7 +528,7 @@ export default {
                     current_time: element.PlatingTime,
                 }
                 ppr_result_convert.push(item)
-            })
+            })  
             // ppr_result_convert.unshift(
             //     {
             //         name: "起始電流",
@@ -884,58 +880,21 @@ export default {
         },
         async RecipeStore()
         {
-            let token
-            await fetch("http://10.11.0.156:8529/_open/auth",
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    username: "root", 
-                    password: "root", })
-            })
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                if(response["error"])
-                {
-                    throw response["errorMessage"]
-                }
-                token = 'Bearer ' + response["jwt"]
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: 'Server資料庫存取異常', message: err})
-            })
-            await fetch("http://10.11.0.156:8529/_db/VCP-30/_api/document/PH",
-            {
+            let response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-30/_api/document/PH",
                 method: "POST",
-                headers: {
-                'Accept': 'application/json',
-                'Authorization': token,
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(
-                    {
-                        _key: this.recipe_name,
-                        ppr_data: this.ppr_data,
-                        lotdata: this.lotdata,
-                        ppr_result: this.ppr_result_convert, 
-                    }
-                ),
-            })
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                // console.log(response)
-                if(response["error"])
+                payload:
                 {
-                    throw response["errorMessage"]
-                }
-                this.$message({ message: "儲存成功", type: "success"})
+                    _key: this.recipe_name,
+                    ppr_data: this.ppr_data,
+                    lotdata: this.lotdata,
+                    ppr_result: this.ppr_result_convert, 
+                },
             })
-            .catch( err =>
+            if(! response )
             {
-                this.$notify.warning({ title: 'Server資料庫存取異常', message: err})
-            })
+                this.$message({ message: "儲存成功", type: "success"})
+            }
         },  
         async prod_work()
         {
@@ -960,7 +919,7 @@ export default {
                     lotdata: this.lotdata,
                     procdata: this.procdata,
                     noteList: this.noteList,
-                    })
+                })
             })
             .then( response => {return response.json()})
             .then( response =>
@@ -1018,8 +977,8 @@ export default {
 </script>
 
 <style scoped>
-    .el-row
-    {
-        margin-bottom: 20px;
-    }
+.el-row
+{
+    margin-bottom: 20px;
+}
 </style>

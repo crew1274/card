@@ -9454,6 +9454,11 @@ vue-loader@^15.8.3:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-lodash@^2.1.2:
+  version "2.1.2"
+  resolved "https://r.cnpmjs.org/vue-lodash/download/vue-lodash-2.1.2.tgz#1ec2b1471ee289518e8d285250a25516adee6c51"
+  integrity sha1-HsKxRx7iiVGOjShSUKJVFq3ubFE=
+
 vue-router@^3.1.5:
   version "3.1.6"
   resolved "https://registry.npm.taobao.org/vue-router/download/vue-router-3.1.6.tgz#45f5a3a3843e31702c061dd829393554e4328f89"

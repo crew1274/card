@@ -13,17 +13,19 @@ export default new Router({
         {
             path: '/VCP-20',
             component: () => import('@/views/VCP20/Layout.vue'),
-            children: [{
+            meta: { title: "VCP-20" },
+            children: [
+                {
+                    path: '/VCP-20',
+                    redirect: '/VCP-20/dashboard'
+                },
+                {
                     path: '/VCP-20/dashboard',
                     component: () => import('@/views/VCP20/Dashboard.vue')
                 },
                 {
                     path: '/VCP-20/prod',
                     component: () => import('@/views/VCP20/Prod.vue')
-                },
-                {
-                    path: '/VCP-20/PPR',
-                    component: () => import('@/views/VCP20/PPR.vue')
                 },
                 {
                     path: '/VCP-20/history',
@@ -54,7 +56,7 @@ export default new Router({
                 },
                 {
                     path: '/VCP-30/dashboard',
-                    component: () => import('@/views/VCP30/Dashboard.vue')
+                    component: () => import('@/views/VCP30/Dashboard.vue'),
                 },
                 {
                     path: '/VCP-30/prod',

@@ -205,24 +205,6 @@
     export default {
     async created()
     {
-        await fetch("http://10.11.0.156:8529/_open/auth",
-        {
-            method: 'POST',
-            body: JSON.stringify({ username: "root", password: "root", })
-        })
-        .then( response => {return response.json()})
-        .then( response =>
-        {
-            if(response["error"])
-            {
-                throw response["errorMessage"]
-            }
-            this.token = 'Bearer ' + response["jwt"]
-        })
-        .catch( err =>
-        {
-            this.$notify.warning({ title: 'Server資料庫存取異常', message: err})
-        })
         await this.CheckData()
     },
     data: function()

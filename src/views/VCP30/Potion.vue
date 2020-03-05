@@ -36,7 +36,7 @@
     },
     computed:
     {
-        show_list : function()
+        show_list()
         {
             let show_map = {}
             let show_list = []
@@ -54,7 +54,6 @@
                     show_map[element["message"]]["start_time"] = element["datetime"]
                 }
             })
-            console.log(show_map)
             Object.keys(show_map).forEach( element =>
             {
                 show_map[element]["start_time"] = show_map[element]["datetime"]
@@ -91,7 +90,8 @@
 </script>
 
 <style>
-  .el-table .warning-row {
+  .el-table .warning-row
+  {
     background: #f15c66;
   }
 </style>

@@ -1,8 +1,12 @@
 <template>
   <div id="loyout">
     <el-container>
-        <el-aside width="250px">
-            <el-image :src="img_uri" fit="contain"></el-image>
+        <el-aside width="230px">
+            <el-image :src="img_uri" fit="contain">
+                <div slot="error">
+                    <i class="el-icon-picture-outline"> </i>
+                </div>
+            </el-image>
             <el-menu default-active="Dashboard" router @select="handle" text-color = "#55585c" active-text-color = "#1ababd">
                 <el-menu-item index="Dashboard" route="Dashboard">
                     <h1><i class="el-icon-s-home" />首頁</h1>
@@ -43,7 +47,6 @@
                 </transition>
         </el-container>
     </el-container>
-    <!-- <vue-touch-keyboard v-if="visible" :options="options" :layout="layout" :cancel="hide" :accept="keyboard_accept" :input="input" /> -->
   </div>
 </template>
 
@@ -51,18 +54,20 @@
   export default {
     name: 'layout',
     components: { },
+    async mounted()
+    {
+        await this.get_token()
+        this.timer = await setInterval( () => { this.get_token() }, 5000) //定期更新token
+    },
+    beforeDestroy()
+    {
+        clearInterval(this.timer)
+    },
     data: function()
     {
         return {
-            img_uri: "http://www.cht-pt.com.tw/files/file_pool/1/0g312372164526975026/logo.png",
-            now: 'dashboard',
-            layout: "normal",
-            input: null,
-            options:
-            {
-                useKbEvents: false,
-                preventClickEvent: false
-            },
+            img_uri: require("@/assets/VCP30.png"),
+            timer: undefined,
         }
     },
     computed:
@@ -70,6 +75,10 @@
         getstateisLogin()
         {
             return this.$store.state._ws_isLogin
+        },
+        errorMessage()
+        {
+            return this.$store.state.errorMessage
         },
     },
     watch:
@@ -80,6 +89,10 @@
             {
                 location.reload()
             }
+        },
+        errorMessage(msg)
+        {
+            this.$notify.warning({ title: msg.title, message: msg.message})
         }
     },
     methods:
@@ -109,7 +122,7 @@
             })
             .catch( err =>
             {
-            this.$notify.warning({ title: 'Server資料庫取得token異常', message: err})
+                this.$notify.warning({ title: 'Server資料庫取得token異常', message: err})
             })
         },
     }

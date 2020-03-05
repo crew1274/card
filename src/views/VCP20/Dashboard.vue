@@ -1,9 +1,10 @@
 <template>
-
+  <div>
+    <h4>VCP-20</h4>
+  </div>
 </template>
 
 <script>
-import VueApexCharts from 'vue-apexcharts'
 export default {
   name: 'Dashboard',
   data: function()

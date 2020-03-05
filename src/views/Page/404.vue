@@ -3,10 +3,11 @@
       <div class="error-code">4<span>0</span>4</div>
       <div class="error-desc">頁面不存在</div>
       <div class="error-handle">
-          <router-link to="/login">
+          <router-link to="/">
             <el-button type="primary" size="large">返回首頁</el-button>
           </router-link>
-          <el-button class="error-btn" type="primary" size="large" @click="goBack">返回上一頁</el-button>
+          <!-- <el-button class="error-btn" type="primary" size="large" @click="goBack">返回上一頁</el-button> -->
+          <el-button class="error-btn" type="primary" size="large" @click="reload">重新整理</el-button>
       </div>
   </div>
 </template>
@@ -18,6 +19,10 @@ export default {
     goBack()
     {
         this.$router.go(-1)
+    },
+    reload()
+    {
+        location.reload()
     }
   }
 }
