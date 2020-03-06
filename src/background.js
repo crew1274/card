@@ -1,10 +1,6 @@
 'use strict'
 
-import {
-  app,
-  protocol,
-  BrowserWindow
-} from 'electron'
+import { app, protocol, BrowserWindow, clipboard, shell } from 'electron'
 import {
   createProtocol,
   installVueDevtools
@@ -35,7 +31,7 @@ function createWindow() {
       fullscreenable: true
     }
   })
-  win.setFullScreen(true)
+  shell.beep()
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -44,6 +40,7 @@ function createWindow() {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
+    win.setFullScreen(true)
   }
 
   win.on('closed', () => {
@@ -86,9 +83,10 @@ app.on('ready', async () => {
     // } catch (e) {
     //   console.error('Vue Devtools failed to install:', e.toString())
     // }
-
   }
   createWindow()
+  clipboard.writeText('Example String', 'selection')
+  console.log(clipboard.readText('selection'))
 })
 
 // Exit cleanly on request from parent process in development mode.
