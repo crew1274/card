@@ -170,10 +170,10 @@
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
-                            <el-col :span="4" :offset="8">
+                            <el-col :span="6" :offset="6">
                                 <el-button @click="prod_confrim" type="success" icon="el-icon-switch-button">啟動自動模式</el-button>
                             </el-col>
-                            <el-col :span="4">
+                            <el-col :span="6" :offset="6">
                                 <el-button @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
                             </el-col>
                         </el-row><el-row /><el-row />

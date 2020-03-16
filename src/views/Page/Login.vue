@@ -34,10 +34,10 @@
             </el-row>
             <el-row :gutter="10">
                 <el-col :span="12">
-                    <el-button style="width:100%;" type="info" @click="login" icon="el-icon-refresh-left" >重新整理</el-button>
+                    <el-button style="width:100%;" type="info" @click="refresh" icon="el-icon-refresh-left" >重新整理</el-button>
                 </el-col>
                 <el-col :span="12">
-                    <el-button style="width:100%;" type="danger" @click="login" icon="el-icon-close" >關閉程式</el-button>
+                    <el-button style="width:100%;" type="danger" @click="close" icon="el-icon-close" >關閉程式</el-button>
                 </el-col>            
             </el-row>
 
@@ -110,6 +110,15 @@
                 let password = this.password
                 let machine = this.machine
                 this.$store.dispatch('_ws_login', {"User": user, "Password": "password", "machine": machine})
+            },
+            close()
+            {
+                let w = require('electron').remote.getCurrentWindow()
+                w.close()
+            },
+            refresh()
+            {
+                location.reload()
             },
         }
     }
