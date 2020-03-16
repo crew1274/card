@@ -17,12 +17,13 @@
 </template>
 
 <script>
-    export default {
+export default
+{
     async created()
     {
         await this.CheckData()
     },
-    data: function()
+    data()
     {
         return {
             loading: false,
@@ -69,7 +70,7 @@
     {
         async CheckData()
         {
-            await fetch("http://10.11.30.61:9999/api/error",
+            await fetch("http://10.11.30.60:9999/api/error",
             {
                 method: "GET",
             })
@@ -104,7 +105,8 @@
 </script>
 
 <style>
-  .el-table .warning-row {
+  .el-table .warning-row
+  {
     background: #f15c66;
   }
 </style>

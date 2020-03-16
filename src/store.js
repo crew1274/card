@@ -22,8 +22,10 @@ export default new Vuex.Store(
     },
     _db_err(state, err)
     {
-      state.errorMessage["title"] = "ArangoDB資料庫連線異常"
-      state.errorMessage["message"] = err
+      state.errorMessage = {
+        "title": "ArangoDB資料庫連線異常",
+        "message": err
+      }
     },
     _ws_message(state, e)
     {

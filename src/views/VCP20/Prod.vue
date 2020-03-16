@@ -1,14 +1,16 @@
 <template>
     <el-container class="content">
-        <el-header height="60px" />
-        <el-main>
+        <el-header height="60px" >
+            <center>製程參數套用</center>
+        </el-header>
+        <el-main v-loading="loading" element-loading-text="拼命載入資料中"
+        element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-row :gutter="20">
                 <el-steps :active="prod_step" finish-status="success" align-center>
                     <el-step title="步驟 1" description="檢查PLC、MES連線狀態"></el-step>
-                    <el-step title="步驟 2" description="請對RFID讀取器感應員工識別證及工單並輸入製程序和片數"></el-step>
+                    <el-step title="步驟 2" description="請對RFID讀取器感應員工識別證及工 單並輸入製程序和片數"></el-step>
                     <el-step title="步驟 3" description="輸入及確認製程參數"></el-step>
-                    <el-step title="步驟 4" description="參數寫入PLC"></el-step>
-                    <el-step title="步驟 5" description="呼叫AGV"></el-step>
+                    <el-step title="步驟 4" description="參數寫入PLC及呼叫AGV"></el-step>
                 </el-steps>
             </el-row>
             <el-row :gutter="20">
@@ -27,129 +29,88 @@
                         <el-button style="float: right;" type="danger" @click="prod_cancel">取消</el-button>
                     </el-row>
                     </div>
-                    <div v-loading="loading">
-                        <div v-if="prod_step == 0">
-                            <el-row :gutter="20">
-                                <center>
-                                    <el-button type="text" @click="prod_check">操作前點我檢查連線狀態</el-button>
-                                </center>
-                            </el-row>
-                        </div>
-                        <div v-else-if="prod_step == 1">
-                            <el-row>
-                                <center><h3>請輸入批號、工號及製程序</h3></center>
-                            </el-row>
-                            <el-row :gutter="20">
-                                <el-col :span="24">
-                                    <el-tooltip class="item" effect="dark" content="感應RFID可自動帶入" placement="top">
-                                        <el-input v-model="LotNO" clearable>
-                                            <template slot="prepend">批號:</template>
-                                        </el-input>
-                                    </el-tooltip>
-                                </el-col>
-                            </el-row>
-                            <el-row :gutter="20">
-                                <el-col :span="24">
-                                    <el-tooltip class="item" effect="dark" content="感應RFID可自動帶入" placement="top">
-                                        <el-input v-model="Operator" clearable>
-                                            <template slot="prepend">工號:</template>
-                                        </el-input>
-                                    </el-tooltip>
-                                </el-col>
-                            </el-row>
-                            <el-row :gutter="20">
-                                <el-col :span="4">
-                                    製程序:
-                                </el-col>
-                                <el-tooltip class="item" effect="dark" content="預設0即查詢當站參數" placement="top">
-                                    <el-col :span="4">
-                                        <el-input-number v-model="ProcSeq" :min="0" :max="200" label="製程序"  size="large" />
-                                    </el-col>
+                    <div v-if="prod_step == 0">
+                        <el-row :gutter="20">
+                            <center>
+                                <el-button type="text" @click="prod_check">操作前點我檢查連線狀態</el-button>
+                            </center>
+                        </el-row>
+                    </div>
+                    <div v-else-if="prod_step == 1">
+                        <el-row>
+                            <center><h3>請輸入批號、工號及製程序</h3></center>
+                        </el-row>
+                        <el-row :gutter="20">
+                            <el-col :span="24">
+                                <el-tooltip class="item" effect="dark" content="感應RFID可自動帶入" placement="top">
+                                    <el-input v-model="LotNO" clearable>
+                                        <template slot="prepend">批號:</template>
+                                    </el-input>
                                 </el-tooltip>
-                            </el-row>
-                        </div>
-                        <div v-else-if="prod_step == 2">
-                            <el-row>
-                                {{procdata.procname}}
-                            </el-row>
-                            <el-row>
-                                <el-form ref="form" :model="ppr_data">
-                                    <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="right">
-                                        <el-form-item label="板寬(mm):">
-                                            <el-input-number v-model="ppr_data.RD05M48" size="large" />
-                                        </el-form-item>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響遮板高度" placement="right">
-                                        <el-form-item label="板長(mm):">
-                                            <el-input-number v-model="ppr_data.RD05M47" size="large" />
-                                        </el-form-item>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍時間" placement="right">
-                                        <el-form-item label="電鍍時間(分鐘):">
-                                            <el-input-number v-model="ppr_data.PlatingTime" size="large" />
-                                        </el-form-item>
-                                    </el-tooltip>
-                                    <el-form-item label="上料片數(不包含Dummy):">
-                                        <el-tooltip class="item" effect="dark" content="範圍(1~6)" placement="top">
-                                            <el-input-number v-model="ppr_data.PlatingPnl" :min="1" :max="6" size="large" />
-                                        </el-tooltip>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="20">
+                            <el-col :span="24">
+                                <el-tooltip class="item" effect="dark" content="感應RFID可自動帶入" placement="top">
+                                    <el-input v-model="Operator" clearable>
+                                        <template slot="prepend">工號:</template>
+                                    </el-input>
+                                </el-tooltip>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="20">
+                            <el-col :span="4">
+                                製程序:
+                            </el-col>
+                            <el-tooltip class="item" effect="dark" content="預設0即查詢當站參數" placement="top">
+                                <el-col :span="4">
+                                    <el-input-number v-model="ProcSeq" :min="0" :max="200" label="製程序"  size="large" />
+                                </el-col>
+                            </el-tooltip>
+                        </el-row>
+                    </div>
+                    <div v-else-if="prod_step == 2">
+                        <el-row>
+                            {{procdata.procname}}
+                        </el-row>
+                        <el-row>
+                            <el-form ref="form" :model="ppr_data">
+                                <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="right">
+                                    <el-form-item label="版寬(mm):">
+                                        <el-input-number v-model="ppr_data.RD05M48" size="large" />
                                     </el-form-item>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="right">
-                                        <el-form-item label="電鍍面積(SQIN):">
-                                            <el-input-number v-model="ppr_data.RD05M49" size="large" />
-                                        </el-form-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="此參數影響遮板高度" placement="right">
+                                    <el-form-item label="板長(mm):">
+                                        <el-input-number v-model="ppr_data.RD05M47" size="large" />
+                                    </el-form-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="此參數影響電鍍時間" placement="right">
+                                    <el-form-item label="電鍍時間(分鐘):">
+                                        <el-input-number v-model="ppr_data.PlatingTime" size="large" />
+                                    </el-form-item>
+                                </el-tooltip>
+                                <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="right">
+                                    <el-form-item label="單片電鍍電流(PlatingAmp):">
+                                        <el-input-number v-model="ppr_data.PlatingAmp" size="large" />
+                                    </el-form-item>
+                                </el-tooltip>
+                                <el-form-item label="上料片數(不包含Dummy):">
+                                    <el-tooltip class="item" effect="dark" content="範圍(1~6)" placement="top">
+                                        <el-input-number v-model="ppr_data.PlatingPnl" :min="1" :max="6" size="large" />
                                     </el-tooltip>
-                                    <el-form-item label="備註:">
-                                        <el-checkbox-group v-model="noteList">
-                                            <el-checkbox label="重工"></el-checkbox>
-                                        </el-checkbox-group>
-                                    </el-form-item>                          
-                                    電鍍電流計算公式:
-                                    [電鍍面積(SQIN){{ppr_data.RD05M49}} / 144 / 2 * 8(ASF) * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{this.ppr_result[1].P_PlatingAmp}}
-                                </el-form>
-                            </el-row>
-                            <el-divider content-position="left">飛靶編號及刀數可於上料後於生產履歷再修改</el-divider> 
-                            <el-row :gutter="10">
-                                <el-card>
-                                    <div slot="header" class="clearfix">
-                                        飛靶編號(面對設備 從裡面到外面)
-                                    </div>
-                                    <el-row :gutter="10">
-                                        <el-col :span="3">
-                                            <el-input placeholder="DUMMY" disabled clearable />
-                                        </el-col>
-                                        <div v-for="(key, index) in ppr_data.PlatingPnl" v-bind:key="key">
-                                            <el-col :span="3">
-                                                <el-input v-model="ppr_data.carrier[index]" clearable />
-                                            </el-col>
-                                        </div>
-                                        <el-col :span="3">
-                                            <el-input placeholder="DUMMY" disabled clearable />
-                                        </el-col>
-                                    </el-row>
-                                </el-card>
-                            </el-row>
-                            <el-row :gutter="10">
-                                <el-card>
-                                    <div slot="header" class="clearfix">
-                                        刀數(面對設備 從裡面到外面)
-                                    </div>
-                                    <el-row :gutter="10">
-                                        <el-col :span="3">
-                                            <el-input placeholder="DUMMY" disabled clearable />
-                                        </el-col>
-                                        <div v-for="(key, index) in ppr_data.PlatingPnl" v-bind:key="key">
-                                            <el-col :span="3">
-                                                <el-input v-model="ppr_data.cut_tag[index]" clearable />
-                                            </el-col>
-                                        </div>
-                                        <el-col :span="3">
-                                            <el-input placeholder="DUMMY" disabled clearable />
-                                        </el-col>
-                                    </el-row>
-                                </el-card>
-                            </el-row>
-                            <el-divider />
+                                </el-form-item>
+                                <el-form-item label="備註:">
+                                    <el-checkbox-group v-model="noteList">
+                                        <el-checkbox label="重工"></el-checkbox>
+                                    </el-checkbox-group>
+                                </el-form-item>                          
+                                電鍍電流計算公式:
+                                [電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{this.ppr_result[1].P_PlatingAmp}}
+                            </el-form>
+                        </el-row>
+                        <el-divider content-position="left">換算實際套用結果</el-divider> 
+                        <el-row>
                             <el-col :span="24">
                                 <el-table :data="ppr_result" style="font-size: 20px; width: 100%">
                                     <el-table-column prop="name" label="" width="180" />
@@ -158,36 +119,75 @@
                                     <el-table-column prop="N_PlatingAmp" label="負向電流 (A)" width="180" />
                                 </el-table>  
                             </el-col>
-                        </div>
-                        <div v-else-if="prod_step == 3">
-                            <el-row /><el-row /><el-row>
+                        </el-row>
+                        <el-divider content-position="left">飛靶編號及刀數可於上料後於生產履歷再修改</el-divider> 
+                        <el-row :gutter="10">
+                            <el-card>
+                                <div slot="header" class="clearfix">
+                                    飛靶編號(面對設備 從裡面到外面)
+                                </div>
+                                <el-row :gutter="10">
+                                    <el-col :span="3">
+                                        <el-input placeholder="DUMMY" disabled clearable />
+                                    </el-col>
+                                    <div v-for="(key, index) in ppr_data.PlatingPnl" v-bind:key="key">
+                                        <el-col :span="3">
+                                            <el-input v-model="ppr_data.carrier[index]" clearable />
+                                        </el-col>
+                                    </div>
+                                    <el-col :span="3">
+                                        <el-input placeholder="DUMMY" disabled clearable />
+                                    </el-col>
+                                </el-row>
+                            </el-card>
+                        </el-row>
+                        <el-row :gutter="10">
+                            <el-card>
+                                <div slot="header" class="clearfix">
+                                    刀數(面對設備 從裡面到外面)
+                                </div>
+                                <el-row :gutter="10">
+                                    <el-col :span="3">
+                                        <el-input placeholder="DUMMY" disabled clearable />
+                                    </el-col>
+                                    <div v-for="(key, index) in ppr_data.PlatingPnl" v-bind:key="key">
+                                        <el-col :span="3">
+                                            <el-input v-model="ppr_data.cut_tag[index]" clearable />
+                                        </el-col>
+                                    </div>
+                                    <el-col :span="3">
+                                        <el-input placeholder="DUMMY" disabled clearable />
+                                    </el-col>
+                                </el-row>
+                            </el-card>
+                        </el-row>
+                    </div>
+                    <div v-else-if="prod_step == 3">
+                        <el-row /><el-row />
+                        <el-row>
                             <el-col :span="4" :offset="10">
                                 <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
                             </el-col>
-                            </el-row><el-row /><el-row /><el-row>
-                            <el-col :span="4" :offset="10">
-                                <el-button @click="prod_confrim" type="primary" icon="el-icon-switch-button">啟動自動模式</el-button>
+                        </el-row><el-row /><el-row />
+                        <el-row>
+                            <el-col :span="4" :offset="8">
+                                <el-button @click="prod_confrim" type="success" icon="el-icon-switch-button">啟動自動模式</el-button>
                             </el-col>
-                            </el-row><el-row /><el-row />
-                            <el-col :span="4" :offset="10">
-                                <el-button type="primary" @click="storeDialogFormVisible = true" icon="el-icon-upload2">儲存參數</el-button>
+                            <el-col :span="4">
+                                <el-button @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
                             </el-col>
-                        </div>
-                        <div v-else-if="prod_step == 4">
-                            <el-row>
-                                <el-col :span="4" :offset="10">
-                                    <el-button @click="callAGV" type="primary" icon="el-icon-phone">
-                                        呼叫AGV
-                                    </el-button>
-                                </el-col>
-                            </el-row><el-row /><el-row />
-                        </div>
-                        <div v-else-if="prod_step == 5">
-                            <el-row />
-                                <center><h3>操作完成，按下一步跳轉到首頁</h3></center>
-                            <el-row />
-                        </div>
-                    </div>   
+                        </el-row><el-row /><el-row />
+                        <el-row>
+                            <el-col :span="4" :offset="10">
+                                <el-button type="warning" @click="storeDialogFormVisible = true" icon="el-icon-upload2">儲存參數</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <div v-else-if="prod_step == 4">
+                        <el-row />
+                            <center><h3>操作完成，按下一步跳轉到首頁</h3></center>
+                        <el-row />
+                    </div>
                 </el-card>
             </el-row>
             <el-dialog title="提示" :visible.sync="dialogVisible" width="50%">
@@ -198,7 +198,7 @@
                 <el-button @click="dialogVisible = false" type="primary" >確定</el-button>
                 </span>
             </el-dialog>
-            <el-dialog title="保留參數紀錄" :visible.sync="storeDialogFormVisible">
+            <el-dialog title="儲存參數" :visible.sync="storeDialogFormVisible">
                 <el-form>
                     <el-tooltip class="item" effect="dark" content="名稱不可重複" placement="left">
                         <el-form-item label="幫參數取個名字吧:">
@@ -208,7 +208,7 @@
                     <el-button type="primary" @click="generateRandom">採用預設(料號+批號+製程序)</el-button>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="storeDialogFormVisible = false">取消</el-button>
+                    <el-button type="danger" @click="storeDialogFormVisible = false">取消</el-button>
                     <el-button type="primary" @click="RecipeStore">儲存</el-button>
                 </div>
             </el-dialog>
@@ -263,15 +263,12 @@ export default {
             {
                 RD05M134 : "", //成品孔銅
                 RD05M146 : "",  //最小孔徑
-                RD05M136 : "",// 板厚
                 RD05M49 : "", // 鍍銅面積
                 PlatingPnl : 1, //生產片數
+                PlatingAmp : "", //生產片數
                 RD05M47 : "",  //長
                 RD05M48 : "",  //寬
                 PlatingTime : "", //電鍍時間(DC用)
-                PlatingTime_1_offset : "", //電鍍時間(AC用)
-                PlatingTime_2_offset : "", //電鍍時間(AC用)
-                PlatingTime_3_offset : "", //電鍍時間(AC用)
                 PPR_or_DC: "DC",
                 carrier: [],
                 cut_tag:[],
@@ -305,98 +302,6 @@ export default {
         {
             return this.$store.state._ws_back
         },
-        RD05M134()
-        {
-            return +this.ppr_data.RD05M134
-        },
-        RD05M146()
-        {
-            return +this.ppr_data.RD05M146
-        },
-        RD05M136()
-        {
-            return +this.ppr_data.RD05M136
-        },
-        RD05M49()
-        {
-            return +this.ppr_data.RD05M49
-        },        
-        RD05M47()
-        {
-            return +this.ppr_data.RD05M47
-        },
-        PlatingPnl()
-        {
-            return +this.ppr_data.PlatingPnl
-        },
-        ASF()
-        {
-            return 12
-        },
-        SQIN()
-        {
-            return (Number(this.RD05M49) / 2 * this.PlatingPnl)
-        },
-        SQFT()
-        {
-            return (Number(this.SQIN) * 0.006944)
-        },
-        SQFT_Dummy()
-        {
-            return (2 * Number(this.RD05M47) * 0.00328 * 230 * 0.00328)
-        },
-        RD05M136_Compensation() //當站板厚補償值
-        {
-            if(Number(this.RD05M136) <= 5)
-            {
-                return 1
-            }
-            else if(Number(this.RD05M136) > 5 && Number(this.RD05M136) <= 7)
-            {
-                return 1.1
-            }
-            else if(Number(this.RD05M136) > 7 && Number(this.RD05M136) <= 9)
-            {
-                return 1.2
-            }
-            else if(Number(this.RD05M136) > 9 && Number(this.RD05M136) <= 10)
-            {
-                return 1.3
-            }
-            else if(Number(this.RD05M136) > 10)
-            {
-                return 1.4
-            }
-            else
-            {
-                return NaN
-            }
-        },
-
-        RD05M145_Compensation() //當站孔徑補償值
-        {
-            if(Number(this.RD05M146) <= 5)
-            {
-                return 1
-            }
-            else if(Number(this.RD05M146) > 5 && Number(this.RD05M146) <= 6)
-            {
-                return 1
-            }
-            else if(Number(this.RD05M146) > 7 && Number(this.RD05M146) <= 8)
-            {
-                return 1
-            }
-            else if(Number(this.RD05M146) > 8)
-            {
-                return 1
-            }
-            else
-            {
-                return NaN
-            }
-        },
-
         ppr_result()
         {
             let result = []
@@ -419,8 +324,7 @@ export default {
                 {
                     name = '主電鍍'
                     PlatingTime = this.ppr_data.PlatingTime
-                    let PlatingAmp = this.ppr_data.RD05M49 / 144 / 2 * 8
-                    P_PlatingAmp = (PlatingAmp * this.ppr_data.PlatingPnl) + 10
+                    P_PlatingAmp = (this.ppr_data.PlatingAmp  * this.ppr_data.PlatingPnl) + 10
                     N_PlatingAmp = 0   
                 }
                 result[i] = 
@@ -447,6 +351,7 @@ export default {
         {
           this.prod_step = 0
           this.loading = false
+          this.cleanData()
         },
         cleanData()
         {
@@ -552,7 +457,7 @@ export default {
                 }
             }
             this.prod_step = this.prod_step + 1
-            if(this.prod_step == 6)
+            if(this.prod_step == 5)
             {
                 this.prod_step = 0
             }
@@ -583,7 +488,7 @@ export default {
         async RecipeStore()
         {
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/document/PH",
+                url: "_db/VCP-20/_api/document/Warehouse",
                 method: "POST",
                 payload:
                 {
@@ -593,15 +498,19 @@ export default {
                     ppr_result: this.ppr_result, 
                 },
             })
-            if(! response )
+            if(response)
             {
                 this.$message({ message: "儲存成功", type: "success"})
             }
+            else
+            {
+                this.$message({ message: "儲存失敗", type: "error"})
+            }
+            this.storeDialogFormVisible = false
         },  
         async prod_work()
         {
             this.loading = true
-            // console.log(this.ppr_result_convert)
             console.log({                    
                     ppr_result: this.ppr_result, 
                     ppr_data: this.ppr_data,

@@ -212,7 +212,6 @@
         return {
             loading: false,
             search: "",
-            token: "",
             result : [],
             noteList: [],
             deleteDialogVisible: false,
@@ -224,6 +223,10 @@
     },
     computed:
     {
+        token()
+        {
+            return this.$store.state.token
+        },
         RD05M134:function ()
         {
             return +this.ppr_data.RD05M134

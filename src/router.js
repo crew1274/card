@@ -28,8 +28,8 @@ export default new Router({
                     component: () => import('@/views/VCP20/Prod.vue')
                 },
                 {
-                    path: '/VCP-20/history',
-                    component: () => import('@/views/VCP20/History.vue')
+                    path: '/VCP-20/store',
+                    component: () => import('@/views/VCP20/Store.vue')
                 },
                 {
                     path: '/VCP-20/mo',
@@ -67,8 +67,8 @@ export default new Router({
                     component: () => import('@/views/VCP30/PPR.vue')
                 },
                 {
-                    path: '/VCP-30/history',
-                    component: () => import('@/views/VCP30/History.vue')
+                    path: '/VCP-30/store',
+                    component: () => import('@/views/VCP30/Store.vue')
                 },
                 {
                     path: '/VCP-30/mo',

@@ -22,8 +22,8 @@
                         <el-menu-item index="prod" route="prod">
                             <h1><i class="el-icon-s-check" />製程參數套用</h1>
                         </el-menu-item>
-                        <el-menu-item index="history" route="history">
-                            <h1><i class="el-icon-s-data" />歷史參數套用</h1>
+                        <el-menu-item index="store" route="store">
+                            <h1><i class="el-icon-s-data" />儲存參數套用</h1>
                         </el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
@@ -76,10 +76,6 @@
         {
             return this.$store.state._ws_isLogin
         },
-        errorMessage()
-        {
-            return this.$store.state.errorMessage
-        },
     },
     watch:
     {
@@ -90,10 +86,23 @@
                 location.reload()
             }
         },
-        errorMessage(msg)
+        '$store.state.errorMessage':
         {
-            this.$notify.warning({ title: msg.title, message: msg.message})
+            handler(newVal, oldVal)
+            {
+                this.$notify.warning({ title: newVal.title, message: newVal.message})
+            },
+            deep: true
         }
+        // errorMessage:
+        // {
+        //     handler(newVal, oldVal)
+        //     {
+        //         console.log(newVal)
+        //         this.$notify.warning({ title: newVal.title, message: newVal.message})
+        //     },
+        //     deep: true
+        // },
     },
     methods:
     {

@@ -308,7 +308,7 @@ export default {
         {
             this.loading = true
             let tres = []
-            await fetch("http://10.11.30.61:9999/api/mo_all",
+            await fetch("http://10.11.30.60:9999/api/mo_all",
             {
                 method: "GET",
             })
@@ -384,7 +384,7 @@ export default {
         async CheckData()
         {
             this.loading = true
-            await fetch("http://10.11.30.61:9999/api/mo",
+            await fetch("http://10.11.30.60:9999/api/mo",
             {
                 method: "GET",
             })
