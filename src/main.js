@@ -19,6 +19,13 @@ router.beforeEach((to, from, next) =>
   (to.path !== '/login' ? next({ path: '/login' }) : next())
 })
 
+const ipc = require('electron').ipcRenderer
+
+ipc.on('RFID', (event, msg) =>
+{
+  store.commit('update_rfid_msg', msg)
+})
+
 new Vue({
   router,
   store,

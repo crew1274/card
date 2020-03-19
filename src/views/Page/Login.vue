@@ -2,7 +2,7 @@
     <div class="login-box">
         <el-card>
             <div slot="header" class="title">
-                <center>產線設備入口</center>
+                <center>3F 產線設備入口</center>
             </div>
             <el-row>
                 <el-col :span="8">
@@ -17,7 +17,7 @@
                     密碼:
                 </el-col>
                 <el-col :span="16">
-                    <el-input v-model="password" />
+                    <el-input v-model="password" show-password/>
                 </el-col>
             </el-row>
             <el-row>
@@ -51,8 +51,6 @@
 
     export default {
         name: "login",
-        // components: {keyboard,  },
-        // mixins: [keyboard],
         data:  function()
         {   
             return {

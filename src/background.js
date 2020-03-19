@@ -20,6 +20,11 @@ protocol.registerSchemesAsPrivileged([{
   }
 }])
 
+var redis = require("redis")
+var subscriber = redis.createClient()
+
+subscriber.subscribe("RFID")
+
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
@@ -31,6 +36,16 @@ function createWindow() {
       fullscreenable: true
     }
   })
+
+  subscriber.on("message", function (channel, message)
+    {
+      if (channel == "RFID")
+      {
+        win.webContents.send('RFID', message)
+      }
+    })
+
+
   shell.beep()
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -85,8 +100,8 @@ app.on('ready', async () => {
     // }
   }
   createWindow()
-  clipboard.writeText('Example String', 'selection')
-  console.log(clipboard.readText('selection'))
+  // clipboard.writeText('Example String', 'selection')
+  // console.log(clipboard.readText('selection'))
 })
 
 // Exit cleanly on request from parent process in development mode.

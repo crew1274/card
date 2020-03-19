@@ -220,6 +220,9 @@
 import X2JS from 'x2js'
 
 export default {
+    mounted()
+    {
+    },
     data: function()
     {
         return {
@@ -278,6 +281,24 @@ export default {
     },
     watch:
     {
+        rfid_msg(value)
+        {
+            
+            let val = value['rfid_msg']
+            if(this.prod_step == 1)
+            {
+                if(val.length < 8)
+                {
+                    this.$message({ message: "RFID讀取到工號:"+val, type: "info"})
+                    this.Operator = val
+                }
+                else
+                {
+                    this.$message({ message: "RFID讀取到工單:"+val, type: "info"})
+                    this.LotNO = val
+                }
+            }
+        },
         getWSmessage(value)
         {
             if(this.prod_step == 1)
@@ -298,6 +319,10 @@ export default {
     },
     computed:
     {
+        rfid_msg()
+        {
+            return this.$store.state.rfid_msg
+        },
         getWSmessage()
         {
             return this.$store.state._ws_back

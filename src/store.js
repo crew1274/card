@@ -13,9 +13,17 @@ export default new Vuex.Store(
     _ws_back: null,
     _ws_isLogin: false,
     errorMessage: {},
+    rfid_msg: ""
   },
   mutations:
   {
+    update_rfid_msg(state, rfid_msg)
+    {
+      state.rfid_msg = {
+        datetime: new Date().getMilliseconds(),
+        rfid_msg: rfid_msg,
+      }
+    },
     update_token(state, token)
     {
       state.token = token
@@ -42,6 +50,15 @@ export default new Vuex.Store(
     {
       commit("_ws_message", message)
     },
+
+    // register({ commit, state, dispatch })
+    // {
+    //   ipc.on('RFID', (event, msg) =>
+    //   {
+    //     commit('update_rfid_msg', msg)
+    //   })
+    // },
+
     async _ws_login({ commit, state, dispatch }, para) /*para為登入參數 */
     {
       let url 
