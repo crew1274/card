@@ -36,13 +36,13 @@ function createWindow() {
     }
   })
 
-  subscriber.on("message", function (channel, message)
-    {
-      if (channel == "RFID")
-      {
-        win.webContents.send('RFID', message)
-      }
-    })
+  // subscriber.on("message", function (channel, message)
+  //   {
+  //     if (channel == "RFID")
+  //     {
+  //       win.webContents.send('RFID', message)
+  //     }
+  //   })
 
 
   shell.beep()
