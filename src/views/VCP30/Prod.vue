@@ -278,7 +278,14 @@
                             </el-col>
                         </div>
                         <div v-else-if="prod_step == 3">
-                            <el-row /><el-row /><el-row>
+                            <el-row >
+                                <el-col :span="7" :offset="9">
+                                    <h3>
+                                        預備投料到VCP-30
+                                    </h3>
+                                </el-col>
+                            </el-row>
+                            <el-row /><el-row>
                             <el-col :span="4" :offset="10">
                                 <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
                             </el-col>

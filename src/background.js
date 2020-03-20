@@ -20,10 +20,9 @@ protocol.registerSchemesAsPrivileged([{
   }
 }])
 
-var redis = require("redis")
-var subscriber = redis.createClient()
-
-subscriber.subscribe("RFID")
+// var redis = require("redis")
+// var subscriber = redis.createClient()
+// subscriber.subscribe("RFID")
 
 function createWindow() {
   // Create the browser window.

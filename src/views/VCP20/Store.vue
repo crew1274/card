@@ -60,42 +60,6 @@
                 電鍍電流計算公式:
                 [電鍍面積(SQIN){{ppr_data.RD05M49}} / 144 / 2 * 8(ASF) * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{ppr_result[1].P_PlatingAmp}}</h4>
             </el-form>
-            <div v-if="ppr_data.carrier">
-                <el-row :gutter="10">
-                    <h5>飛靶編號(面對設備 從裡面到外面)</h5>
-                </el-row>
-                <el-row :gutter="10">
-                    <el-col :span="3">
-                        <el-input placeholder="DUMMY" disabled clearable />
-                    </el-col>
-                    <div v-for="(key, index) in ppr_data.PlatingPnl" v-bind:key="key">
-                        <el-col :span="3">
-                            <el-input v-model="ppr_data.carrier[index]" clearable />
-                        </el-col>
-                    </div>
-                    <el-col :span="3">
-                        <el-input placeholder="DUMMY" disabled clearable />
-                    </el-col>
-                </el-row>
-            </div>
-            <div v-if="ppr_data.cut_tag">
-                <el-row :gutter="10">
-                    <h5>刀數(面對設備 從裡面到外面)</h5>
-                </el-row>
-                <el-row :gutter="10">
-                    <el-col :span="3">
-                        <el-input placeholder="DUMMY" disabled clearable />
-                    </el-col>
-                    <div v-for="(key, index) in ppr_data.PlatingPnl" v-bind:key="key">
-                        <el-col :span="3">
-                            <el-input v-model="ppr_data.cut_tag[index]" clearable />
-                        </el-col>
-                    </div>
-                    <el-col :span="3">
-                        <el-input placeholder="DUMMY" disabled clearable />
-                    </el-col>
-                </el-row>
-            </div>
             <el-divider />
             <el-row>
                 <el-col :span="24">
@@ -110,9 +74,6 @@
             <el-row>
                 <el-col :span="4" :offset="6">
                     <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
-                </el-col>
-                <el-col :span="4" :offset="2">
-                    <el-button @click="prod_confrim" type="success" icon="el-icon-switch-button">啟動自動模式</el-button>
                 </el-col>
                 <el-col :span="4" :offset="2">
                     <el-button @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
@@ -240,6 +201,7 @@ export default
         },
         async prod_confrim()
         {
+            this.loading = true
             await fetch("http://10.11.30.60:9999/api/PLC/prod", {method: 'POST',})
             .then( response => {return response.json()})
             .then( response =>
@@ -256,28 +218,26 @@ export default
             })
             .finally( () =>
             {
-                loading.close()
+                this.loading = false
             })
         },
         async prod_work()
         {
-            console.log(this.ppr_result_convert)
-            for(let i = 3; i>1; i--)
-            {
-                console.log(this.ppr_result_convert[i]["current_time"])
-                if( this.ppr_result_convert[i]["current_time"] > 0 && this.ppr_result_convert[i-1]["current_time"] == 0)
-                {
-                    this.$message({ message: "電鍍第"+(i-1).toString()+"段電鍍時間不能為0", type: "warning"})
-                    loading.close()
-                    return 
-                }  
-            }
+            this.loading = true
+            console.log({                    
+                    ppr_result: this.ppr_result, 
+                    ppr_data: this.ppr_data,
+                    lotdata: this.lotdata,
+                    procdata: this.procdata,
+                    noteList: this.noteList})
+            this.lotdata["source"] = "runcard"
             await fetch("http://10.11.30.60:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
                     ppr_result: this.ppr_result_convert, 
                     ppr_data: this.ppr_data,
                     lotdata: this.lotdata,
+                    procdata: this.procdata,
                     noteList: this.noteList,
                 })
             })
@@ -296,11 +256,12 @@ export default
             })
             .finally( () =>
             {
-                loading.close()
+                this.loading = false
             })
         },
         async callAGV()
         {
+            this.loading = true
             await fetch("http://10.11.30.60:9999/api/CallAGV", {method: 'POST'})
             .then( response => {return response.json()})
             .then( response =>
@@ -315,7 +276,10 @@ export default
             {
                 this.$notify.warning({ title: 'Edge異常回報', message: err})
             })
-            .finally( () => {})
+            .finally( () => 
+            {
+                this.loading = false
+            })
         }
     }
 }

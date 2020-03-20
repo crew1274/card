@@ -163,17 +163,20 @@
                         </el-row>
                     </div>
                     <div v-else-if="prod_step == 3">
-                        <el-row /><el-row />
+                        <el-row >
+                            <el-col :span="7" :offset="9">
+                                <h3>
+                                    預備投料到VCP-20
+                                </h3>
+                            </el-col>
+                        </el-row>
                         <el-row>
                             <el-col :span="4" :offset="10">
                                 <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
-                            <el-col :span="6" :offset="6">
-                                <el-button @click="prod_confrim" type="success" icon="el-icon-switch-button">啟動自動模式</el-button>
-                            </el-col>
-                            <el-col :span="6" :offset="6">
+                            <el-col :span="4" :offset="10">
                                 <el-button @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
                             </el-col>
                         </el-row><el-row /><el-row />
@@ -578,6 +581,7 @@ export default {
         },
         async callAGV()
         {
+            this.loading = true
             await fetch("http://10.11.30.60:9999/api/CallAGV", {method: 'POST'})
             .then( response => {return response.json()})
             .then( response =>
@@ -592,7 +596,10 @@ export default {
             {
                 this.$notify.warning({ title: 'Edge異常回報', message: err})
             })
-            .finally( () => {})
+            .finally( () =>
+            {
+                this.loading = false
+            })
         }
     }
 }
