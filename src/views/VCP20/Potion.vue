@@ -67,7 +67,7 @@
     {
         async CheckData()
         {
-            await fetch("http://10.11.30.61:9999/api/potion",
+            await fetch("http://10.11.30.60:9999/api/potion",
             {
                 method: "GET",
             })

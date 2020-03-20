@@ -231,9 +231,9 @@ export default {
             dialogVisible: false,
             ProdCheckList: [ {"key": "EDGE", "status": false, "label": "檢查Edge連線"}, {"key": "RFID", "status": false, "label": "檢查RFID連線"},
                 {"key": "PLC", "status": false, "label": "檢查PLC連線"}, {"key": "MES","status": false, "label": "檢查MES連線"} ,{"key": "MES","status": false, "label": "檢查PPR設備連線"}],  
-            LotNO: '2019090191-1-1-1',
-            Operator: '171104',
-            ProcSeq: 17,
+            LotNO: '',
+            Operator: '',
+            ProcSeq: '',
             loading: false,
             prod_step: 0,
 
