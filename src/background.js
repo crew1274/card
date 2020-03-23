@@ -20,9 +20,13 @@ protocol.registerSchemesAsPrivileged([{
   }
 }])
 
-// var redis = require("redis")
-// var subscriber = redis.createClient()
-// subscriber.subscribe("RFID")
+if (process.platform != "browser")
+{
+  var redis = require("redis")
+  var subscriber = redis.createClient()
+  subscriber.subscribe("RFID")
+}
+
 
 function createWindow() {
   // Create the browser window.
@@ -36,13 +40,16 @@ function createWindow() {
     }
   })
 
-  // subscriber.on("message", function (channel, message)
-  //   {
-  //     if (channel == "RFID")
-  //     {
-  //       win.webContents.send('RFID', message)
-  //     }
-  //   })
+  if (process.platform != "browser")
+  {
+    subscriber.on("message", function (channel, message)
+    {
+      if (channel == "RFID")
+      {
+        win.webContents.send('RFID', message)
+      }
+    })
+  }
 
 
   shell.beep()
