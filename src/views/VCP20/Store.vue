@@ -8,13 +8,10 @@
             <el-table :data="show_data.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))" style="width: 100%">
                 <el-table-column label="名稱" prop="name" />
                 <el-table-column align="right">
-                <template slot="header">
-                    <el-input v-model="search" size="mini" placeholder="搜尋" clearable/>
-                </template>
-                <template slot-scope="scope">
-                    <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
-                    <el-button size="mini" type="danger" @click="handleDelete(scope.row)">刪除</el-button>
-                </template>
+                    <template slot-scope="scope">
+                        <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
+                        <el-button size="mini" type="danger" @click="handleDelete(scope.row)">刪除</el-button>
+                    </template>
                 </el-table-column>
             </el-table>
         </el-main>
@@ -24,7 +21,7 @@
                 <el-button type="danger" @click="confrimDelete">確定</el-button>
             </span>
         </el-dialog>
-        <el-dialog title="參數詳細資訊" :visible.sync="recipeDialogVisible" width="80%">
+        <el-dialog title="參數詳細資訊" :visible.sync="recipeDialogVisible" width="80%" >
             <el-form ref="form" :model="ppr_data" size="medium">
                 <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="left">
                     <el-form-item label="板寬(mm):">
@@ -199,42 +196,20 @@ export default
             await this.CheckData()
             this.deleteDialogVisible = false
         },
-        async prod_confrim()
-        {
-            this.loading = true
-            await fetch("http://10.11.30.60:9999/api/PLC/prod", {method: 'POST',})
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                if(response["Exception"])
-                {
-                    throw response["Exception"]
-                }
-                response["response"] ? this.$message({ message: "準備啟動", type: "success"}) : this.$message({ message: "啟動異常", type: "warning"})
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: 'Edge異常回報', message: err})
-            })
-            .finally( () =>
-            {
-                this.loading = false
-            })
-        },
         async prod_work()
         {
             this.loading = true
-            console.log({                    
-                    ppr_result: this.ppr_result, 
-                    ppr_data: this.ppr_data,
-                    lotdata: this.lotdata,
-                    procdata: this.procdata,
-                    noteList: this.noteList})
+            // console.log({                    
+            //         ppr_result: this.ppr_result, 
+            //         ppr_data: this.ppr_data,
+            //         lotdata: this.lotdata,
+            //         procdata: this.procdata,
+            //         noteList: this.noteList})
             this.lotdata["source"] = "runcard"
             await fetch("http://10.11.30.60:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
-                    ppr_result: this.ppr_result_convert, 
+                    ppr_result: this.ppr_result, 
                     ppr_data: this.ppr_data,
                     lotdata: this.lotdata,
                     procdata: this.procdata,

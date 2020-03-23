@@ -491,28 +491,28 @@ export default {
             }
             this.loading = false
         },
-        async prod_confrim()
-        {
-            this.loading = true
-            await fetch("http://10.11.30.60:9999/api/PLC/prod", {method: 'POST',})
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                if(response["Exception"])
-                {
-                    throw response["Exception"]
-                }
-                response["response"] ? this.$message({ message: "準備啟動", type: "success"}) : this.$message({ message: "啟動異常", type: "warning"})
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: 'Edge異常回報', message: err})
-            })
-            .finally( () =>
-            {
-                this.loading = false
-            })
-        },
+        // async prod_confrim()
+        // {
+        //     this.loading = true
+        //     await fetch("http://10.11.30.60:9999/api/PLC/prod", {method: 'POST',})
+        //     .then( response => {return response.json()})
+        //     .then( response =>
+        //     {
+        //         if(response["Exception"])
+        //         {
+        //             throw response["Exception"]
+        //         }
+        //         response["response"] ? this.$message({ message: "準備啟動", type: "success"}) : this.$message({ message: "啟動異常", type: "warning"})
+        //     })
+        //     .catch( err =>
+        //     {
+        //         this.$notify.warning({ title: 'Edge異常回報', message: err})
+        //     })
+        //     .finally( () =>
+        //     {
+        //         this.loading = false
+        //     })
+        // },
         async RecipeStore()
         {
             let response = await this.$store.dispatch("_db", { 
@@ -539,17 +539,17 @@ export default {
         async prod_work()
         {
             this.loading = true
-            console.log({                    
-                    ppr_result: this.ppr_result, 
-                    ppr_data: this.ppr_data,
-                    lotdata: this.lotdata,
-                    procdata: this.procdata,
-                    noteList: this.noteList})
+            // console.log({                    
+            //         ppr_result: this.ppr_result, 
+            //         ppr_data: this.ppr_data,
+            //         lotdata: this.lotdata,
+            //         procdata: this.procdata,
+            //         noteList: this.noteList})
             this.lotdata["source"] = "runcard"
             await fetch("http://10.11.30.60:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
-                    ppr_result: this.ppr_result_convert, 
+                    ppr_result: this.ppr_result, 
                     ppr_data: this.ppr_data,
                     lotdata: this.lotdata,
                     procdata: this.procdata,

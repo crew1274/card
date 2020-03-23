@@ -179,7 +179,7 @@
                     </el-col>
                 </el-row>
                 <el-divider />
-                    <ve-line :data="chartData"></ve-line>
+                    <!-- <ve-line :data="chartData"></ve-line> -->
             </el-dialog>
         </el-main>
   </el-container>
@@ -270,17 +270,9 @@ export default {
         ppr_result_convert: function()
         {
             let ppr_result_convert = []
-            if(this.ppr_data.PPR_or_DC == 'DC')
-            {
-                
-                ppr_result_convert.push(this.ppr_result[0])
-                ppr_result_convert.push(this.ppr_result[1])
-                ppr_result_convert.push(this.ppr_result[4])
-            }
-            else
-            {
-                ppr_result_convert = this.ppr_result
-            }
+            ppr_result_convert.push(this.ppr_result[0])
+            ppr_result_convert.push(this.ppr_result[1])
+            ppr_result_convert.push(this.ppr_result[4])
             return ppr_result_convert
         }
     },
@@ -424,11 +416,12 @@ export default {
         },
         async handleCheck(row)
         {
-            await this.Qinflux(row["STARTDATETIME"], row["ENDDATETIME"])
+            // await this.Qinflux(row["STARTDATETIME"], row["ENDDATETIME"])
             this.loading = true
             this.row = row
+            console.log(this.row["RANDOMSTRING"])
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-30/_api/document/History/" + this.row["RANDOMSTRING"],
+                url: "_db/VCP-20/_api/document/History/" + this.row["RANDOMSTRING"],
                 method: "GET",
                 payload: {},
             })
