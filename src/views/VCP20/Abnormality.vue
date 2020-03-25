@@ -38,7 +38,7 @@ export default
     },
     computed:
     {
-        show_list : function()
+        show_list()
         {
             let show_map = {}
             let show_list = []
@@ -56,7 +56,6 @@ export default
                     show_map[element["message"]]["start_time"] = element["datetime"]
                 }
             })
-            console.log(show_map)
             Object.keys(show_map).forEach( element =>
             {
                 show_map[element]["start_time"] = show_map[element]["datetime"]
@@ -70,6 +69,7 @@ export default
     {
         async CheckData()
         {
+            this.loading = true
             await fetch("http://10.11.30.60:9999/api/error",
             {
                 method: "GET",
@@ -86,6 +86,9 @@ export default
             .catch( err =>
             {
                 this.$notify.warning({ title: 'Edge資料庫存取異常', message: err})
+            })
+            .finally( () => {
+                this.loading = false
             })
         },
         
@@ -104,7 +107,7 @@ export default
 }
 </script>
 
-<style>
+<style scoped>
   .el-table .warning-row
   {
     background: #f15c66;

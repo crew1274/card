@@ -254,11 +254,11 @@ export default {
     },
     computed:
     {
-        source: function()
+        source()
         {
             return this.lotdata.source == "runcard" ? "製程參數套用": "歷史參數套用"
         },
-        show_data:function ()
+        show_data()
         {
             let arr = []
             this.list.forEach((element) =>
@@ -267,7 +267,7 @@ export default {
             })
             return arr
         },
-        ppr_result_convert: function()
+        ppr_result_convert()
         {
             let ppr_result_convert = []
             if(this.ppr_data.PPR_or_DC == 'DC')
@@ -520,7 +520,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .el-table .warning-row
   {
     background: #f2a202

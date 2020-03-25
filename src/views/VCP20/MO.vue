@@ -388,7 +388,6 @@ export default {
                     throw response["Exception"]
                 }
                 this.list = response["result"]
-                console.log(response["result"])
             })
             .catch( err =>
             {
@@ -513,7 +512,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .el-table .warning-row
   {
     background: #f2a202

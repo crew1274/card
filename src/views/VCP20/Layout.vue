@@ -33,9 +33,9 @@
                 <el-menu-item index="abnormality" route="abnormality">
                     <h1><i class="el-icon-warning" />異常履歷</h1>
                 </el-menu-item>
-                <el-menu-item index="potion" route="potion">
+                <!-- <el-menu-item index="potion" route="potion">
                     <h1><i class="el-icon-date" />藥水添加記錄</h1>
-                </el-menu-item>
+                </el-menu-item> -->
                 <el-menu-item index="logout" route="login">
                     <h1><i class="el-icon-close" />登出</h1>
                 </el-menu-item>

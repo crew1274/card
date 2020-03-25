@@ -550,7 +550,6 @@
                 {
                     throw response["errorMessage"]
                 }
-                console.log(response["result"])
                 this.result = response["result"]
             })
             .catch( err =>
@@ -572,7 +571,6 @@
             .then( response => {return response.json()})
             .then( response =>
             {
-                console.log(response)
                 if(response["error"])
                 {
                     throw response["errorMessage"]
@@ -595,10 +593,10 @@
         async prod_confrim()
         {
             const loading = this.$loading({
-            lock: false,
-            text: 'Loading',
-            spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
+                lock: false,
+                text: 'Loading',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
             })
             await fetch("http://10.11.30.61:9999/api/PLC/prod", {method: 'POST',})
             .then( response => {return response.json()})
@@ -627,10 +625,8 @@
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             })
-            console.log(this.ppr_result_convert)
             for(let i = 3; i>1; i--)
             {
-                console.log(this.ppr_result_convert[i]["current_time"])
                 if( this.ppr_result_convert[i]["current_time"] > 0 && this.ppr_result_convert[i-1]["current_time"] == 0)
                 {
                     this.$message({ message: "電鍍第"+(i-1).toString()+"段電鍍時間不能為0", type: "warning"})

@@ -8,6 +8,9 @@
             <el-table :data="show_data.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))" style="width: 100%">
                 <el-table-column label="名稱" prop="name" />
                 <el-table-column align="right">
+                    <template slot="header">
+                        <el-input v-model="search" size="mini" placeholder="搜尋" clearable> </el-input>
+                    </template>
                     <template slot-scope="scope">
                         <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
                         <el-button size="mini" type="danger" @click="handleDelete(scope.row)">刪除</el-button>
@@ -21,7 +24,9 @@
                 <el-button type="danger" @click="confrimDelete">確定</el-button>
             </span>
         </el-dialog>
-        <el-dialog title="參數詳細資訊" :visible.sync="recipeDialogVisible" width="80%" >
+        <el-dialog title="參數詳細資訊" :visible.sync="recipeDialogVisible" width="80%" append-to-body 
+            v-loading="loading" element-loading-text="拼命載入資料中"
+            element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-form ref="form" :model="ppr_data" size="medium">
                 <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="left">
                     <el-form-item label="板寬(mm):">
@@ -38,24 +43,25 @@
                         <el-input-number v-model="ppr_data.PlatingTime" size="large" />
                     </el-form-item>
                 </el-tooltip>
-                <el-form-item label="上料片數(不包含Dummy):">
-                    <el-tooltip class="item" effect="dark" content="範圍(1~6)" placement="top">
-                        <el-input-number v-model="ppr_data.PlatingPnl" :min="1" :max="6" size="large" />
-                    </el-tooltip>
-                </el-form-item>
-                <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="leftyarbn ">
-                    <el-form-item label="電鍍面積(SQIN):">
-                        <el-input-number v-model="ppr_data.RD05M49" size="large" />
+                <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="left">
+                    <el-form-item label="單片電鍍電流(PlatingAmp):">
+                        <el-input-number v-model="ppr_data.PlatingAmp" size="large" />
                     </el-form-item>
-                </el-tooltip> 
+                </el-tooltip>
+                <el-tooltip class="item" effect="dark" content="範圍(1~6)" placement="left">
+                    <el-form-item label="上料片數(不包含Dummy):">
+                        <el-input-number v-model="ppr_data.PlatingPnl" :min="1" :max="6" size="large" />
+                    </el-form-item>
+                </el-tooltip>
                 <el-form-item label="備註:">
                     <el-checkbox-group v-model="noteList">
                         <el-checkbox label="重工"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>  
-                <h4>                                  
-                電鍍電流計算公式:
-                [電鍍面積(SQIN){{ppr_data.RD05M49}} / 144 / 2 * 8(ASF) * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{ppr_result[1].P_PlatingAmp}}</h4>
+                <h4>
+                    電鍍電流計算公式:
+                    [電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{this.ppr_result[1].P_PlatingAmp}}
+                </h4>
             </el-form>
             <el-divider />
             <el-row>

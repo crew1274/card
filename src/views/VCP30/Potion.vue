@@ -67,6 +67,7 @@
     {
         async CheckData()
         {
+            this.loading = true
             await fetch("http://10.11.30.61:9999/api/potion",
             {
                 method: "GET",
@@ -84,12 +85,15 @@
             {
                 this.$notify.warning({ title: 'Edge資料庫存取異常', message: err})
             })
+            .finally( () => {
+                this.loading = false
+            })
         },
     }
 }
 </script>
 
-<style>
+<style scoped>
   .el-table .warning-row
   {
     background: #f15c66;

@@ -89,7 +89,7 @@
 }
 </script>
 
-<style>
+<style scoped>
   .el-table .warning-row
   {
     background: #f15c66;
