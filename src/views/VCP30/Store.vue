@@ -189,11 +189,16 @@
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="4" :offset="6">
+                    <el-col :span="4" :offset="4">
                         <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
                     </el-col>
-                    <el-col :span="4" :offset="6">
+                    <el-col :span="4" :offset="4">
                         <el-button @click="prod_confrim" type="primary" icon="el-icon-switch-button">啟動自動模式</el-button>
+                    </el-col>
+                    <el-col :span="4" :offset="4">
+                        <el-button @click="callAGV" type="success" icon="el-icon-phone">
+                            呼叫AGV
+                        </el-button>                    
                     </el-col>
                 </el-row>
             </el-dialog>
@@ -689,16 +694,26 @@
             })
             await this.CheckData()
         },
-        openFullScreen()
+        async callAGV()
         {
-            const loading = this.$loading({
-            lock: true,
-            text: 'Loading',
-            spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
+            this.loading = true
+            await fetch("http://10.11.30.61:9999/api/CallAGV", {method: 'POST'})
+            .then( response => {return response.json()})
+            .then( response =>
+            {
+                if(response["Exception"])
+                {
+                    throw response["Exception"]
+                }
+                response["response"] ? this.$message({ message: "呼叫AGV成功", type: "success"}) : this.$message({ message: "呼叫AGV失敗", type: "warning"})
             })
-            setTimeout(() =>
-            {loading.close() }, 2000)
+            .catch( err =>
+            {
+                this.$notify.warning({ title: 'Edge異常回報', message: err})
+            })
+            .finally( () => {
+                this.loading = false
+            })
         },
         PPR_or_DC_confirm()
         {

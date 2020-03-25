@@ -301,7 +301,7 @@
                         <div v-else-if="prod_step == 4">
                             <el-row>
                                 <el-col :span="4" :offset="10">
-                                    <el-button @click="callAGV" type="primary" icon="el-icon-phone">
+                                    <el-button @click="callAGV" type="success" icon="el-icon-phone">
                                         呼叫AGV
                                     </el-button>
                                 </el-col>
@@ -963,6 +963,7 @@ export default {
         },
         async callAGV()
         {
+            this.loading = true
             await fetch("http://10.11.30.61:9999/api/CallAGV", {method: 'POST'})
             .then( response => {return response.json()})
             .then( response =>
@@ -977,7 +978,9 @@ export default {
             {
                 this.$notify.warning({ title: 'Edge異常回報', message: err})
             })
-            .finally( () => {})
+            .finally( () => {
+                this.loading = false
+            })
         }
     }
 }
