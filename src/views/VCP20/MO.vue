@@ -60,49 +60,7 @@
                     </div>
                     </h3>
                 </el-row>
-                <div v-if="ppr_data.PPR_or_DC == 'PPR'">
-                    <el-row>
-                        <el-form ref="form" :model="ppr_data" size="medium">
-                            <el-row>
-                                <el-col :span="12">
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="left">
-                                        <h3>孔銅需求(mil):{{ppr_data.RD05M134}}</h3>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="left">
-                                        <h3>最小孔徑(mil):{{ppr_data.RD05M146}}</h3>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="left">
-                                        <h3>當站板厚(mm):{{ppr_data.RD05M136}}</h3>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="left">
-                                        <h3>面積(SQIN):{{ppr_data.RD05M49}}</h3>     
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響遮板高度及電鍍電流" placement="left">
-                                        <h3>板長(mm):{{ppr_data.RD05M47}}</h3>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="left">
-                                        <h3>板寬(mm):{{ppr_data.RD05M48}}</h3>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="範圍(1~6)" placement="left">
-                                        <h3>上料片數(不包含Dummy):{{ppr_data.PlatingPnl}}</h3>
-                                    </el-tooltip>
-                                </el-col>
-                                <el-col :span="12">
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍第一段電鍍時間" placement="left">
-                                        <h3>電鍍第一段補償時間:{{ppr_data.PlatingTime_1_offset}}</h3>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍第二段電鍍時間" placement="left">
-                                        <h3>電鍍第二段補償時間:{{ppr_data.PlatingTime_2_offset}}</h3>
-                                    </el-tooltip>
-                                    <el-tooltip class="item" effect="dark" content="此參數影響電鍍第三段電鍍時間" placement="left">
-                                        <h3>電鍍第三段補償時間:{{ppr_data.PlatingTime_3_offset}}</h3>  
-                                    </el-tooltip>
-                                </el-col>
-                            </el-row>
-                        </el-form>
-                    </el-row>
-                </div>
-                <div v-else-if="ppr_data.PPR_or_DC == 'DC'">
+                <el-row> 
                     <el-form ref="form" :model="ppr_data" size="medium">
                         <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="left">
                             <h3>板寬(mm):{{ppr_data.RD05M48}}</h3>
@@ -113,14 +71,17 @@
                         <el-tooltip class="item" effect="dark" content="此參數影響電鍍時間" placement="left">
                             <h3>電鍍時間(分鐘):{{ppr_data.PlatingTime}}</h3>
                         </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="left">
+                            <h3>單片電鍍電流(PlatingAmp):{{ppr_data.PlatingAmp}}</h3>
+                        </el-tooltip>  
                         <el-tooltip class="item" effect="dark" content="範圍(1~6)" placement="top">
                             <h3>上料片數(不包含Dummy):{{ppr_data.PlatingPnl}}</h3>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="leftyarbn ">
-                            <h3>電鍍面積(SQIN):{{ppr_data.RD05M49}}</h3>
-                        </el-tooltip> 
+                        <h2>電鍍電流計算公式:
+                        [電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{
+                            (ppr_data.PlatingAmp * ppr_data.PlatingPnl) + 10}}</h2>
                     </el-form>
-                </div>
+                </el-row>
                 <div v-if="ppr_data.carrier">
                     <el-row :gutter="10">
                         <el-card>
@@ -170,11 +131,11 @@
                 <el-divider />
                 <el-row>
                     <el-col :span="24">
-                        <el-table :data="ppr_result_convert" style="font-size: 20px; width: 100%">
+                        <el-table :data="ppr_result" style="font-size: 20px; width: 100%">
                             <el-table-column prop="name" label="" width="180" />
-                            <el-table-column prop="current_time" label="電鍍時間 (min)" width="180" />
-                            <el-table-column prop="forward_current" label="正向電流 (A)" width="180" />
-                            <el-table-column prop="reverse_current" label="負向電流 (A)" width="180" />
+                            <el-table-column prop="PlatingTime" label="電鍍時間 (min)" width="180" />
+                            <el-table-column prop="P_PlatingAmp" label="正向電流 (A)" width="180" />
+                            <el-table-column prop="N_PlatingAmp" label="負向電流 (A)" width="180" />
                         </el-table>  
                     </el-col>
                 </el-row>
@@ -254,11 +215,11 @@ export default {
     },
     computed:
     {
-        source: function()
+        source()
         {
             return this.lotdata.source == "runcard" ? "製程參數套用": "歷史參數套用"
         },
-        show_data:function ()
+        show_data()
         {
             let arr = []
             this.list.forEach((element) =>
@@ -267,14 +228,6 @@ export default {
             })
             return arr
         },
-        ppr_result_convert: function()
-        {
-            let ppr_result_convert = []
-            ppr_result_convert.push(this.ppr_result[0])
-            ppr_result_convert.push(this.ppr_result[1])
-            ppr_result_convert.push(this.ppr_result[4])
-            return ppr_result_convert
-        }
     },
     async created()
     {
@@ -352,26 +305,23 @@ export default {
                 item["起始電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][0]["forward_current_time"]
                 item["起始電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][0]["reverse_current"]
                 item["起始電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][0]["reverse_current_time"]
-                for(let i=1; i<4; i++)
-                {
-                    item["第"+(i).toString()+"段電鍍_電鍍時間"] = ele["detail"]["ppr_result"][i]["current_time"]
-                    item["第"+(i).toString()+"段電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][i]["forward_current"]
-                    item["第"+(i).toString()+"段電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][i]["forward_current_time"]
-                    item["第"+(i).toString()+"段電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][i]["reverse_current"]
-                    item["第"+(i).toString()+"段電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][i]["reverse_current_time"]
-                }
-                item["結束電鍍_電鍍時間"] = ele["detail"]["ppr_result"][4]["current_time"]
-                item["結束電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][4]["forward_current"]
-                item["結束電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][4]["forward_current_time"]
-                item["結束電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][4]["reverse_current"]
-                item["結束電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][4]["reverse_current_time"]
+                item["第"+(i).toString()+"段電鍍_電鍍時間"] = ele["detail"]["ppr_result"][1]["current_time"]
+                item["第"+(i).toString()+"段電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][1]["forward_current"]
+                item["第"+(i).toString()+"段電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][1]["forward_current_time"]
+                item["第"+(i).toString()+"段電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][1]["reverse_current"]
+                item["第"+(i).toString()+"段電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][1]["reverse_current_time"]
+                item["結束電鍍_電鍍時間"] = ele["detail"]["ppr_result"][2]["current_time"]
+                item["結束電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][2]["forward_current"]
+                item["結束電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][2]["forward_current_time"]
+                item["結束電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][2]["reverse_current"]
+                item["結束電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][2]["reverse_current_time"]
                 data.push(item) 
             })
             const ws = XLSX.utils.json_to_sheet(data)
             const wbout = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(wbout, ws, "生產履歷")
             this.loading = false
-            XLSX.writeFile(wbout, 'VCP-30生產履歷.xlsx')
+            XLSX.writeFile(wbout, 'VCP-20生產履歷.xlsx')
         },
         async CheckData()
         {
@@ -388,6 +338,7 @@ export default {
                     throw response["Exception"]
                 }
                 this.list = response["result"]
+                console.log(this.list)
             })
             .catch( err =>
             {
@@ -403,7 +354,7 @@ export default {
             this.result["ppr_data"] = this.ppr_data
             this.result["datetime"] = moment().format('YYYY-MM-DD HH:mm:ss')
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-30/_api/document/History/" + this.row["RANDOMSTRING"],
+                url: "_db/VCP-20/_api/document/History/" + this.row["RANDOMSTRING"],
                 method: "PUT",
                 payload: this.result,
             })
@@ -424,6 +375,7 @@ export default {
                 method: "GET",
                 payload: {},
             })
+            console.log(response)
             if(response)
             {
                 this.result = response
