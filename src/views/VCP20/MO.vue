@@ -338,7 +338,7 @@ export default {
                     throw response["Exception"]
                 }
                 this.list = response["result"]
-                console.log(this.list)
+                // console.log(this.list)
             })
             .catch( err =>
             {
@@ -375,7 +375,7 @@ export default {
                 method: "GET",
                 payload: {},
             })
-            console.log(response)
+            // console.log(response)
             if(response)
             {
                 this.result = response
