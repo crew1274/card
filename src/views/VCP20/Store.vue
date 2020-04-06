@@ -5,12 +5,9 @@
         </el-header>
         <el-main v-loading="loading" element-loading-text="拼命載入資料中"
             element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-            <el-table :data="show_data.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))" style="width: 100%">
+            <el-table :data="show_data">
                 <el-table-column label="名稱" prop="name" />
                 <el-table-column align="right">
-                    <template slot="header">
-                        <el-input v-model="search" size="mini" placeholder="搜尋" clearable> </el-input>
-                    </template>
                     <template slot-scope="scope">
                         <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
                         <el-button size="mini" type="danger" @click="handleDelete(scope.row)">刪除</el-button>
@@ -24,7 +21,7 @@
                 <el-button type="danger" @click="confrimDelete">確定</el-button>
             </span>
         </el-dialog>
-        <el-dialog title="參數詳細資訊" :visible.sync="recipeDialogVisible" width="80%" append-to-body 
+        <el-dialog title="參數詳細資訊" :visible.sync="recipeDialogVisible" width="80%"
             v-loading="loading" element-loading-text="拼命載入資料中"
             element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-form ref="form" :model="ppr_data" size="medium">
@@ -33,11 +30,18 @@
                         <el-input-number v-model="ppr_data.RD05M48" size="large" />
                     </el-form-item>
                 </el-tooltip>
-                <el-tooltip class="item" effect="dark" content="此參數影響遮板高度" placement="left">
-                    <el-form-item label="板長(mm):">
-                        <el-input-number v-model="ppr_data.RD05M47" size="large" />
-                    </el-form-item>
-                </el-tooltip>
+                <el-row>
+                    <el-col :span="11">
+                        <el-tooltip class="item" effect="dark" content="此參數影響遮板高度" placement="right">
+                            <el-form-item label="板高(mm):">
+                                <el-input-number v-model="ppr_data.RD05M47" size="large" />
+                            </el-form-item>
+                        </el-tooltip>
+                    </el-col>
+                    <el-col :span="11">
+                        <h4>使用Dummy板高: {{dummy_height}}</h4>
+                    </el-col>
+                </el-row>
                 <el-tooltip class="item" effect="dark" content="此參數影響電鍍時間" placement="left">
                     <el-form-item label="電鍍時間(分鐘):">
                         <el-input-number v-model="ppr_data.PlatingTime" size="large" />
@@ -53,15 +57,10 @@
                         <el-input-number v-model="ppr_data.PlatingPnl" :min="1" :max="6" size="large" />
                     </el-form-item>
                 </el-tooltip>
-                <el-form-item label="備註:">
-                    <el-checkbox-group v-model="noteList">
-                        <el-checkbox label="重工"></el-checkbox>
-                    </el-checkbox-group>
-                </el-form-item>  
-                <h4>
+                <h3>
                     電鍍電流計算公式:
                     [電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{this.ppr_result[1].P_PlatingAmp}}
-                </h4>
+                </h3>
             </el-form>
             <el-divider />
             <el-row>
@@ -72,14 +71,6 @@
                         <el-table-column prop="P_PlatingAmp" label="正向電流 (A)" width="180" />
                         <el-table-column prop="N_PlatingAmp" label="負向電流 (A)" width="180" />
                     </el-table>  
-                </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="4" :offset="6">
-                    <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
-                </el-col>
-                <el-col :span="4" :offset="2">
-                    <el-button @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
                 </el-col>
             </el-row>
         </el-dialog>
@@ -110,6 +101,22 @@ export default
     },
     computed:
     {
+        dummy_height()
+        {
+            let a  = 25 * ( Math.ceil(this.ppr_data.RD05M47 / 25) )
+            if(a < 400 )
+            {
+                return 400
+            }
+            else if(a > 750)
+            {
+                return 750
+            }
+            else
+            {
+                return a
+            }
+        },
         show_data()
         {
             let arr = []
@@ -265,4 +272,3 @@ export default
     }
 }
 </script>
-

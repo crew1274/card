@@ -7,9 +7,9 @@
         element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-row :gutter="20">
                 <el-steps :active="prod_step" finish-status="success" align-center>
-                    <el-step title="步驟 1" description="選擇參數來源"></el-step>
-                    <el-step title="步驟 2" description="RFID讀取/選擇歷史參數"></el-step>
-                    <el-step title="步驟 3" description="修改及確認製程參數"></el-step>
+                    <el-step title="步驟 1" description="檢查PLC、MES連線狀態"></el-step>
+                    <el-step title="步驟 2" description="請對RFID讀取器感應員工識別證及工 單並輸入製程序和片數"></el-step>
+                    <el-step title="步驟 3" description="輸入及確認製程參數"></el-step>
                     <el-step title="步驟 4" description="參數寫入PLC及呼叫AGV"></el-step>
                 </el-steps>
             </el-row>
@@ -18,7 +18,7 @@
                     <div slot="header">
                     <el-row :gutter="20">
                         <el-col :span="4">
-                            <span>步驟:{{prod_step+1}}</span>
+                            <span>操作步驟:{{prod_step+1}}</span>
                         </el-col>
                         <el-col :span="4" :offset="4">
                             <el-button type="warning" @click="prod_previous">上一步</el-button>
@@ -30,58 +30,44 @@
                     </el-row>
                     </div>
                     <div v-if="prod_step == 0">
-                        <center><h3>選擇參數來源</h3></center>
                         <el-row :gutter="20">
-                            <el-col :span="14" :offset="10">
-                                <el-radio v-model="source" label="warehouse" border>參數庫</el-radio>
-                                <el-radio v-model="source" label="runcard" border>RunCard</el-radio>
-                            </el-col>
+                            <center>
+                                <el-button type="text" @click="prod_check">操作前點我檢查連線狀態</el-button>
+                            </center>
                         </el-row>
                     </div>
                     <div v-else-if="prod_step == 1">
-                        <div v-if="source == 'runcard'">
-                            <el-row>
-                                <center><h3>請輸入批號、工號及製程序</h3></center>
-                            </el-row>
-                            <el-row :gutter="10">
-                                <el-col :span="20" :offset="4">
-                                    <el-tooltip class="item" effect="dark" content="感應RFID可自動帶入" placement="top">
-                                        <el-input v-model="LotNO" clearable>
-                                            <template slot="prepend">批號:</template>
-                                        </el-input>
-                                    </el-tooltip>
-                                </el-col>
-                            </el-row>
-                            <el-row :gutter="20">
-                                <el-col :span="20" :offset="4">
-                                    <el-tooltip class="item" effect="dark" content="感應RFID可自動帶入" placement="top">
-                                        <el-input v-model="Operator" clearable>
-                                            <template slot="prepend">工號:</template>
-                                        </el-input>
-                                    </el-tooltip>
-                                </el-col>
-                            </el-row>
-                            <el-row :gutter="20">
-                                <el-col :span="4" :offset="4">
-                                    製程序:
-                                </el-col>
-                                <el-tooltip class="item" effect="dark" content="預設0即查詢當站參數" placement="top">
-                                    <el-col :span="4">
-                                        <el-input-number v-model="ProcSeq" :min="0" :max="200" label="製程序"  size="large" />
-                                    </el-col>
+                        <el-row>
+                            <center><h3>請輸入批號、工號及製程序</h3></center>
+                        </el-row>
+                        <el-row :gutter="20">
+                            <el-col :span="24">
+                                <el-tooltip class="item" effect="dark" content="感應RFID可自動帶入" placement="top">
+                                    <el-input v-model="LotNO" clearable>
+                                        <template slot="prepend">批號:</template>
+                                    </el-input>
                                 </el-tooltip>
-                            </el-row>
-                        </div>
-                        <div v-else>
-                            <el-row>
-                                <center><h3>請選擇歷史參數</h3></center>
-                            </el-row>
-                            <el-row>
-                                <el-table :data="store_recipe" border :highlight-current-row="true" @current-change="handleCurrentChange">
-                                    <el-table-column label="名稱" prop="name" />
-                                </el-table>
-                            </el-row>
-                        </div>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="20">
+                            <el-col :span="24">
+                                <el-tooltip class="item" effect="dark" content="感應RFID可自動帶入" placement="top">
+                                    <el-input v-model="Operator" clearable>
+                                        <template slot="prepend">工號:</template>
+                                    </el-input>
+                                </el-tooltip>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="20">
+                            <el-col :span="4">
+                                製程序:
+                            </el-col>
+                            <el-tooltip class="item" effect="dark" content="預設0即查詢當站參數" placement="top">
+                                <el-col :span="4">
+                                    <el-input-number v-model="ProcSeq" :min="0" :max="200" label="製程序"  size="large" />
+                                </el-col>
+                            </el-tooltip>
+                        </el-row>
                     </div>
                     <div v-else-if="prod_step == 2">
                         <el-row>
@@ -246,11 +232,12 @@
 import X2JS from 'x2js'
 
 export default {
+    mounted()
+    {
+    },
     data: function()
     {
         return {
-            store_recipe: [],
-            source: "runcard",
             recipe_name: "",
             storeDialogFormVisible: false,
             dialogVisible: false,
@@ -262,7 +249,6 @@ export default {
             loading: false,
             prod_step: 0,
             noteList: [],
-            selectRecipe: "",
             payload:
             {
                 mfdata:
@@ -348,7 +334,7 @@ export default {
     {
         dummy_height()
         {
-            let a  = 25 *  Math.ceil(this.ppr_data.RD05M47 / 25)
+            let a  = 25 * ( parseInt(this.ppr_data.RD05M47 / 25) + 1 )
             if(a < 400 )
             {
                 return 400
@@ -408,25 +394,6 @@ export default {
     },
     methods:
     {
-        handleCurrentChange(val)
-        {
-            this.selectRecipe = val
-        },
-        async getStoreRecipe()
-        {
-            this.loading = true
-            let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/simple/all-keys",
-                method: "PUT",
-                payload: {collection: "Warehouse"},
-            })
-            this.store_recipe = []
-            response["result"].forEach((element) =>
-            {
-                this.store_recipe.push({ name: element.split("/")[6] })
-            })
-            this.loading = false
-        },
         prod_previous()
         {
             if(this.prod_step >= 1)
@@ -518,60 +485,28 @@ export default {
         async prod_next()
         {
             this.loading = true
-            if(this.prod_step == 0)
+            if(this.prod_step == 1)
             {
-                if(this.source == "warehouse")
+                if(this.LotNO == "" || this.Operator == "")
                 {
-                    await this.getStoreRecipe()
-                    this.selectRecipe = ""
+                    this.$notify.warning({ message: "批號或工號不能為空!"})
+                    this.prod_step = this.prod_step - 1
                 }
-            }
-            else if(this.prod_step == 1)
-            {
-                if(this.source == "warehouse")
+                else
                 {
-                    console.log(this.selectRecipe)
-                    if(this.selectRecipe == "")
+                    if(await this.getRecipe())
                     {
-                        this.$notify.warning({ message: "請先選擇套用參數!"})
-                        this.prod_step = this.prod_step - 1
-                    }
-                    else
-                    {
-                        this.loading = true
-                        let response = await this.$store.dispatch("_db", { 
-                            url: "_db/VCP-20/_api/document/Warehouse/" + this.selectRecipe["name"],
-                            method: "GET",
-                            payload: {},
-                        })
-                        this.ppr_data = response["ppr_data"]
-                        this.lotdata = response["lotdata"]
-                        this.loading = false
-                    }
-                }
-                else if(this.source == "runcard")
-                {
-                    if(this.LotNO == "" || this.Operator == "")
-                    {
-                        this.$notify.warning({ message: "批號或工號不能為空!"})
-                        this.prod_step = this.prod_step - 1
-                    }
-                    else
-                    {
-                        if(await this.getRecipe())
+                        for(let item of this.procdata.procprams.procpram)
                         {
-                            for(let item of this.procdata.procprams.procpram)
+                            if(item.procprammes in this.ppr_data)
                             {
-                                if(item.procprammes in this.ppr_data)
-                                {
-                                    this.ppr_data[item.procprammes] = +item.procvalue
-                                }
+                                this.ppr_data[item.procprammes] = +item.procvalue
                             }
                         }
-                        else
-                        {
-                            this.$message({ message: "MES回應異常", type: "error"})
-                        }
+                    }
+                    else
+                    {
+                        this.$message({ message: "MES回應異常", type: "error"})
                     }
                 }
             }
@@ -582,6 +517,28 @@ export default {
             }
             this.loading = false
         },
+        // async prod_confrim()
+        // {
+        //     this.loading = true
+        //     await fetch("http://10.11.30.60:9999/api/PLC/prod", {method: 'POST',})
+        //     .then( response => {return response.json()})
+        //     .then( response =>
+        //     {
+        //         if(response["Exception"])
+        //         {
+        //             throw response["Exception"]
+        //         }
+        //         response["response"] ? this.$message({ message: "準備啟動", type: "success"}) : this.$message({ message: "啟動異常", type: "warning"})
+        //     })
+        //     .catch( err =>
+        //     {
+        //         this.$notify.warning({ title: 'Edge異常回報', message: err})
+        //     })
+        //     .finally( () =>
+        //     {
+        //         this.loading = false
+        //     })
+        // },
         async RecipeStore()
         {
             this.ppr_data["dummy_height"] = this.dummy_height
@@ -671,18 +628,7 @@ export default {
             {
                 this.loading = false
             })
-        },
-        async CheckData()
-        {
-            this.loading = true
-            let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/simple/all-keys",
-                method: "PUT",
-                payload: {collection: "Warehouse"},
-            })
-            this.result = response["result"]
-            this.loading = false
-        },
+        }
     }
 }
 </script>
@@ -695,8 +641,5 @@ export default {
 .content
 {
     font-size: 24px;
-}
-.el-table >>> .el-table__body tr.current-row>td {
-  background: #f0ba87!important;
 }
 </style>

@@ -11,14 +11,11 @@
                 <el-menu-item index="Dashboard" route="Dashboard">
                     <h1><i class="el-icon-s-home" />首頁</h1>
                 </el-menu-item>
-                <el-submenu index="">
+                <!-- <el-submenu index="">
                     <template slot="title">
                         <h1><i class="el-icon-s-claim" />上料準備</h1>
                     </template>
                     <el-menu-item-group>
-                        <!-- <el-menu-item index="PPR" route="PPR">
-                            <h1><i class="el-icon-s-help" />PPR手動套用</h1>
-                        </el-menu-item> -->
                         <el-menu-item index="prod" route="prod">
                             <h1><i class="el-icon-s-check" />製程參數套用</h1>
                         </el-menu-item>
@@ -26,12 +23,21 @@
                             <h1><i class="el-icon-s-data" />儲存參數套用</h1>
                         </el-menu-item>
                     </el-menu-item-group>
-                </el-submenu>
+                </el-submenu> -->
+                <el-menu-item index="prod" route="prod">
+                    <h1><i class="el-icon-s-claim" />上料準備</h1>
+                </el-menu-item>
+                <el-menu-item index="store" route="store">
+                    <h1><i class="el-icon-s-data" />參數庫管理</h1>
+                </el-menu-item>
                 <el-menu-item index="mo" route="mo">
                     <h1><i class="el-icon-document" />生產履歷</h1>
                 </el-menu-item>
                 <el-menu-item index="abnormality" route="abnormality">
                     <h1><i class="el-icon-warning" />異常履歷</h1>
+                </el-menu-item>
+                <el-menu-item index="document" route="document">
+                    <h1><i class="el-icon-document" />使用說明</h1>
                 </el-menu-item>
                 <!-- <el-menu-item index="potion" route="potion">
                     <h1><i class="el-icon-date" />藥水添加記錄</h1>

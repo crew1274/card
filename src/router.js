@@ -40,8 +40,8 @@ export default new Router({
                     component: () => import('@/views/VCP20/Abnormality.vue')
                 },
                 {
-                    path: '/VCP-20/potion',
-                    component: () => import('@/views/VCP20/Potion.vue')
+                    path: '/VCP-20/document',
+                    component: () => import('@/views/VCP20/Document.vue')
                 },
             ]
         },
