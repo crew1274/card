@@ -310,7 +310,6 @@ export default {
     {
         rfid_msg(value)
         {
-            
             let val = value['rfid_msg']
             if(this.prod_step == 1)
             {

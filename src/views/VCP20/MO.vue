@@ -369,7 +369,7 @@ export default {
             // await this.Qinflux(row["STARTDATETIME"], row["ENDDATETIME"])
             this.loading = true
             this.row = row
-            console.log(this.row["RANDOMSTRING"])
+            // console.log(this.row["RANDOMSTRING"])
             let response = await this.$store.dispatch("_db", { 
                 url: "_db/VCP-20/_api/document/History/" + this.row["RANDOMSTRING"],
                 method: "GET",
@@ -396,7 +396,7 @@ export default {
             let end_time = moment(end, 'YYYY-MM-DD HH:mm:ss').add(10, 'minutes').toISOString()
             // let end_time = "2019-11-11 14:52:27"
 
-            await fetch("http://10.11.0.156:8086/query?db=VCP_30&q=SELECT average_current_1, average_current_2, average_voltage_1, average_voltage_2 FROM PPR WHERE time > '"+ start_time + "' AND time < '" + end_time + "' ",
+            await fetch("http://10.11.0.156:8086/query?db=VCP_20&q=SELECT average_current_1, average_current_2, average_voltage_1, average_voltage_2 FROM PPR WHERE time > '"+ start_time + "' AND time < '" + end_time + "' ",
             {
                 method: "GET",
                 headers : { 'Content-Type' : 'application/x-www-form-urlencoded' },
