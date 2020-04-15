@@ -22,18 +22,22 @@ protocol.registerSchemesAsPrivileged([{
 
 if (process.platform != "browser")
 {
-  try
-  {
-    const redis = require("redis")
-    const subscriber = redis.createClient()
-    subscriber.subscribe("RFID")
-  }
-  catch (err)
-  {
-    console.error(err)
-  }
+    const isPortReachable = require('is-port-reachable');
+    (async () =>
+    {
+      if (await isPortReachable(6379))
+      {
+        const redis = require("redis")
+        const subscriber = redis.createClient()
+        subscriber.subscribe("RFID")
+        subscriber.on("message", function (channel, message) {
+          if (channel == "RFID") {
+            win.webContents.send('RFID', message)
+          }
+        })
+      }
+    })()
 }
-
 
 function createWindow() {
   // Create the browser window.
@@ -47,19 +51,6 @@ function createWindow() {
     }
   })
 
-  // if (process.platform != "browser")
-  // {
-  //   subscriber.on("message", function (channel, message)
-  //   {
-  //     if (channel == "RFID")
-  //     {
-  //       win.webContents.send('RFID', message)
-  //     }
-  //   })
-  // }
-
-
-  shell.beep()
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)

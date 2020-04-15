@@ -88,6 +88,12 @@
                             {{procdata.procname}}
                         </el-row>
                         <el-row>
+                            <el-col :span="4">
+                                <el-button @click="prod_predict" type="primary" icon="el-icon-s-opportunity">進行預測</el-button>
+                            </el-col>
+                        </el-row>
+                        <el-divider />
+                        <el-row>
                             <el-form ref="form" :model="ppr_data">
                                 <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="right">
                                     <el-form-item label="版寬(mm):">
@@ -454,7 +460,10 @@ export default {
                 this.procdata[key] = null
             })
         },
-         
+        async prod_predict()
+        {
+
+        },
         async getRecipe()
         {
             this.payload["mfdata"]["lotdata"]["no"] = this.LotNO
@@ -616,6 +625,7 @@ export default {
             //         noteList: this.noteList})
             this.lotdata["source"] = "runcard"
             this.ppr_data["dummy_height"] = this.dummy_height
+            this.ppr_data["load_mode"] = "manual"
             await fetch("http://10.11.30.60:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
@@ -652,7 +662,16 @@ export default {
         async callAGV()
         {
             this.loading = true
-            await fetch("http://10.11.30.60:9999/api/CallAGV", {method: 'POST'})
+            this.ppr_data["load_mode"] = "auto"
+            await fetch("http://10.11.30.60:9999/api/CallAGV", {
+                method: 'POST',
+                body: JSON.stringify({
+                    ppr_result: this.ppr_result, 
+                    ppr_data: this.ppr_data,
+                    lotdata: this.lotdata,
+                    procdata: this.procdata,
+                    noteList: this.noteList,
+                })})
             .then( response => {return response.json()})
             .then( response =>
             {

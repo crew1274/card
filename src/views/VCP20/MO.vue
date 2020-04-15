@@ -235,6 +235,14 @@ export default {
         this.date_range.push(moment().subtract(7,'d').format('YYYY-MM-DD'))
         this.date_range.push(moment().add(1,'d').format('YYYY-MM-DD'))
         await this.CheckData()
+        // let response = await this.$store.dispatch("_db", { 
+        //     url: "_db/VCP-20/_api/cursor",
+        //     method: "POST",
+        //     payload: {"query": "FOR doc IN History SORT doc.STARTDATETIME DESC LIMIT 1 RETURN doc",
+        //     "count": true,
+        //     "batchSize": 2},
+        // })
+        // console.log(response)
     },
     methods: 
     {

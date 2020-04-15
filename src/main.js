@@ -21,18 +21,11 @@ router.beforeEach((to, from, next) =>
 
 if (process.platform != "browser")
 {
-  try
-  {
     const ipc = require('electron').ipcRenderer
-
+    
     ipc.on('RFID', (event, msg) => {
       store.commit('update_rfid_msg', msg)
     })
-  }
-  catch(err)
-  {
-    console.error(err)
-  }
 }
 
 new Vue({
