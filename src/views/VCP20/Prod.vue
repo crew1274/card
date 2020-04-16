@@ -103,7 +103,7 @@
                         <el-divider />
                         <el-row>
                             <el-form ref="form" :model="ppr_data">
-                                <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="right">
+                                <el-tooltip class="item" effect="dark" content="此參數影響推桿位置，請務必確認靶寬必須小於版寬" placement="right">
                                     <el-form-item label="版寬(mm):">
                                         <el-input-number v-model="ppr_data.RD05M48" size="large" />
                                     </el-form-item>
@@ -136,7 +136,7 @@
                                     </el-tooltip>
                                 </el-form-item>
                                 <el-form-item label="備註:">
-                                    <el-radio-group v-model="ppr_data.mode" >
+                                    <el-radio-group v-model="ppr_data.mode" @change="mode_change">
                                         <el-radio label="一鍍" border>一鍍</el-radio>
                                         <el-radio label="二鍍" border>二鍍</el-radio>
                                         <el-radio label="重工" border>重工</el-radio>
@@ -210,6 +210,11 @@
                         <el-row>
                             <el-col :span="4" :offset="10">
                                 <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
+                            </el-col>
+                        </el-row><el-row /><el-row />
+                        <el-row>
+                            <el-col :span="4" :offset="10">
+                                <el-button @click="prod_confrim" type="primary" icon="el-icon-switch-button">啟動自動模式</el-button>
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
@@ -565,6 +570,40 @@ export default {
                 this.$message({ message: err, type: "error"})
             })
         },
+        async prod_confrim()
+        {
+            this.loading = true
+            await fetch("http://10.11.30.60:9999/api/mode",
+            {   method: 'PUT',
+                body: JSON.stringify({
+                    mode: "自動模式",
+                })
+            })
+            .then( response => {return response.json()})
+            .then( response =>
+            {
+                if(response["Exception"])
+                {
+                    throw response["Exception"]
+                }
+                if(response["response"])
+                {
+                    this.$message({ message: "啟動自動模式成功", type: "success"})
+                }
+                else
+                {
+                    this.$message({ message: "啟動自動模式失敗", type: "error"})
+                }
+            })
+            .catch( err =>
+            {
+                this.$notify.warning({ title: 'Edge異常回報', message: err})
+            })
+            .finally( () =>
+            {
+                this.loading = false
+            })
+        },
         async prod_next()
         {
             this.loading = true
@@ -655,7 +694,14 @@ export default {
                 this.$message({ message: "儲存失敗", type: "error"})
             }
             this.storeDialogFormVisible = false
-        },  
+        },
+        mode_change(value)
+        {
+            if(value == "一鍍")
+            {
+                this.ppr_data["PlatingTime"] = 80
+            }
+        },
         async prod_work()
         {
             this.loading = true
@@ -684,7 +730,14 @@ export default {
                 {
                     throw response["Exception"]
                 }
-                response["response"] ? this.$message({ message: "寫入暫存區完成", type: "success"}) : this.$message({ message: "寫入暫存區錯誤", type: "warning"})
+                if(response["response"])
+                {
+                    this.$notify.success({ title: '套用參數成功', message: "寫入暫存區完成"})   
+                }
+                else
+                {
+                    this.$notify.error({ title: '套用參數失敗', message: "請確認是否生產中或是Bypass狀態"})
+                }
             })
             .catch( err =>
             {
@@ -720,7 +773,14 @@ export default {
                 {
                     throw response["Exception"]
                 }
-                response["response"] ? this.$message({ message: "呼叫AGV成功", type: "success"}) : this.$message({ message: "呼叫AGV失敗", type: "warning"})
+                if(response["response"])
+                {
+                    this.$notify.success({ title: '呼叫AGV成功', message: "寫入暫存區完成"})   
+                }
+                else
+                {
+                    this.$notify.error({ title: '呼叫AGV失敗', message: "請確認是否生產中或是Bypass狀態"})
+                }
             })
             .catch( err =>
             {

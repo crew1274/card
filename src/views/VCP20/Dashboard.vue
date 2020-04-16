@@ -14,6 +14,12 @@
           </el-switch>
         </el-row>
         <el-row>
+          <el-card header="上筆套用參數">
+            <el-row>
+            </el-row>
+          </el-card>
+        </el-row>
+        <el-row>
           <el-card header="設備即時狀態">
             努力開發中...
           </el-card>
@@ -33,9 +39,29 @@ export default
       mode: true,
     }
   },
-  created()
+  async created()
   {
-
+    await fetch("http://10.11.30.60:9999/api/mode", { method: 'GET'})
+    .then( response => {return response.json()})
+    .then( response =>
+    {
+        if(response["Exception"])
+        {
+          throw response["Exception"]
+        }
+        if(response["response"] == "自動模式")
+        {
+          this.mode = true
+        }
+        else
+        {
+          this.mode = false
+        }
+    })
+    .catch( err =>
+    {
+        this.$notify.warning({ title: 'Edge異常回報', message: err})
+    })
   },
   methods: 
   {
@@ -51,7 +77,7 @@ export default
         })
         .then(() => {
           //call function
-
+          this.changeMode()
         })
         .catch(() => {
           //rollback
@@ -60,29 +86,38 @@ export default
       },
       async changeMode()
       {
-        // await fetch("http://10.11.30.60:9999/api/mode",
-        // {   method: 'POST',
-        //     body: JSON.stringify({
-        //         mode: this.mode,
-        //     })
-        // })
-        // .then( response => {return response.json()})
-        // .then( response =>
-        // {
-        //     if(response["Exception"])
-        //     {
-        //         throw response["Exception"]
-        //     }
-        //     response["response"] ? this.$message({ message: "寫入暫存區完成", type: "success"}) : this.$message({ message: "寫入暫存區錯誤", type: "warning"})
-        // })
-        // .catch( err =>
-        // {
-        //     this.$notify.warning({ title: 'Edge異常回報', message: err})
-        // })
-        // .finally( () =>
-        // {
-        //     this.loading = false
-        // })
+        this.loading = true
+        await fetch("http://10.11.30.60:9999/api/mode",
+        {   method: 'PUT',
+            body: JSON.stringify({
+                mode: (this.mode ? "自動模式": "手動模式"),
+            })
+        })
+        .then( response => {return response.json()})
+        .then( response =>
+        {
+            if(response["Exception"])
+            {
+                throw response["Exception"]
+            }
+            if(response["response"])
+            {
+              this.$message({ message: "更動模式成功", type: "success"})
+            }
+            else
+            {
+              this.$message({ message: "更動模式失敗", type: "error"})
+              this.mode = !this.mode
+            }
+        })
+        .catch( err =>
+        {
+            this.$notify.warning({ title: 'Edge異常回報', message: err})
+        })
+        .finally( () =>
+        {
+            this.loading = false
+        })
       }
   }
 }
