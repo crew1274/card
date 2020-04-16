@@ -87,9 +87,17 @@
                         <el-row>
                             {{procdata.procname}}
                         </el-row>
-                        <el-row>
+                        <el-row :gutter="10">
                             <el-col :span="4">
                                 <el-button @click="prod_predict" type="primary" icon="el-icon-s-opportunity">進行預測</el-button>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-input placeholder="預測結果" v-model="predict_result">
+                                    <template slot="append">分鐘</template>
+                                </el-input>
+                            </el-col>
+                            <el-col :span="4">
+                                <el-button @click="pick_up" type="primary" icon="el-icon-bottom" :disabled="is_pick_up">套用</el-button>
                             </el-col>
                         </el-row>
                         <el-divider />
@@ -255,6 +263,7 @@ export default {
     data: function()
     {
         return {
+            predict_result: "",
             store_recipe: [],
             source: "runcard",
             recipe_name: "",
@@ -305,7 +314,8 @@ export default {
                 RD05M48 : "",  //寬
                 PlatingTime : "", //電鍍時間(DC用)
                 PPR_or_DC: "DC",
-                mode: "",
+                mode: "二鍍",
+                load_mode: "manual",
                 carrier: [],
                 cut_tag:[],
             },
@@ -351,6 +361,17 @@ export default {
     },
     computed:
     {
+        is_pick_up()
+        {
+            if(this.predict_result)
+            {
+                return false
+            }
+            else
+            {
+                return true
+            }
+        },
         dummy_height()
         {
             let a  = 25 *  Math.ceil(this.ppr_data.RD05M47 / 25)
@@ -462,7 +483,28 @@ export default {
         },
         async prod_predict()
         {
-
+            this.loading = true
+            await fetch('http://10.11.30.60:9999/api/predict/' + this.lotdata["no"], {method: 'GET' })
+            .then( response => {return response.json()})
+            .then( response =>
+            {
+                this.$message({ message: "預測成功", type: "success"})
+                this.predict_result = Math.round(+response["response"])
+            })
+            .catch( err =>
+            {
+                this.$message({ message: err, type: "error"})
+            })
+            .finally( () =>
+            {
+                this.loading = false
+            })
+        },
+        pick_up()
+        {
+            this.ppr_data["PlatingTime"] = this.predict_result
+            this.ppr_data["pick_predict"] = true
+            this.$message({ message: "套用預測電鍍時間", type: "success"})
         },
         async getRecipe()
         {
@@ -625,7 +667,6 @@ export default {
             //         noteList: this.noteList})
             this.lotdata["source"] = "runcard"
             this.ppr_data["dummy_height"] = this.dummy_height
-            this.ppr_data["load_mode"] = "manual"
             await fetch("http://10.11.30.60:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
