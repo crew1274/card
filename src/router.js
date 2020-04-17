@@ -36,6 +36,10 @@ export default new Router({
                     component: () => import('@/views/VCP20/MO.vue')
                 },
                 {
+                    path: '/VCP-20/history',
+                    component: () => import('@/views/VCP20/History.vue')
+                },
+                {
                     path: '/VCP-20/abnormality',
                     component: () => import('@/views/VCP20/Abnormality.vue')
                 },

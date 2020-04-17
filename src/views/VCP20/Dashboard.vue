@@ -16,6 +16,68 @@
         <el-row>
           <el-card header="上筆套用參數">
             <el-row>
+              <el-card header="批號資料">
+                <el-row>
+                  <el-col :span="8">
+                    批號: {{lotdata.itemno}}
+                  </el-col>
+                  <el-col :span="8">
+                    料號: {{lotdata.no}}
+                  </el-col>
+                  <el-col :span="8">
+                    製程序: {{lotdata.procseq}}
+                  </el-col>
+                </el-row>
+                <el-row>
+                </el-row>
+              </el-card>
+              <el-card header="參數資料">
+                <el-row>
+                  <el-col :span="8">
+                    板寬: {{ppr_data.RD05M48}}(mm)
+                  </el-col>
+                  <el-col :span="8">
+                    板高: {{ppr_data.RD05M47}}(mm)
+                  </el-col>
+                  <el-col :span="8">
+                    Dummy 板高: {{ppr_data.dummy_height}}(mm)
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="8">
+                    單片電流: {{ppr_data.PlatingAmp}}(A)
+                  </el-col>
+                  <el-col :span="8">
+                    片數: {{ppr_data.PlatingPnl}}
+                  </el-col>
+                  <el-col :span="8">
+                    電鍍時間: {{ppr_data.PlatingTime}}(分鐘)
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="8">
+                    上料方式: {{ppr_data.load_mode}}
+                  </el-col>
+                  <el-col :span="8">
+                    電鍍需求: {{ppr_data.mode}}
+                  </el-col>
+                  <el-col :span="8">
+                    電鍍方式: {{ppr_data.PPR_or_DC}}
+                  </el-col>
+                </el-row>
+                <el-row>
+                </el-row>
+              </el-card>
+              <el-card header="電鍍流程">
+                <el-row>
+                  <el-table :data="ppr_result" style="font-size: 20px; width: 100%">
+                      <el-table-column prop="name" label="" width="180" />
+                      <el-table-column prop="PlatingTime" label="電鍍時間 (min)" width="180" />
+                      <el-table-column prop="P_PlatingAmp" label="正向電流 (A)" width="180" />
+                      <el-table-column prop="N_PlatingAmp" label="負向電流 (A)" width="180" />
+                  </el-table>  
+                </el-row>
+              </el-card>
             </el-row>
           </el-card>
         </el-row>
@@ -37,6 +99,10 @@ export default
     return {
       loading: false,
       mode: true,
+      prod: {},
+      lotdata: {},
+      ppr_data: {},
+      ppr_result: [],
     }
   },
   async created()
@@ -57,6 +123,22 @@ export default
         {
           this.mode = false
         }
+    })
+    .catch( err =>
+    {
+        this.$notify.warning({ title: 'Edge異常回報', message: err})
+    })
+    await fetch("http://10.11.30.60:9999/api/prod", { method: 'GET'})
+    .then( response => {return response.json()})
+    .then( response =>
+    {
+        if(response["Exception"])
+        {
+          throw response["Exception"]
+        }
+        this.lotdata = response["response"]["lotdata"]
+        this.ppr_data = response["response"]["ppr_data"]
+        this.ppr_result = response["response"]["ppr_result"]
     })
     .catch( err =>
     {
@@ -123,11 +205,10 @@ export default
 }
 </script>
 
-<style scoped>
-.el-row
-{
-    margin-bottom: 20px;
-}
+<style>
+  .el-card {
+    margin-bottom: 15px;
+  }
 .content
 {
     font-size: 24px;

@@ -30,7 +30,7 @@
                 <el-menu-item index="store" route="store">
                     <h1><i class="el-icon-s-data" />參數庫管理</h1>
                 </el-menu-item>
-                <el-menu-item index="mo" route="mo">
+                <el-menu-item index="history" route="history">
                     <h1><i class="el-icon-document" />生產履歷</h1>
                 </el-menu-item>
                 <el-menu-item index="abnormality" route="abnormality">
