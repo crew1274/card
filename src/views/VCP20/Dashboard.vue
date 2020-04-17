@@ -206,9 +206,10 @@ export default
 </script>
 
 <style>
-  .el-card {
-    margin-bottom: 15px;
-  }
+.el-card
+{
+  margin-bottom: 15px;
+}
 .content
 {
     font-size: 24px;

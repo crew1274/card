@@ -161,7 +161,7 @@
                         <el-row :gutter="10">
                             <el-card>
                                 <div slot="header" class="clearfix">
-                                    飛靶編號( 牆壁 - 走道)
+                                    飛靶編號(牆壁 - 走道)
                                 </div>
                                 <el-row :gutter="10">
                                     <el-col :span="3">

@@ -32,8 +32,8 @@ export default new Router({
                     component: () => import('@/views/VCP20/Store.vue')
                 },
                 {
-                    path: '/VCP-20/mo',
-                    component: () => import('@/views/VCP20/MO.vue')
+                    path: '/VCP-20/statistic',
+                    component: () => import('@/views/VCP20/Statistic.vue')
                 },
                 {
                     path: '/VCP-20/history',

@@ -10,7 +10,7 @@
                 <el-col :span="16">
                 <el-date-picker v-model="date_range" type="daterange" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"
                     start-placeholder="開始日期" range-separator="至" end-placeholder="結束日期" 
-                    :picker-options="pickerOptions" 
+                    :picker-options="pickerOptions" @change="CheckData"
                     size="large"/>
                 </el-col>
                 <el-col :span="4">
@@ -37,57 +37,83 @@
                 </template>
                 </el-table-column>
             </el-table>
-            <el-dialog title="參數詳細資訊" :visible.sync="recipeDialogVisible" width="80%">
+            <el-dialog title="詳細資訊" :visible.sync="recipeDialogVisible" width="80%">
                 <el-row>
-                    <el-col :span="6">
-                        <h3>料號:{{lotdata.itemno}}</h3>
-                    </el-col>                    
-                    <el-col :span="6">
-                        <h3>批號:{{lotdata.no}}</h3>
-                    </el-col>
-                    <el-col :span="6">
-                        <h3>製程序:{{lotdata.procseq}}</h3>
-                    </el-col>
-                    <el-col :span="6">
-                        <h3>參數來源:{{source}}</h3>
-                    </el-col>
+                    <el-card header="批號資料" class="content">
+                        <el-row>
+                            <el-col :span="8">
+                                批號: {{lotdata.itemno}}
+                            </el-col>
+                            <el-col :span="8">
+                                料號: {{lotdata.no}}
+                            </el-col>
+                            <el-col :span="8">
+                                製程序: {{lotdata.procseq}}
+                            </el-col>
+                        </el-row>
+                    </el-card>
                 </el-row>
                 <el-divider />
                 <el-row>    
-                    <h3>   
-                    <center>電鍍模式:{{ppr_data.PPR_or_DC}}</center>
-                    <div v-for="(note, index) in noteList" :key="index">
-                        <el-tag type="danger">{{note}}</el-tag>
-                    </div>
-                    </h3>
+                    <el-card header="參數資料" class="content">
+                        <el-row>
+                        <el-col :span="8">
+                            板寬: {{ppr_data.RD05M48}}(mm)
+                        </el-col>
+                        <el-col :span="8">
+                            板高: {{ppr_data.RD05M47}}(mm)
+                        </el-col>
+                        <el-col :span="8">
+                            Dummy 板高: {{ppr_data.dummy_height}}(mm)
+                        </el-col>
+                        </el-row>
+                        <el-row>
+                        <el-col :span="8">
+                            單片電流: {{ppr_data.PlatingAmp}}(A)
+                        </el-col>
+                        <el-col :span="8">
+                            片數: {{ppr_data.PlatingPnl}}
+                        </el-col>
+                        <el-col :span="8">
+                            電鍍時間: {{ppr_data.PlatingTime}}(分鐘)
+                        </el-col>
+                        </el-row>
+                        <el-row>
+                        <el-col :span="8">
+                            上料方式: {{ppr_data.load_mode}}
+                        </el-col>
+                        <el-col :span="8">
+                            電鍍需求: {{ppr_data.mode}}
+                        </el-col>
+                        <el-col :span="8">
+                            電鍍方式: {{ppr_data.PPR_or_DC}}
+                        </el-col>
+                        </el-row>
+                        <el-row>
+                        </el-row>
+                    </el-card>
                 </el-row>
-                <el-row> 
-                    <el-form ref="form" :model="ppr_data" size="medium">
-                        <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="left">
-                            <h3>板寬(mm):{{ppr_data.RD05M48}}</h3>
-                        </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="此參數影響遮板高度" placement="left">
-                            <h3>板長(mm):{{ppr_data.RD05M47}}</h3>
-                        </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="此參數影響電鍍時間" placement="left">
-                            <h3>電鍍時間(分鐘):{{ppr_data.PlatingTime}}</h3>
-                        </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="left">
-                            <h3>單片電鍍電流(PlatingAmp):{{ppr_data.PlatingAmp}}</h3>
-                        </el-tooltip>  
-                        <el-tooltip class="item" effect="dark" content="範圍(1~6)" placement="top">
-                            <h3>上料片數(不包含Dummy):{{ppr_data.PlatingPnl}}</h3>
-                        </el-tooltip>
-                        <h2>電鍍電流計算公式:
-                        [電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{
-                            (ppr_data.PlatingAmp * ppr_data.PlatingPnl) + 10}}</h2>
-                    </el-form>
+                <h4>電鍍電流計算公式:
+                        [單片電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) =
+                        {{(ppr_data.PlatingAmp * ppr_data.PlatingPnl) + 10}}
+                </h4>
+                <el-divider />
+                <el-row>
+                    <el-col :span="24">
+                        <el-table :data="ppr_result" style="font-size: 20px; width: 100%">
+                            <el-table-column prop="name" label="" width="180" />
+                            <el-table-column prop="PlatingTime" label="電鍍時間 (min)" width="180" />
+                            <el-table-column prop="P_PlatingAmp" label="正向電流 (A)" width="180" />
+                            <el-table-column prop="N_PlatingAmp" label="負向電流 (A)" width="180" />
+                        </el-table>  
+                    </el-col>
                 </el-row>
+                <el-divider />
                 <div v-if="ppr_data.carrier">
                     <el-row :gutter="10">
                         <el-card>
                             <div slot="header" class="clearfix">
-                                飛靶編號(面對設備 從裡面到外面)
+                                飛靶編號(牆壁 - 走道)
                                 <el-button style="float: right;" type="primary" @click="update_db">更新</el-button>
                             </div>
                             <el-row :gutter="10">
@@ -110,7 +136,7 @@
                     <el-row :gutter="10">
                         <el-card>
                             <div slot="header" class="clearfix">
-                                刀數(面對設備 從裡面到外面)
+                                刀數(牆壁 - 走道)
                                 <el-button style="float: right;" type="primary" @click="update_db">更新</el-button>
                             </div>
                             <el-row :gutter="10">
@@ -129,17 +155,6 @@
                         </el-card>
                     </el-row>
                 </div>
-                <el-divider />
-                <el-row>
-                    <el-col :span="24">
-                        <el-table :data="ppr_result" style="font-size: 20px; width: 100%">
-                            <el-table-column prop="name" label="" width="180" />
-                            <el-table-column prop="PlatingTime" label="電鍍時間 (min)" width="180" />
-                            <el-table-column prop="P_PlatingAmp" label="正向電流 (A)" width="180" />
-                            <el-table-column prop="N_PlatingAmp" label="負向電流 (A)" width="180" />
-                        </el-table>  
-                    </el-col>
-                </el-row>
                 <el-divider />
                     <!-- <ve-line :data="chartData"></ve-line> -->
             </el-dialog>
@@ -234,7 +249,7 @@ export default {
     {
         moment.locale("zh-tw")
         this.date_range.push(moment().subtract(7,'d').format('YYYY-MM-DD'))
-        this.date_range.push(moment().add(1,'d').format('YYYY-MM-DD'))
+        this.date_range.push(moment().format('YYYY-MM-DD'))
         await this.CheckData()
         // let response = await this.$store.dispatch("_db", { 
         //     url: "_db/VCP-20/_api/cursor",
@@ -261,69 +276,52 @@ export default {
         async download()
         {
             this.loading = true
-            let tres = []
-            await fetch("http://10.11.30.60:9999/api/mo_all",
-            {
-                method: "GET",
-            })
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                if(response["Exception"])
-                {
-                    throw response["Exception"]
-                }
-                tres = response["result"]
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: 'Edge資料庫存取異常', message: err})
-            })
-            .finally( () =>
-            {
-                this.loading = false
-            })
-            this.loading = true
+            // let tres = []
+
+            // let response = await this.$store.dispatch("_db", { 
+            //     url: "/_db/VCP-20/_api/cursor",
+            //     method: "POST",
+            //     payload: {
+            //         "query": "FOR doc IN History \
+            //          SORT doc.STARTDATETIME DESC RETURN doc"
+            //     },
+            // })
+            // tres = response["result"]
+            // console.log(tres)
             let data = []
-            tres.forEach( ele =>
+            this.list.forEach( ele =>
             {
                 let item = {}
-                item["批號"] = ele["LOTNO"]
-                item["料號"] = ele["PARTNO"]
+                item["批號"] = ele["lotdata"]["itemno"]
+                item["料號"] = ele["lotdata"]["no"]
                 item["開始時間"] = ele["STARTDATETIME"]
                 item["結束時間"] = ele["ENDDATETIME"]
-                item["孔銅需求(mil)"] = ele["detail"]["ppr_data"]["RD05M134"]
-                item["最小孔徑(mil)"] = ele["detail"]["ppr_data"]["RD05M146"]
-                item["當站板厚(mm)"] = ele["detail"]["ppr_data"]["RD05M136"]
-                item["面積(SQIN)"] = ele["detail"]["ppr_data"]["RD05M49"]
-                item["板長(mm)"] = ele["detail"]["ppr_data"]["RD05M47"]
-                item["板寬(mm)"] = ele["detail"]["ppr_data"]["RD05M48"]
-                item["上料片數(不包含Dummy)"] = ele["detail"]["ppr_data"]["PlatingPnl"]
-                item["電鍍第一段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_1_offset"]
-                item["電鍍第二段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_2_offset"]
-                item["電鍍第三段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_3_offset"]
+                
+                item["單片電鍍電流(A)"] = ele["ppr_data"]["PlatingAmp"]
+                item["上料片數(不包含Dummy)"] = ele["ppr_data"]["PlatingPnl"]
+                item["電鍍時間(分鐘)_DC模式下"] = ele["ppr_data"]["PlatingTime"]
 
-                item["電鍍第一段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_1_offset"]
-                item["電鍍第二段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_2_offset"]
-                item["電鍍第三段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_3_offset"]
+                item["孔銅需求(mil)"] = ele["ppr_data"]["RD05M134"]
+                item["最小孔徑(mil)"] = ele["ppr_data"]["RD05M146"]
+                item["面積(SQIN)"] = ele["ppr_data"]["RD05M49"]
+                item["板高(mm)"] = ele["ppr_data"]["RD05M47"]
+                item["Dummy板高(mm)"] = ele["ppr_data"]["dummy_height"]
+                item["板寬(mm)"] = ele["ppr_data"]["RD05M48"]
+                item["上料模式"] = ele["ppr_data"]["load_mode"]
+                item["電鍍模式"] = ele["ppr_data"]["PPR_or_DC"]
+                item["電鍍需求"] = ele["ppr_data"]["mode"]
 
-                item["電鍍時間(分鐘)_DC模式下"] = ele["detail"]["ppr_data"]["PlatingTime"]
+                item["起始電鍍_電鍍時間"] = ele["ppr_result"][0]["PlatingTime"]
+                item["起始電鍍_正向電鍍電流"] = ele["ppr_result"][0]["P_PlatingAmp"]
+                item["起始電鍍_反向電鍍電流"] = ele["ppr_result"][0]["N_PlatingAmp"]
 
-                item["起始電鍍_電鍍時間"] = ele["detail"]["ppr_result"][0]["current_time"]
-                item["起始電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][0]["forward_current"]
-                item["起始電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][0]["forward_current_time"]
-                item["起始電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][0]["reverse_current"]
-                item["起始電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][0]["reverse_current_time"]
-                item["第"+(i).toString()+"段電鍍_電鍍時間"] = ele["detail"]["ppr_result"][1]["current_time"]
-                item["第"+(i).toString()+"段電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][1]["forward_current"]
-                item["第"+(i).toString()+"段電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][1]["forward_current_time"]
-                item["第"+(i).toString()+"段電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][1]["reverse_current"]
-                item["第"+(i).toString()+"段電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][1]["reverse_current_time"]
-                item["結束電鍍_電鍍時間"] = ele["detail"]["ppr_result"][2]["current_time"]
-                item["結束電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][2]["forward_current"]
-                item["結束電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][2]["forward_current_time"]
-                item["結束電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][2]["reverse_current"]
-                item["結束電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][2]["reverse_current_time"]
+                item["主電鍍_電鍍時間"] = ele["ppr_result"][1]["PlatingTime"]
+                item["主電鍍_正向電鍍電流"] = ele["ppr_result"][1]["P_PlatingAmp"]
+                item["主電鍍_反向電鍍電流"] = ele["ppr_result"][1]["N_PlatingAmp"]
+
+                item["結束電鍍_電鍍時間"] = ele["ppr_result"][2]["PlatingTime"]
+                item["結束電鍍_正向電鍍電流"] = ele["ppr_result"][2]["P_PlatingAmp"]
+                item["結束電鍍_反向電鍍電流"] = ele["ppr_result"][2]["N_PlatingAmp"]
                 data.push(item) 
             })
             const ws = XLSX.utils.json_to_sheet(data)
@@ -341,10 +339,12 @@ export default {
                 payload: {
                     "query": "FOR doc IN History \
                      SORT doc.STARTDATETIME DESC \
-                     FILTER doc.`STARTDATETIME` <= '"+ this.date_range[1] +"' \
+                     FILTER doc.`STARTDATETIME` <= '"+ moment(this.date_range[1]).add(1,'d').format('YYYY-MM-DD') +"' \
                      AND  doc.`STARTDATETIME` > '"+ this.date_range[0] +"' RETURN doc"
                 },
             })
+            // moment(this.date_range[1]).add(1,'d').format('YYYY-MM-DD')
+            // this.date_range.push(moment().add(1,'d').format('YYYY-MM-DD'))
             this.list = response["result"]
             this.loading = false
         },
@@ -352,13 +352,13 @@ export default {
         {
             this.loading = true
             this.result["ppr_data"] = this.ppr_data
-            this.result["datetime"] = moment().format('YYYY-MM-DD HH:mm:ss')
+            this.result["Editdatetime"] = moment().format('YYYY-MM-DD HH:mm:ss')
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/document/History/" + this.row["RANDOMSTRING"],
+                url: "_db/VCP-20/_api/document/History/" + this.row["_key"],
                 method: "PUT",
                 payload: this.result,
             })
-            if(! response )
+            if(!response)
             {
                 this.$message({ message: "更新成功", type: "success"})
             }
@@ -465,12 +465,16 @@ export default {
 </script>
 
 <style scoped>
-  .el-table >>> .warning-row
-  {
-    background: #f2a202
-  }
-  .clearfix
-  {
-      font-size: 18px
-  }
+.el-table >>> .warning-row
+{
+background: #f2a202
+}
+.el-card
+{
+  margin-bottom: 15px;
+}
+.content
+{
+    font-size: 24px;
+}
 </style>
