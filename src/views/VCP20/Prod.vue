@@ -619,7 +619,7 @@ export default {
             {
                 if(this.source == "warehouse")
                 {
-                    console.log(this.selectRecipe)
+                    // console.log(this.selectRecipe)
                     if(this.selectRecipe == "")
                     {
                         this.$notify.warning({ message: "請先選擇套用參數!"})
@@ -713,6 +713,7 @@ export default {
             //         noteList: this.noteList})
             this.lotdata["source"] = "runcard"
             this.ppr_data["dummy_height"] = this.dummy_height
+            this.ppr_data["load_mode"] = "manual"
             await fetch("http://10.11.30.60:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
