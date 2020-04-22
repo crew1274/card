@@ -639,6 +639,7 @@
                     return 
                 }  
             }
+            this.ppr_data["load_mode"] = "auto"
             await fetch("http://10.11.30.61:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
@@ -697,7 +698,17 @@
         async callAGV()
         {
             this.loading = true
-            await fetch("http://10.11.30.61:9999/api/CallAGV", {method: 'POST'})
+            this.ppr_data["load_mode"] = "auto"
+            await fetch("http://10.11.30.61:9999/api/CallAGV",
+            {   
+                method: 'POST',
+                body: JSON.stringify({
+                    ppr_result: this.ppr_result_convert, 
+                    ppr_data: this.ppr_data,
+                    lotdata: this.lotdata,
+                    procdata: this.procdata,
+                    noteList: this.noteList,
+            })})
             .then( response => {return response.json()})
             .then( response =>
             {

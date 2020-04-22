@@ -90,6 +90,10 @@ export default new Router({
                     path: '/VCP-30/potion',
                     component: () => import('@/views/VCP30/Potion.vue')
                 },
+                {
+                    path: '/VCP-30/statistic',
+                    component: () => import('@/views/VCP30/Statistic.vue')
+                },
             ]
         },
         {
