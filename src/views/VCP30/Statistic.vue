@@ -19,7 +19,7 @@
                 <el-card header="自動上下料使用率">
                     <el-row>
                         <el-col :span="18">
-                            <ve-line :data="lineChartData"></ve-line>
+                            <ve-histogram :data="lineChartData" :settings="chartSettings"></ve-histogram>
                         </el-col>
                         <el-col :span="6">
                             <ve-ring :data="ringChartData"></ve-ring>
@@ -39,6 +39,9 @@ export default {
     data: function()
     {
         return {
+            chartSettings: {
+                stack: { '上料方式': ['手動', '自動'] }
+            },
             loading: false,
             date_range: [],
             date_range_each_date: [],
@@ -114,24 +117,32 @@ export default {
         lineChartData()
         {
             let data = []
-            this.date_range_each_date.forEach( (date) =>
+            this.date_range_each_date.forEach( date =>
             {
                 let total = 0
-                let auto_amount = 0
-                this.list.forEach( (element) =>
+                let auto = 0
+                let manual = 0
+                this.list.forEach( element =>
                 {
-                    if(moment(element["STARTDATETIME"]).format('YYYY-MM-DD') == date)
+                    if(moment(element["STARTDATETIME"]) < moment(date) &&
+                     moment(element["STARTDATETIME"]) >=  moment(date).subtract(1,'d'))
                     {
                         total = total + 1
                         if(element["ppr_data"]["load_mode"] == "auto") //使用自動模式
                         {
-                            auto_amount = auto_amount + 1
+                            auto = auto + 1
                         }
+                        else if(element["ppr_data"]["load_mode"] == "manual")
+                        {
+                            manual = manual + 1
+                        }
+                        // console.log(element["STARTDATETIME"] + ":" + element["ppr_data"]["load_mode"] )
                     }
                 })
-                data.push({'日期': date, "使用率": (auto_amount / total) })
+                data.push({'日期': date, "手動": manual, "自動": auto})
+                // console.log(moment(date).format('YYYY-MM-DD hh:mm:ss') + "-------" + moment(date).subtract(1,'d').format('YYYY-MM-DD hh:mm:ss'))
             })
-            return { columns: ['日期', '使用率'], rows: data}
+            return { columns: ['日期', '自動', '手動'], rows: data}
         },
     },
     watch:
@@ -143,16 +154,17 @@ export default {
             let end = moment(value[1]).add(1,'d').format('YYYY-MM-DD')
             while (start.isBefore(end))
             {
-                this.date_range_each_date.push(start.format('YYYY-MM-DD'))
+                this.date_range_each_date.push(start.format('YYYY-MM-DD 08:00:00'))
                 start = start.add(1, 'd')
             }
+            // console.log(this.date_range_each_date)
         },
     },
     async created()
     {
         moment.locale("zh-tw")
-        this.date_range.push(moment().subtract(7,'d').format('YYYY-MM-DD'))
-        this.date_range.push(moment().format('YYYY-MM-DD'))
+        this.date_range.push(moment().subtract(7,'d').format('YYYY-MM-DD 08:00:00'))
+        this.date_range.push(moment().format('YYYY-MM-DD 08:00:00'))
         await this.CheckData()
     },
     methods: 
@@ -160,18 +172,18 @@ export default {
         async CheckData()
         {
             this.loading = true
-
             let response = await this.$store.dispatch("_db", { 
                 url: "/_db/VCP-30/_api/cursor",
                 method: "POST",
                 payload: {
                     "query": "FOR doc IN History \
                      SORT doc.STARTDATETIME DESC \
-                     FILTER doc.`STARTDATETIME` <= '"+ moment(this.date_range[1]).add(1,'d').format('YYYY-MM-DD') +"' \
-                     AND  doc.`STARTDATETIME` > '"+ this.date_range[0] +"' RETURN doc"
+                     FILTER doc.`STARTDATETIME` <= '"+ moment(this.date_range[1]).add(1,'d').format('YYYY-MM-DD 08:00:00') +"' \
+                     AND  doc.`STARTDATETIME` > '"+ moment(this.date_range[0]).subtract(1,'d').format('YYYY-MM-DD 08:00:00') +"' RETURN doc"
                 },
             })
             this.list = response["result"]
+            // console.log(this.list)
             this.loading = false
         },
     }

@@ -546,7 +546,7 @@
                 'Authorization': this.token,
                 'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ collection: "PH", })
+                body: JSON.stringify({ collection: "Warehouse", })
             })
             .then( response => {return response.json()})
             .then( response =>
@@ -564,7 +564,7 @@
         },
         async handleCheck(row)
         {
-            await fetch("http://10.11.0.156:8529/_db/VCP-30/_api/document/PH/" + row["name"],
+            await fetch("http://10.11.0.156:8529/_db/VCP-30/_api/document/Warehouse/" + row["name"],
             {
                 method: "GET",
                 headers: {
@@ -670,7 +670,7 @@
         async confrimDelete()
         {
             this.deleteDialogVisible = false
-            await fetch("http://10.11.0.156:8529/_db/VCP-30/_api/document/PH/" + this.delete_name,
+            await fetch("http://10.11.0.156:8529/_db/VCP-30/_api/document/Warehouse/" + this.delete_name,
             {
                 method: "DELETE",
                 headers: {

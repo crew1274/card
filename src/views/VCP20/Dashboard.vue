@@ -99,7 +99,6 @@ export default
     return {
       loading: false,
       mode: true,
-      prod: {},
       lotdata: {},
       ppr_data: {},
       ppr_result: [],

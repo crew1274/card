@@ -11,23 +11,13 @@
                 <el-menu-item index="Dashboard" route="Dashboard">
                     <h1><i class="el-icon-s-home" />首頁</h1>
                 </el-menu-item>
-                <el-submenu index="">
-                    <template slot="title">
-                        <h1><i class="el-icon-s-claim" />上料準備</h1>
-                    </template>
-                    <el-menu-item-group>
-                        <!-- <el-menu-item index="PPR" route="PPR">
-                            <h1><i class="el-icon-s-help" />PPR手動套用</h1>
-                        </el-menu-item> -->
-                        <el-menu-item index="prod" route="prod">
-                            <h1><i class="el-icon-s-check" />製程參數套用</h1>
-                        </el-menu-item>
-                        <el-menu-item index="store" route="store">
-                            <h1><i class="el-icon-s-data" />儲存參數套用</h1>
-                        </el-menu-item>
-                    </el-menu-item-group>
-                </el-submenu>
-                <el-menu-item index="mo" route="mo">
+                <el-menu-item index="prod" route="prod">
+                    <h1><i class="el-icon-s-claim" />上料準備</h1>
+                </el-menu-item>
+                <el-menu-item index="store" route="store">
+                    <h1><i class="el-icon-s-data" />參數庫管理</h1>
+                </el-menu-item>
+                <el-menu-item index="history" route="history">
                     <h1><i class="el-icon-document" />生產履歷</h1>
                 </el-menu-item>
                 <el-menu-item index="statistic" route="statistic">

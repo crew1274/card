@@ -88,21 +88,28 @@
                             {{procdata.procname}}
                         </el-row>
                         <el-row :gutter="10">
-                            <el-col :span="4">
-                                <el-button @click="prod_predict" type="primary" icon="el-icon-s-opportunity">進行預測</el-button>
-                            </el-col>
                             <el-col :span="6">
+                                <el-button @click="prod_predict" type="primary" icon="el-icon-s-opportunity" :disabled="is_predictable">
+                                    進行預測
+                                </el-button>
+                            </el-col>
+                            <el-col :span="10">
                                 <el-input placeholder="預測結果" v-model="predict_result">
                                     <template slot="append">分鐘</template>
                                 </el-input>
                             </el-col>
-                            <el-col :span="4">
+                            <el-col :span="6">
                                 <el-button @click="pick_up" type="primary" icon="el-icon-bottom" :disabled="is_pick_up">套用</el-button>
                             </el-col>
                         </el-row>
                         <el-divider />
                         <el-row>
                             <el-form ref="form" :model="ppr_data">
+                                <el-tooltip class="item" effect="dark" content="如超過8mm無法使用自動上下料" placement="right">
+                                    <el-form-item label="版厚(mm):">
+                                        <el-input-number v-model="ppr_data.RD05M136" size="large" />
+                                    </el-form-item>
+                                </el-tooltip>
                                 <el-tooltip class="item" effect="dark" content="此參數影響推桿位置，請務必確認靶寬必須小於版寬" placement="right">
                                     <el-form-item label="版寬(mm):">
                                         <el-input-number v-model="ppr_data.RD05M48" size="large" />
@@ -122,7 +129,7 @@
                                 </el-row>
                                 <el-tooltip class="item" effect="dark" content="此參數影響電鍍時間" placement="right">
                                     <el-form-item label="電鍍時間(分鐘):">
-                                        <el-input-number v-model="ppr_data.PlatingTime" size="large" />
+                                        <el-input-number v-model="ppr_data.PlatingTime" size="large"/>
                                     </el-form-item>
                                 </el-tooltip>
                                 <el-tooltip class="item" effect="dark" content="此參數影響電鍍電流" placement="right">
@@ -135,13 +142,13 @@
                                         <el-input-number v-model="ppr_data.PlatingPnl" :min="1" :max="6" size="large" />
                                     </el-tooltip>
                                 </el-form-item>
-                                <el-form-item label="備註:">
+                                <el-form-item label="電鍍需求:">
                                     <el-radio-group v-model="ppr_data.mode" @change="mode_change">
                                         <el-radio label="一鍍" border>一鍍</el-radio>
                                         <el-radio label="二鍍" border>二鍍</el-radio>
                                         <el-radio label="重工" border>重工</el-radio>
                                     </el-radio-group>
-                                </el-form-item>                          
+                                </el-form-item>
                                 電鍍電流計算公式:
                                 [電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{this.ppr_result[1].P_PlatingAmp}}
                             </el-form>
@@ -218,8 +225,11 @@
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
+                            <div v-show="isCallAGV">
+                                <center>板厚超出規格(0~8mm)無法使用自動上下料</center>
+                            </div>
                             <el-col :span="4" :offset="10">
-                                <el-button @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
+                                <el-button :disabled="isCallAGV" @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
@@ -230,7 +240,7 @@
                     </div>
                     <div v-else-if="prod_step == 4">
                         <el-row />
-                            <center><h3>操作完成，按下一步跳轉到首頁</h3></center>
+                            <center><h3>操作完成，按下一步跳轉到首頁查看參數!</h3></center>
                         <el-row />
                     </div>
                 </el-card>
@@ -309,6 +319,7 @@ export default {
             },
             ppr_data:
             {
+                RD05M136: "", //板厚
                 RD05M134 : "", //成品孔銅
                 RD05M146 : "",  //最小孔徑
                 RD05M49 : "", // 鍍銅面積
@@ -363,14 +374,53 @@ export default {
                 }
             }
         },
+        'ppr_data.PlatingTime'(value)
+        {
+            if(this.ppr_data.mode == '一鍍')
+            {
+                if(value != 80 || value != 60)
+                {
+                    
+                }
+            }
+        },
     },
     computed:
     {
+        isCallAGV()
+        {
+            if(this.ppr_data.RD05M136 > 8|| this.ppr_data.RD05M136 <= 0)
+            {
+                return true
+            }
+            else
+            {
+                return false
+            }
+        },
+        is_predictable()
+        {
+            if(this.ppr_data.mode == '一鍍' || this.ppr_data.mode == '重工')
+            {
+                return true
+            }
+            else
+            {
+                return false
+            }
+        },
         is_pick_up()
         {
             if(this.predict_result)
             {
-                return false
+                if(this.ppr_data.mode == '一鍍' || this.ppr_data.mode == '重工')
+                {
+                    return true
+                }
+                else
+                {
+                    return false
+                }
             }
             else
             {
@@ -493,6 +543,10 @@ export default {
             .then( response => {return response.json()})
             .then( response =>
             {
+                if(!response["response"])
+                {
+                    throw response["errorMessage"]
+                }
                 this.$message({ message: "預測成功", type: "success"})
                 this.predict_result = Math.round(+response["response"])
             })
@@ -656,6 +710,8 @@ export default {
                                     this.ppr_data[item.procprammes] = +item.procvalue
                                 }
                             }
+                            //取得板厚
+                            await this.getRD05M136(this.lotdata)
                         }
                         else
                         {
@@ -753,6 +809,25 @@ export default {
         {
             // this.recipe_name = this.lotdata.itemno + "_" + Math.random().toString(36).substring(4)
             this.recipe_name = this.lotdata.itemno + "_" + this.LotNO + "_" + this.ProcSeq
+        },
+        async getRD05M136(lotdata)
+        {
+            await fetch("http://10.11.30.61:9999/api/getRD05M136", {method: 'POST', body: JSON.stringify(lotdata)})
+            .then( response => {return response.json()})
+            .then( response =>
+            {
+                if(response["Exception"])
+                {
+                    throw response["Exception"]
+                }
+                this.ppr_data["RD05M136"] = response["result"]
+                return true
+            })
+            .catch( err =>
+            {
+                this.$notify.warning({ title: 'MES查無板厚資訊', message: err})
+            })
+            return false
         },
         async callAGV()
         {
