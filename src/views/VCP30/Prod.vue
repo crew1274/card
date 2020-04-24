@@ -31,7 +31,7 @@
                             <center><h3>選擇參數來源</h3></center>
                             <el-row :gutter="20">
                                 <el-col :span="14" :offset="10">
-                                    <!-- <el-radio v-model="source" label="warehouse" border>參數庫</el-radio> -->
+                                    <el-radio v-model="source" label="warehouse" border>參數庫</el-radio>
                                     <el-radio v-model="source" label="runcard" border>RunCard</el-radio>
                                 </el-col>
                             </el-row>
@@ -925,7 +925,7 @@ export default {
                 }
             }
             this.prod_step = this.prod_step + 1
-            if(this.prod_step == 6)
+            if(this.prod_step == 5)
             {
                 this.prod_step = 0
             }

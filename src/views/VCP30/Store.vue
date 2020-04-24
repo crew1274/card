@@ -94,11 +94,11 @@
                                             <el-input-number v-model="ppr_data.PlatingTime_3_offset" :min="-180" :max="180" size="large" />
                                         </el-tooltip>
                                     </el-form-item>
-                                    <el-form-item label="備註:">
+                                    <!-- <el-form-item label="備註:">
                                         <el-checkbox-group v-model="noteList">
                                             <el-checkbox label="重工"></el-checkbox>
                                         </el-checkbox-group>
-                                    </el-form-item>  
+                                    </el-form-item>   -->
                                 </el-col>
                             </el-row>
                         </el-form>
@@ -188,7 +188,7 @@
                         </el-table>  
                     </el-col>
                 </el-row>
-                <el-row>
+                <!-- <el-row>
                     <el-col :span="4" :offset="4">
                         <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
                     </el-col>
@@ -200,7 +200,7 @@
                             呼叫AGV
                         </el-button>                    
                     </el-col>
-                </el-row>
+                </el-row> -->
             </el-dialog>
         </el-main>
   </el-container>
