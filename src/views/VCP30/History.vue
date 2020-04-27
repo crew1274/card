@@ -412,7 +412,7 @@ export default {
                 method: "PUT",
                 payload: this.result,
             })
-            if(! response )
+            if(response)
             {
                 this.$message({ message: "更新成功", type: "success"})
             }
