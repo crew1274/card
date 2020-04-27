@@ -408,7 +408,7 @@ export default {
             this.result["ppr_data"] = this.ppr_data
             this.result["datetime"] = moment().format('YYYY-MM-DD HH:mm:ss')
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-30/_api/document/History/" + this.row["RANDOMSTRING"],
+                url: "_db/VCP-30/_api/document/History/" + this.row["_key"],
                 method: "PUT",
                 payload: this.result,
             })
