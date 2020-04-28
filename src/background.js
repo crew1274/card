@@ -45,27 +45,43 @@ function DownLoad(flavor, verison, filename)
   console.log('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename)
   const http = require('http')
   const fs = require('fs')
-
-  const file = fs.createWriteStream(filename)
+  var os = require('os')
+  let file
+  if(os.platform() != "win32")
+  {
+    file = fs.createWriteStream(app.getAppPath() + "/old_version/" + filename)
+  }
+  else
+  {
+    file = fs.createWriteStream(filename)
+  }
   const request = http.get('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename,
   function (response)
   {
     response.pipe(file)
     app.quit()
-    fs.unlinkSync(app.getAppPath())
-    const {
-      exec
-    } = require('child_process')
-    exec(filename)
+    // fs.unlinkSync(app.getAppPath())
+    const { exec } = require('child_process')
+    if(os.platform() != "win32")
+    {
+      file = fs.createWriteStream("ln -f -s old_version/" + filename, app.getAppPath() + "/App.AppImage")
+    }
+    let options = {
+      type: 'info',
+      title: '更新成功',
+      message: "程式將自動關閉，請重新執行程式",
+      buttons: ['關閉程式']
+    }
+    dialog.showMessageBoxSync(options)
   })
 }
 
 async function checkUpdate()
 {
-    const options = {
+    let options = {
     type: 'info',
     title: '發現新的版本',
-    message: "使否進行更新? 更新時間大約三分鐘",
+    message: "是否進行更新? 更新時間大約三分鐘",
     buttons: ['現在更新', '等等']
   }
   await axios.get('http://10.11.0.156:9666/api/version')
@@ -83,7 +99,6 @@ async function checkUpdate()
             if(dialog.showMessageBoxSync(options) == 0)
             {
               DownLoad(a[i]["flavor"]["name"], a[i]["name"], a[i]["assets"][0]['name'])
-              
             }
           } 
           else 

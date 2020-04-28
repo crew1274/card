@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
 /dist
+/old_verison
+*.AppImage
 
 # local env files
 .env.local
