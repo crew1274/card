@@ -1,16 +1,15 @@
 'use strict'
-
-import { app, protocol, BrowserWindow, clipboard, shell } from 'electron'
+import { app, protocol, BrowserWindow, clipboard, shell, dialog } from 'electron'
 import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
-
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{
   scheme: 'app',
@@ -37,6 +36,70 @@ if (process.platform != "browser")
         })
       }
     })()
+}
+
+const axios = require('axios')
+
+function DownLoad(flavor, verison, filename)
+{
+  console.log('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename)
+  const http = require('http')
+  const fs = require('fs')
+
+  const file = fs.createWriteStream(filename)
+  const request = http.get('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename,
+  function (response)
+  {
+    response.pipe(file)
+    app.quit()
+    fs.unlinkSync(app.getAppPath())
+    const {
+      exec
+    } = require('child_process')
+    exec(filename)
+  })
+}
+
+async function checkUpdate()
+{
+    const options = {
+    type: 'info',
+    title: '發現新的版本',
+    message: "使否進行更新? 更新時間大約三分鐘",
+    buttons: ['現在更新', '等等']
+  }
+  await axios.get('http://10.11.0.156:9666/api/version')
+  .then(response =>
+  {
+    let a = response.data
+    for (let i = 0; i < a.length; i++)
+    {
+      if(a[i]["flavor"]["name"])
+      {
+        if (app.getName()  == a[i]["flavor"]["name"])
+        {
+          if (app.getVersion() != a[i]["name"])
+          {
+            if(dialog.showMessageBoxSync(options) == 0)
+            {
+              DownLoad(a[i]["flavor"]["name"], a[i]["name"], a[i]["assets"][0]['name'])
+              
+            }
+          } 
+          else 
+          {
+            console.log("軟體已是最新")
+          }
+          return
+        }
+      }
+    }
+  })
+  .catch(error =>
+  {
+    console.log(error)
+  })
+
 }
 
 function createWindow() {
@@ -104,6 +167,7 @@ app.on('ready', async () => {
     // }
   }
   createWindow()
+  checkUpdate()
   // clipboard.writeText('Example String', 'selection')
   // console.log(clipboard.readText('selection'))
 })
