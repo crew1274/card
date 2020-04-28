@@ -87,7 +87,7 @@ async function checkUpdate()
   await axios.get('http://10.11.0.156:9666/api/version')
   .then(response =>
   {
-    let a = response.data
+    let a = response.data.reverse()
     for (let i = 0; i < a.length; i++)
     {
       if(a[i]["flavor"]["name"])
