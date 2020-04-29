@@ -64,7 +64,7 @@ function DownLoad(flavor, verison, filename)
     const { exec } = require('child_process')
     if(os.platform() != "win32")
     {
-      file = fs.createWriteStream("ln -f -s old_version/" + filename, app.getAppPath() + "/App.AppImage")
+      exec("ln -f -s " + app.getAppPath() + "/old_version/" + filename + " " + app.getAppPath() + " /App.AppImage ")
     }
     let options = {
       type: 'info',
