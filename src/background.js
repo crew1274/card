@@ -46,24 +46,13 @@ if (process.platform != "browser") {
 
 const axios = require('axios')
 
-async function DownLoad(flavor, verison, filename) {
-  console.log('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename)
-  const http = require('http')
-  const fs = require('fs')
-  var os = require('os')
-  let file
-  if (os.platform() != "win32")
-  {
-    file = fs.createWriteStream("/home/pi/Desktop/old_version/" + filename)
-  }
-  else
-  {
-    file = fs.createWriteStream(filename)
-  }
+async function DownLoad(flavor, verison, filename)
+{
+  // console.log('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename)
   var options 
+  var os = require('os')
   if (os.platform() != "win32")
   {
-    file = fs.createWriteStream("/home/pi/Desktop/old_version/" + filename)
     options = {
       directory: "/home/pi/Desktop/old_version/",
       filename: filename
@@ -71,37 +60,32 @@ async function DownLoad(flavor, verison, filename) {
   } 
   else
   {
-    file = fs.createWriteStream(filename)
-        options = {
-          directory: "./",
-          filename: filename
-        }
+    options = {
+      directory: "./",
+      filename: filename
+    }
   }
   var download = require('download-file')
 
   await download('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename,
-  options,
-  function (err)
-  {
-    if (err) throw err
-    console.log("meow") 
-  })
-      const { exec } = require('child_process')
-      if (os.platform() != "win32")
-      {
+  options, () => {
+      const {
+        exec
+      } = require('child_process')
+      if (os.platform() != "win32") {
         exec("ln -f -s /home/pi/Desktop/old_version/" + filename + " " + "/home/pi/Desktop/App.AppImage ")
       }
       // app.quit()
       options = {
-       type: 'info',
-       title: '更新成功',
-       message: "程式將自動關閉，請重新執行程式",
-       buttons: ['關閉程式']
+        type: 'info',
+        title: '更新成功',
+        message: "程式將自動關閉，請重新執行程式",
+        buttons: ['關閉程式']
       }
-      if (dialog.showMessageBoxSync(options) == 0)
-      {
-       app.quit()
+      if (dialog.showMessageBoxSync(options) == 0) {
+        app.quit()
       }
+  })
 
 }
 
