@@ -1,10 +1,19 @@
 'use strict'
-import { app, protocol, BrowserWindow, clipboard, shell, dialog } from 'electron'
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  clipboard,
+  shell,
+  dialog
+} from 'electron'
 import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable'
+import {
+  connectableObservableDescriptor
+} from 'rxjs/internal/observable/ConnectableObservable'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -19,101 +28,111 @@ protocol.registerSchemesAsPrivileged([{
   }
 }])
 
-if (process.platform != "browser")
-{
-    const isPortReachable = require('is-port-reachable');
-    (async () =>
-    {
-      if (await isPortReachable(6379))
-      {
-        const redis = require("redis")
-        const subscriber = redis.createClient()
-        subscriber.subscribe("RFID")
-        subscriber.on("message", function (channel, message) {
-          if (channel == "RFID") {
-            win.webContents.send('RFID', message)
-          }
-        })
-      }
-    })()
+if (process.platform != "browser") {
+  const isPortReachable = require('is-port-reachable');
+  (async () => {
+    if (await isPortReachable(6379)) {
+      const redis = require("redis")
+      const subscriber = redis.createClient()
+      subscriber.subscribe("RFID")
+      subscriber.on("message", function (channel, message) {
+        if (channel == "RFID") {
+          win.webContents.send('RFID', message)
+        }
+      })
+    }
+  })()
 }
 
 const axios = require('axios')
 
-function DownLoad(flavor, verison, filename)
-{
+async function DownLoad(flavor, verison, filename) {
   console.log('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename)
   const http = require('http')
   const fs = require('fs')
   var os = require('os')
   let file
-  if(os.platform() != "win32")
+  if (os.platform() != "win32")
   {
-    file = fs.createWriteStream(app.getAppPath() + "/old_version/" + filename)
+    file = fs.createWriteStream("/home/pi/Desktop/old_version/" + filename)
   }
   else
   {
     file = fs.createWriteStream(filename)
   }
-  const request = http.get('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename,
-  function (response)
+  var options 
+  if (os.platform() != "win32")
   {
-    response.pipe(file)
-    app.quit()
-    // fs.unlinkSync(app.getAppPath())
-    const { exec } = require('child_process')
-    if(os.platform() != "win32")
-    {
-      exec("ln -f -s " + app.getAppPath() + "/old_version/" + filename + " " + app.getAppPath() + " /App.AppImage ")
+    file = fs.createWriteStream("/home/pi/Desktop/old_version/" + filename)
+    options = {
+      directory: "/home/pi/Desktop/old_version/",
+      filename: filename
     }
-    let options = {
-      type: 'info',
-      title: '更新成功',
-      message: "程式將自動關閉，請重新執行程式",
-      buttons: ['關閉程式']
-    }
-    dialog.showMessageBoxSync(options)
+  } 
+  else
+  {
+    file = fs.createWriteStream(filename)
+        options = {
+          directory: "./",
+          filename: filename
+        }
+  }
+  var download = require('download-file')
+
+  await download('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename,
+  options,
+  function (err)
+  {
+    if (err) throw err
+    console.log("meow") 
   })
+      const { exec } = require('child_process')
+      if (os.platform() != "win32")
+      {
+        exec("ln -f -s /home/pi/Desktop/old_version/" + filename + " " + "/home/pi/Desktop/App.AppImage ")
+      }
+      // app.quit()
+      options = {
+       type: 'info',
+       title: '更新成功',
+       message: "程式將自動關閉，請重新執行程式",
+       buttons: ['關閉程式']
+      }
+      if (dialog.showMessageBoxSync(options) == 0)
+      {
+       app.quit()
+      }
+
 }
 
-async function checkUpdate()
-{
-    let options = {
+async function checkUpdate() {
+  let options = {
     type: 'info',
     title: '發現新的版本',
-    message: "是否進行更新? 更新時間大約三分鐘",
+    message: "是否進行更新?",
     buttons: ['現在更新', '等等']
   }
   await axios.get('http://10.11.0.156:9666/api/version')
-  .then(response =>
-  {
-    let a = response.data.reverse()
-    for (let i = 0; i < a.length; i++)
-    {
-      if(a[i]["flavor"]["name"])
-      {
-        if (app.getName()  == a[i]["flavor"]["name"])
-        {
-          if (app.getVersion() != a[i]["name"])
-          {
-            if(dialog.showMessageBoxSync(options) == 0)
-            {
-              DownLoad(a[i]["flavor"]["name"], a[i]["name"], a[i]["assets"][0]['name'])
+    .then(response => {
+      let a = response.data.reverse()
+      for (let i = 0; i < a.length; i++) {
+        if (a[i]["flavor"]["name"]) {
+          if (app.getName() == a[i]["flavor"]["name"]) {
+            if (app.getVersion() != a[i]["name"]) {
+              if (dialog.showMessageBoxSync(options) == 0) {
+                DownLoad(a[i]["flavor"]["name"], a[i]["name"], a[i]["assets"][0]['name'])
+              }
+            } else {
+              console.log("軟體已是最新")
             }
-          } 
-          else 
-          {
-            console.log("軟體已是最新")
+            return
           }
-          return
         }
       }
-    }
-  })
-  .catch(error =>
-  {
-    console.log(error)
-  })
+    })
+    .catch(error => {
+      console.log(error)
+    })
 
 }
 

@@ -85,7 +85,7 @@
                     </div>
                     <div v-else-if="prod_step == 2">
                         <el-row>
-                            {{procdata.procname}}
+                            製程站點:{{procdata.procname}}
                         </el-row>
                         <el-row :gutter="10">
                             <el-col :span="6">
@@ -584,7 +584,6 @@ export default {
                 let res = response["data"]
                 res = x2js.xml2js(res)
                 res = x2js.xml2js(res["string"]["__text"])
-                // console.log(Object.keys(res))
                 if(! Object.keys(res).includes("mfdata"))
                 {
                     throw "參數返回格式不符合預期"
@@ -701,6 +700,10 @@ export default {
                     }
                     else
                     {
+                        for (let [key, value] of Object.entries(this.ppr_data))
+                        {
+                            this.ppr_data[key] = 0
+                        }
                         if(await this.getRecipe())
                         {
                             for(let item of this.procdata.procprams.procpram)
@@ -789,11 +792,7 @@ export default {
                 }
                 if(response["response"])
                 {
-                    this.$notify.success({ title: '套用參數成功', message: "寫入暫存區完成"})   
-                }
-                else
-                {
-                    this.$notify.error({ title: '套用參數失敗', message: "請確認是否生產中或是Bypass狀態"})
+                    this.$notify.success({ title: '套用參數成功', message: "寫入暫存區及上下料區完成"})   
                 }
             })
             .catch( err =>

@@ -6,12 +6,20 @@
       <el-main v-loading="loading" element-loading-text="拼命載入資料中"
       element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
         <el-row>
-          <el-switch 
-            v-model="mode" :width="60"
-            active-text="自動模式" active-color="#13ce66"
-            inactive-text="手動模式" inactive-color="#ff4949"
-            @change="open">
-          </el-switch>
+          <el-col :span="8">
+            <el-switch 
+              v-model="mode" :width="60"
+              active-text="自動模式" active-color="#13ce66"
+              inactive-text="手動模式" inactive-color="#ff4949"
+              @change="open">
+            </el-switch>
+          </el-col>
+          <el-col :span="8">
+              <el-button type="danger" @click="reconnect(1)" icon="el-icon-setting">設備主站重新連線</el-button>
+          </el-col>
+          <el-col :span="8">
+              <el-button type="danger" @click="reconnect(2)" icon="el-icon-setting">自動上下料系統重新連線</el-button>
+          </el-col>
         </el-row>
         <el-row>
           <el-card header="上筆套用參數">
@@ -163,6 +171,32 @@ export default
         .catch(() => {
           //rollback
           this.mode = !this.mode
+        })
+      },
+      async reconnect(target)
+      {
+        this.loading = true
+        await fetch("http://10.11.30.60:9999/api/reconnect/" + target,
+        { method: 'GET'})
+        .then( response => {return response.json()})
+        .then( response =>
+        {
+            if(response["Exception"])
+            {
+              throw response["Exception"]
+            }
+            if(response["response"])
+            {
+              this.$message({ message: "重新連線成功", type: "success"})
+            }
+        })
+        .catch( err =>
+        {
+            this.$notify.warning({ title: 'Edge異常回報', message: err})
+        })
+        .finally( () =>
+        {
+            this.loading = false
         })
       },
       async changeMode()
