@@ -339,10 +339,9 @@ export default {
                 carrier: [],
                 cut_tag:[],
             },
-
         }
     },
-    beforeMount()
+    mounted()
     {
         Object.keys(this.$store.state.prod).forEach(key =>
         {
@@ -355,6 +354,10 @@ export default {
         Object.keys(this.$data).forEach(key =>
         {
             prod_tmep[key] = this.$data[key]
+            if(key == "ppr_data")
+            {
+                console.log(this.$data[key])
+            }
         })
         this.$store.commit('store_prod_state', prod_tmep)
     },
@@ -719,10 +722,14 @@ export default {
                     }
                     else
                     {
-                        for (let [key, value] of Object.entries(this.ppr_data))
-                        {
-                            this.ppr_data[key] = 0
-                        }
+                        this.ppr_data["RD05M136"] = 0 
+                        this.ppr_data["RD05M134"] = 0 
+                        this.ppr_data["RD05M146"] = 0 
+                        this.ppr_data["RD05M49"] = 0 
+                        this.ppr_data["PlatingAmp"] = 0 
+                        this.ppr_data["RD05M48"] = 0 
+                        this.ppr_data["RD05M47"] = 0 
+                        this.ppr_data["PlatingTime"] = 0 
                         if(await this.getRecipe())
                         {
                             for(let item of this.procdata.procprams.procpram)
