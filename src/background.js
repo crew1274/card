@@ -66,14 +66,16 @@ async function DownLoad(flavor, verison, filename)
     }
   }
   var download = require('download-file')
+  var fs = require('fs')
 
   await download('http://10.11.0.156:9666/download/flavor/' + flavor + '/' + verison + '/linux_32/' + filename,
   options, () => {
+      fs.chmodSync(options["directory"] + filename, '777')
       const {
         exec
       } = require('child_process')
       if (os.platform() != "win32") {
-        exec("ln -f -s /home/pi/Desktop/old_version/" + filename + " " + "/home/pi/Desktop/App.AppImage ")
+        exec("ln -f -s " + options["directory"] + filename + " " + "/home/pi/Desktop/App.AppImage ")
       }
       // app.quit()
       options = {

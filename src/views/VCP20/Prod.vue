@@ -215,6 +215,9 @@
                             </el-col>
                         </el-row>
                         <el-row>
+                            <center><div class="err" v-show="err_msg">錯誤訊息[{{err_msg}}]</div></center>
+                        </el-row>
+                        <el-row>
                             <el-col :span="4" :offset="10">
                                 <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
                             </el-col>
@@ -293,6 +296,7 @@ export default {
             prod_step: 0,
             noteList: [],
             selectRecipe: "",
+            err_msg: "",
             payload:
             {
                 mfdata:
@@ -337,6 +341,22 @@ export default {
             },
 
         }
+    },
+    beforeMount()
+    {
+        Object.keys(this.$store.state.prod).forEach(key =>
+        {
+            this.$data[key] = this.$store.state.prod[key]
+        })
+    },
+    beforeDestroy()
+    {
+        let prod_tmep = {}
+        Object.keys(this.$data).forEach(key =>
+        {
+            prod_tmep[key] = this.$data[key]
+        })
+        this.$store.commit('store_prod_state', prod_tmep)
     },
     watch:
     {
@@ -535,6 +555,7 @@ export default {
             {
                 this.procdata[key] = null
             })
+            this.err_msg = ""
         },
         async prod_predict()
         {
@@ -643,14 +664,12 @@ export default {
                 {
                     this.$message({ message: "啟動自動模式成功", type: "success"})
                 }
-                else
-                {
-                    this.$message({ message: "啟動自動模式失敗", type: "error"})
-                }
+                this.err_msg = ""
             })
             .catch( err =>
             {
                 this.$notify.warning({ title: 'Edge異常回報', message: err})
+                this.err_msg = err
             })
             .finally( () =>
             {
@@ -727,6 +746,7 @@ export default {
             if(this.prod_step == 5)
             {
                 this.prod_step = 0
+                this.err_msg = ""
             }
             this.loading = false
         },
@@ -794,10 +814,12 @@ export default {
                 {
                     this.$notify.success({ title: '套用參數成功', message: "寫入暫存區及上下料區完成"})   
                 }
+                this.err_msg = ""
             })
             .catch( err =>
             {
                 this.$notify.warning({ title: 'Edge異常回報', message: err})
+                this.err_msg = err
             })
             .finally( () =>
             {
@@ -852,14 +874,12 @@ export default {
                 {
                     this.$notify.success({ title: '呼叫AGV成功', message: "寫入暫存區完成"})   
                 }
-                else
-                {
-                    this.$notify.error({ title: '呼叫AGV失敗', message: "請確認是否生產中或是Bypass狀態"})
-                }
+                this.err_msg = ""
             })
             .catch( err =>
             {
                 this.$notify.warning({ title: 'Edge異常回報', message: err})
+                this.err_msg = err
             })
             .finally( () =>
             {
@@ -892,5 +912,9 @@ export default {
 }
 .el-table >>> .el-table__body tr.current-row>td {
   background: #f0ba87!important;
+}
+.err
+{
+    color: #f54838;
 }
 </style>

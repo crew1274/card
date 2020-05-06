@@ -7,16 +7,22 @@ export default new Vuex.Store(
 {
   state:
   {
+    prod: {},
     token: "",
     count: 0,
     _ws: null,
     _ws_back: null,
     _ws_isLogin: false,
     errorMessage: {},
-    rfid_msg: ""
+    rfid_msg: "",
+    packageVersion: process.env.PACKAGE_VERSION || '0'
   },
   mutations:
   {
+    store_prod_state(state, prod_temp)
+    {
+      state.prod = prod_temp
+    },
     update_rfid_msg(state, rfid_msg)
     {
       state.rfid_msg = {

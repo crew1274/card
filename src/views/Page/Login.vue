@@ -40,9 +40,10 @@
                     <el-button style="width:100%;" type="danger" @click="close" icon="el-icon-close" >關閉程式</el-button>
                 </el-col>            
             </el-row>
-
         </el-card>
+        <div class="c"><br>{{version}}</div>
     </div>
+    
 </template>
 
 
@@ -61,10 +62,13 @@
         },
         mounted()
         {
-
         },
         computed:
         {
+            version()
+            {
+                return "Ver. " + this.$store.state.packageVersion
+            },
             _ws_isLogin: function()
             {
                 return this.$store.state._ws_isLogin
@@ -123,6 +127,12 @@
 </script>
 
 <style>
+    .c{
+    position: fixed;
+    bottom: 10px;
+    right: 15px;
+    background: #8EB9A8;
+    }
     .login-box
     {
         margin-top:10%;
