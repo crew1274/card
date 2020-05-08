@@ -9494,10 +9494,10 @@ vue-cli-plugin-axios@^0.0.4:
   resolved "https://r.cnpmjs.org/vue-cli-plugin-axios/download/vue-cli-plugin-axios-0.0.4.tgz#29d4eb48275c7fe15b92e1fd5d95fbe2a966436f"
   integrity sha1-KdTrSCdcf+FbkuH9XZX74qlmQ28=
 
-vue-cli-plugin-electron-builder@^1.4.5:
-  version "1.4.5"
-  resolved "https://r.cnpmjs.org/vue-cli-plugin-electron-builder/download/vue-cli-plugin-electron-builder-1.4.5.tgz#0b41af1e0a48b7ca611407a0c5680bd11f324ec2"
-  integrity sha1-C0GvHgpIt8phFAegxWgL0R8yTsI=
+vue-cli-plugin-electron-builder@^1.4.6:
+  version "1.4.6"
+  resolved "https://r.cnpmjs.org/vue-cli-plugin-electron-builder/download/vue-cli-plugin-electron-builder-1.4.6.tgz#5de519edc158c80ae72a67e8ae8ae983e38ecb7a"
+  integrity sha1-XeUZ7cFYyArnKmfororpg+OOy3o=
   dependencies:
     chokidar "^3.0.2"
     electron-builder "^21.2.0"

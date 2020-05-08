@@ -223,8 +223,11 @@
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
-                            <el-col :span="4" :offset="10">
+                            <el-col :span="4" :offset="6">
                                 <el-button @click="prod_confrim" type="primary" icon="el-icon-switch-button">啟動自動模式</el-button>
+                            </el-col>
+                            <el-col :span="8" :offset="2">
+                                <FeedModeSwitch />                          
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
@@ -276,11 +279,16 @@
 
 <script>
 import X2JS from 'x2js'
+import FeedModeSwitch from "@/views/VCP20/components/FeedModeSwitch.vue";
 
 export default {
+    components: {
+        FeedModeSwitch
+    },
     data: function()
     {
         return {
+            feeding: "人工投料 - 自動模式",
             predict_result: "",
             store_recipe: [],
             source: "runcard",
@@ -748,6 +756,10 @@ export default {
                         }
                     }
                 }
+            }
+            else if(this.prod_step == 2)
+            {
+                //
             }
             this.prod_step = this.prod_step + 1
             if(this.prod_step == 5)
