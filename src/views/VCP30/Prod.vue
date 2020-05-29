@@ -131,6 +131,22 @@
                             <el-row>
                                 <el-divider />
                             </el-row> -->
+                            <el-row :gutter="10">
+                                <el-col :span="6">
+                                    <el-button @click="prod_predict" type="primary" icon="el-icon-s-opportunity" :disabled="is_predictable">
+                                        進行預測第三段電鍍時間
+                                    </el-button>
+                                </el-col>
+                                <el-col :span="10">
+                                    <el-input placeholder="預測結果" v-model="predict_result">
+                                        <template slot="append">分鐘</template>
+                                    </el-input>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-button @click="pick_up" type="primary" icon="el-icon-bottom" :disabled="is_pick_up">套用到第三段電鍍</el-button>
+                                </el-col>
+                            </el-row>
+                            <el-divider />
                             <el-row>
                                 <div v-if="ppr_data.PPR_or_DC == 'PPR'">
                                     <el-row>
@@ -363,6 +379,7 @@ export default {
     data: function()
     {
         return {
+            predict_result: "",
             selectRecipe: {},
             store_recipe: [],
             source: "runcard",
@@ -401,7 +418,7 @@ export default {
             {
                 procname: null,
                 procprams: [],
-            },
+            }, 
             ppr_data:
             {
                 RD05M134 : "", //成品孔銅
@@ -446,6 +463,35 @@ export default {
     },
     computed:
     {
+        is_predictable()
+        {
+            if(this.ppr_data.mode == '重工')
+            {
+                return true
+            }
+            else
+            {
+                return false
+            }
+        },
+        is_pick_up()
+        {
+            if(this.predict_result)
+            {
+                if(this.ppr_data.mode == '重工')
+                {
+                    return true
+                }
+                else
+                {
+                    return false
+                }
+            }
+            else
+            {
+                return true
+            }
+        },
         getWSmessage()
         {
             return this.$store.state._ws_back
@@ -738,6 +784,22 @@ export default {
             }
             return result
         },
+    },
+    mounted()
+    {
+        Object.keys(this.$store.state.prod).forEach(key =>
+        {
+            this.$data[key] = this.$store.state.prod[key]
+        })
+    },
+    beforeDestroy()
+    {
+        let prod_tmep = {}
+        Object.keys(this.$data).forEach(key =>
+        {
+            prod_tmep[key] = this.$data[key]
+        })
+        this.$store.commit('store_prod_state', prod_tmep)
     },
     methods:
     {
@@ -1064,7 +1126,36 @@ export default {
             .finally( () => {
                 this.loading = false
             })
-        }
+        },
+        async prod_predict()
+        {
+            this.loading = true
+            await fetch('http://10.11.30.61:9999/api/predict/' + this.lotdata["no"], {method: 'GET' })
+            .then( response => {return response.json()})
+            .then( response =>
+            {
+                if(!response["response"])
+                {
+                    throw response["errorMessage"]
+                }
+                this.$message({ message: "預測成功", type: "success"})
+                this.predict_result = Math.round(+response["response"])
+            })
+            .catch( err =>
+            {
+                this.$message({ message: err, type: "error"})
+            })
+            .finally( () =>
+            {
+                this.loading = false
+            })
+        },
+        pick_up()
+        {
+            this.ppr_data.PlatingTime_3_offset = this.predict_result - this.ppr_result[3].PlatingTime
+            this.ppr_data["pick_predict"] = true
+            this.$message({ message: "套用預測電鍍時間", type: "success"})
+        },
     }
 }
 </script>

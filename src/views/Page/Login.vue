@@ -25,8 +25,9 @@
                     連線設備:
                 </el-col>
                 <el-col :span="16">
-                    <el-radio v-model="machine" label="VCP-30" class="content">VCP-30</el-radio>
                     <el-radio v-model="machine" label="VCP-20" class="content">VCP-20</el-radio>
+                    <el-radio v-model="machine" label="VCP-30" class="content">VCP-30</el-radio>
+                    <el-radio v-model="machine" label="VCP-40" class="content">VCP-40</el-radio>
                 </el-col>
             </el-row>
             <el-row>
@@ -57,7 +58,7 @@
             return {
                 user: 'watcher',
                 password: 'watcher',
-                machine: "VCP-30"
+                machine: "VCP-20"
             }
         },
         mounted()

@@ -97,6 +97,46 @@ export default new Router({
             ]
         },
         {
+            path: '/VCP-40',
+            component: () => import('@/views/VCP40/Layout.vue'),
+            meta: {
+                title: "VCP-40"
+            },
+            children: [{
+                    path: '/VCP-40',
+                    redirect: '/VCP-40/dashboard'
+                },
+                {
+                    path: '/VCP-40/dashboard',
+                    component: () => import('@/views/VCP20/Dashboard.vue')
+                },
+                {
+                    path: '/VCP-40/prod',
+                    component: () => import('@/views/VCP40/Prod.vue')
+                },
+                {
+                    path: '/VCP-40/store',
+                    component: () => import('@/views/VCP40/Store.vue')
+                },
+                {
+                    path: '/VCP-40/statistic',
+                    component: () => import('@/views/VCP40/Statistic.vue')
+                },
+                {
+                    path: '/VCP-40/history',
+                    component: () => import('@/views/VCP40/History.vue')
+                },
+                {
+                    path: '/VCP-40/abnormality',
+                    component: () => import('@/views/VCP40/Abnormality.vue')
+                },
+                {
+                    path: '/VCP-40/document',
+                    component: () => import('@/views/VCP40/Document.vue')
+                },
+            ]
+        },
+        {
             path: '/login',
             component: () => import('@/views/Page/Login.vue')
         },
