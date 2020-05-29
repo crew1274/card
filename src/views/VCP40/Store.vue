@@ -168,7 +168,7 @@ export default
         {
             this.loading = true
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/simple/all-keys",
+                url: "_db/VCP-004/_api/simple/all-keys",
                 method: "PUT",
                 payload: {collection: "Warehouse"},
             })
@@ -179,7 +179,7 @@ export default
         {
             this.loading = true
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/document/Warehouse/" + row["name"],
+                url: "_db/VCP-004/_api/document/Warehouse/" + row["name"],
                 method: "GET",
                 payload: {},
             })
@@ -198,7 +198,7 @@ export default
         {
             this.loading = true
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/document/Warehouse/" + this.delete_name,
+                url: "_db/VCP-004/_api/document/Warehouse/" + this.delete_name,
                 method: "DELETE",
                 payload: {},
             })
@@ -219,7 +219,7 @@ export default
             //         procdata: this.procdata,
             //         noteList: this.noteList})
             this.lotdata["source"] = "runcard"
-            await fetch("http://10.11.30.60:9999/api/PLC/temp",
+            await fetch("http://10.11.30.62:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
                     ppr_result: this.ppr_result, 
@@ -250,7 +250,7 @@ export default
         async callAGV()
         {
             this.loading = true
-            await fetch("http://10.11.30.60:9999/api/CallAGV", {method: 'POST'})
+            await fetch("http://10.11.30.62:9999/api/CallAGV", {method: 'POST'})
             .then( response => {return response.json()})
             .then( response =>
             {

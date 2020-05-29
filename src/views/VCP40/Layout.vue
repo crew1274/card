@@ -75,7 +75,7 @@
     data: function()
     {
         return {
-            img_uri: require("@/assets/VCP20.png"),
+            img_uri: require("@/assets/VCP40.png"),
             timer: undefined,
         }
     },

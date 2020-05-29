@@ -70,7 +70,7 @@ export default
         async CheckData()
         {
             this.loading = true
-            await fetch("http://10.11.30.60:9999/api/error",
+            await fetch("http://10.11.30.62:9999/api/error",
             {
                 method: "GET",
             })

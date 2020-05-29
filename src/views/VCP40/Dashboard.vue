@@ -114,7 +114,7 @@ export default
   },
   async created()
   {
-    await fetch("http://10.11.30.60:9999/api/mode", { method: 'GET'})
+    await fetch("http://10.11.30.62:9999/api/mode", { method: 'GET'})
     .then( response => {return response.json()})
     .then( response =>
     {
@@ -135,7 +135,7 @@ export default
     {
         this.$notify.warning({ title: 'Edge異常回報', message: err})
     })
-    await fetch("http://10.11.30.60:9999/api/prod", { method: 'GET'})
+    await fetch("http://10.11.30.62:9999/api/prod", { method: 'GET'})
     .then( response => {return response.json()})
     .then( response =>
     {
@@ -176,7 +176,7 @@ export default
       async reconnect(target)
       {
         this.loading = true
-        await fetch("http://10.11.30.60:9999/api/reconnect/" + target,
+        await fetch("http://10.11.30.62:9999/api/reconnect/" + target,
         { method: 'GET'})
         .then( response => {return response.json()})
         .then( response =>
@@ -202,7 +202,7 @@ export default
       async changeMode()
       {
         this.loading = true
-        await fetch("http://10.11.30.60:9999/api/mode",
+        await fetch("http://10.11.30.62:9999/api/mode",
         {   method: 'PUT',
             body: JSON.stringify({
                 mode: (this.mode ? "自動模式": "手動模式"),

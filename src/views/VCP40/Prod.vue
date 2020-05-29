@@ -210,7 +210,7 @@
                         <el-row >
                             <el-col :span="7" :offset="9">
                                 <h3>
-                                    預備投料到VCP-20
+                                    預備投料到VCP-004
                                 </h3>
                             </el-col>
                         </el-row>
@@ -528,7 +528,7 @@ export default {
         {
             this.loading = true
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/simple/all-keys",
+                url: "_db/VCP-004/_api/simple/all-keys",
                 method: "PUT",
                 payload: {collection: "Warehouse"},
             })
@@ -571,7 +571,7 @@ export default {
         async prod_predict()
         {
             this.loading = true
-            await fetch('http://10.11.30.60:9999/api/predict/' + this.lotdata["no"], {method: 'GET' })
+            await fetch('http://10.11.30.62:9999/api/predict/' + this.lotdata["no"], {method: 'GET' })
             .then( response => {return response.json()})
             .then( response =>
             {
@@ -658,7 +658,7 @@ export default {
         async prod_confrim()
         {
             this.loading = true
-            await fetch("http://10.11.30.60:9999/api/mode",
+            await fetch("http://10.11.30.62:9999/api/mode",
             {   method: 'PUT',
                 body: JSON.stringify({
                     mode: "自動模式",
@@ -712,7 +712,7 @@ export default {
                     {
                         this.loading = true
                         let response = await this.$store.dispatch("_db", { 
-                            url: "_db/VCP-20/_api/document/Warehouse/" + this.selectRecipe["name"],
+                            url: "_db/VCP-004/_api/document/Warehouse/" + this.selectRecipe["name"],
                             method: "GET",
                             payload: {},
                         })
@@ -773,7 +773,7 @@ export default {
         {
             this.ppr_data["dummy_height"] = this.dummy_height
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/document/Warehouse",
+                url: "_db/VCP-004/_api/document/Warehouse",
                 method: "POST",
                 payload:
                 {
@@ -812,7 +812,7 @@ export default {
             this.lotdata["source"] = "runcard"
             this.ppr_data["dummy_height"] = this.dummy_height
             this.ppr_data["load_mode"] = "manual"
-            await fetch("http://10.11.30.60:9999/api/PLC/temp",
+            await fetch("http://10.11.30.62:9999/api/PLC/temp",
             {   method: 'POST',
                 body: JSON.stringify({
                     ppr_result: this.ppr_result, 
@@ -873,7 +873,7 @@ export default {
         {
             this.loading = true
             this.ppr_data["load_mode"] = "auto"
-            await fetch("http://10.11.30.60:9999/api/CallAGV", {
+            await fetch("http://10.11.30.62:9999/api/CallAGV", {
                 method: 'POST',
                 body: JSON.stringify({
                     ppr_result: this.ppr_result, 
@@ -909,7 +909,7 @@ export default {
         {
             this.loading = true
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/simple/all-keys",
+                url: "_db/VCP-004/_api/simple/all-keys",
                 method: "PUT",
                 payload: {collection: "Warehouse"},
             })

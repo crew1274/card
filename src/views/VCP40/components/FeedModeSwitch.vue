@@ -26,7 +26,7 @@ export default {
   {
     async get_load_mode()
     {
-        await fetch("http://10.11.30.60:9999/api/load_mode",{ method: 'GET'})
+        await fetch("http://10.11.30.62:9999/api/load_mode",{ method: 'GET'})
         .then( response => {return response.json()})
         .then( response =>
         {
@@ -50,7 +50,7 @@ export default {
     },
     async change_load_mode()
     {
-        await fetch("http://10.11.30.60:9999/api/load_mode",
+        await fetch("http://10.11.30.62:9999/api/load_mode",
         {   method: 'POST',
             body: JSON.stringify({'mode': this.feeding})
         })

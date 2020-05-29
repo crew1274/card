@@ -108,7 +108,7 @@ export default new Router({
                 },
                 {
                     path: '/VCP-40/dashboard',
-                    component: () => import('@/views/VCP20/Dashboard.vue')
+                    component: () => import('@/views/VCP40/Dashboard.vue')
                 },
                 {
                     path: '/VCP-40/prod',

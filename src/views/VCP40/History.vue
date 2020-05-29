@@ -252,7 +252,7 @@ export default {
         this.date_range.push(moment().format('YYYY-MM-DD'))
         await this.CheckData()
         // let response = await this.$store.dispatch("_db", { 
-        //     url: "_db/VCP-20/_api/cursor",
+        //     url: "_db/VCP-004/_api/cursor",
         //     method: "POST",
         //     payload: {"query": "FOR doc IN History SORT doc.STARTDATETIME DESC LIMIT 1 RETURN doc",
         //     "count": true,
@@ -279,7 +279,7 @@ export default {
             // let tres = []
 
             // let response = await this.$store.dispatch("_db", { 
-            //     url: "/_db/VCP-20/_api/cursor",
+            //     url: "/_db/VCP-004/_api/cursor",
             //     method: "POST",
             //     payload: {
             //         "query": "FOR doc IN History \
@@ -328,13 +328,13 @@ export default {
             const wbout = XLSX.utils.book_new()
             XLSX.utils.book_append_sheet(wbout, ws, "生產履歷")
             this.loading = false
-            XLSX.writeFile(wbout, 'VCP-20生產履歷.xlsx')
+            XLSX.writeFile(wbout, 'VCP-004生產履歷.xlsx')
         },
         async CheckData()
         {
             this.loading = true
             let response = await this.$store.dispatch("_db", { 
-                url: "/_db/VCP-20/_api/cursor",
+                url: "/_db/VCP-004/_api/cursor",
                 method: "POST",
                 payload: {
                     "query": "FOR doc IN History \
@@ -354,7 +354,7 @@ export default {
             this.result["ppr_data"] = this.ppr_data
             this.result["Editdatetime"] = moment().format('YYYY-MM-DD HH:mm:ss')
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/document/History/" + this.row["_key"],
+                url: "_db/VCP-004/_api/document/History/" + this.row["_key"],
                 method: "PUT",
                 payload: this.result,
             })
@@ -371,7 +371,7 @@ export default {
             this.row = row
             // console.log(this.row["RANDOMSTRING"])
             let response = await this.$store.dispatch("_db", { 
-                url: "_db/VCP-20/_api/document/History/" + this.row["_key"],
+                url: "_db/VCP-004/_api/document/History/" + this.row["_key"],
                 method: "GET",
                 payload: {},
             })
