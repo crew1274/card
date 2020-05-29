@@ -78,7 +78,7 @@ export default new Vuex.Store(
       }
       else if (para.machine == "VCP-40")
       {
-        url  = "ws://192.168.6.189:9999"
+        url = "ws://10.11.30.62:9999"
       }
       state._ws = new WebSocket(url)
       state._ws.onopen = async function ()
