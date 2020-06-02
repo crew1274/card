@@ -638,7 +638,7 @@ export default {
         prod_check()
         {
             this.dialogVisible = true;
-            fetch('http://10.11.30.61:9999/api/prod/check', {method: 'GET' })
+            fetch('http://10.11.30.62:9999/api/prod/check', {method: 'GET' })
             .then( response => {return response.json()})
             .then( response =>
             {
@@ -852,7 +852,7 @@ export default {
         },
         async getRD05M136(lotdata)
         {
-            await fetch("http://10.11.30.61:9999/api/getRD05M136", {method: 'POST', body: JSON.stringify(lotdata)})
+            await fetch("http://10.11.30.62:9999/api/getRD05M136", {method: 'POST', body: JSON.stringify(lotdata)})
             .then( response => {return response.json()})
             .then( response =>
             {
