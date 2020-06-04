@@ -17,9 +17,9 @@
           <el-col :span="8">
               <el-button type="danger" @click="reconnect(1)" icon="el-icon-setting">設備主站重新連線</el-button>
           </el-col>
-          <el-col :span="8">
+          <!-- <el-col :span="8">
               <el-button type="danger" @click="reconnect(2)" icon="el-icon-setting">自動上下料系統重新連線</el-button>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-row>
           <el-card header="上筆套用參數">

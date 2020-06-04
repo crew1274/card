@@ -115,18 +115,11 @@
                                         <el-input-number v-model="ppr_data.RD05M48" size="large" />
                                     </el-form-item>
                                 </el-tooltip>
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-tooltip class="item" effect="dark" content="此參數影響遮板高度" placement="right">
-                                            <el-form-item label="板高(mm):">
-                                                <el-input-number v-model="ppr_data.RD05M47" size="large" />
-                                            </el-form-item>
-                                        </el-tooltip>
-                                    </el-col>
-                                    <el-col :span="11">
-                                        使用Dummy板高: {{dummy_height}}
-                                    </el-col>
-                                </el-row>
+                                <el-tooltip class="item" effect="dark" content="此參數影響遮板高度" placement="right">
+                                    <el-form-item label="板高(mm):">
+                                        <el-input-number v-model="ppr_data.RD05M47" size="large" />
+                                    </el-form-item>
+                                </el-tooltip>
                                 <el-tooltip class="item" effect="dark" content="此參數影響電鍍時間" placement="right">
                                     <el-form-item label="電鍍時間(分鐘):">
                                         <el-input-number v-model="ppr_data.PlatingTime" size="large"/>
@@ -223,20 +216,12 @@
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
-                            <el-col :span="4" :offset="6">
+                            <el-col :span="4" :offset="10">
                                 <el-button @click="prod_confrim" type="primary" icon="el-icon-switch-button">啟動自動模式</el-button>
                             </el-col>
-                            <el-col :span="8" :offset="2">
+                            <!-- <el-col :span="8" :offset="2">
                                 <FeedModeSwitch />                          
-                            </el-col>
-                        </el-row><el-row /><el-row />
-                        <el-row>
-                            <div v-show="isCallAGV">
-                                <center>板厚超出規格(0~8mm)無法使用自動上下料</center>
-                            </div>
-                            <el-col :span="4" :offset="10">
-                                <el-button :disabled="isCallAGV" @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
-                            </el-col>
+                            </el-col> -->
                         </el-row><el-row /><el-row />
                         <el-row>
                             <el-col :span="4" :offset="10">
