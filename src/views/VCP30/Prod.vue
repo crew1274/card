@@ -1154,7 +1154,7 @@ export default {
         {
             this.ppr_data.PlatingTime_3_offset = this.predict_result - this.ppr_result[3].PlatingTime
             this.ppr_data["pick_predict"] = true
-            this.$message({ message: "套用預測電鍍時間", type: "success"})
+            this.$message({ message: "套用預測電鍍時間，修改第三段補償時間", type: "success"})
         },
     }
 }
