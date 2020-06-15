@@ -27,10 +27,10 @@
               <el-card header="批號資料">
                 <el-row>
                   <el-col :span="8">
-                    批號: {{lotdata.itemno}}
+                    料號: {{lotdata.itemno}}
                   </el-col>
                   <el-col :span="8">
-                    料號: {{lotdata.no}}
+                    批號: {{lotdata.no}}
                   </el-col>
                   <el-col :span="8">
                     製程序: {{lotdata.procseq}}
