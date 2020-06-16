@@ -938,6 +938,8 @@ export default {
             }
             else if(this.prod_step == 1)
             {
+                this.ppr_data.PlatingTime_3_offset = 0
+                this.predict_result = ""
                 if(this.source == "warehouse")
                 {
                     if(this.selectRecipe == "")

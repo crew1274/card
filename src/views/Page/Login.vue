@@ -42,7 +42,7 @@
                 </el-col>            
             </el-row>
         </el-card>
-        <div class="c"><br>{{version}}</div>
+        <div class="c">{{version}}</div>
     </div>
     
 </template>
