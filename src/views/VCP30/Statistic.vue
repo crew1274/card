@@ -91,22 +91,19 @@ export default {
     {
         ringChartData()
         {
-            let row = []
+            let row = [
+                { "上料模式": "auto", "使用次數": 0},
+                { "上料模式": "manual", "使用次數": 0}
+            ]
             this.list.forEach( (element) =>
             {
-                let isNew = true
                 for(let i=0; i<row.length; i++)
                 {
                     if(element["ppr_data"]["load_mode"] == row[i]["上料模式"])
                     {
                         row[i]["使用次數"] = row[i]["使用次數"] + 1
-                        isNew = false
                         break
                     }
-                }
-                if(isNew)
-                {
-                    row.push({ "上料模式": element["ppr_data"]["load_mode"], "使用次數": 1})
                 }
             })
             return {

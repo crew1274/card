@@ -149,8 +149,17 @@
                                         <el-radio label="重工" border>重工</el-radio>
                                     </el-radio-group>
                                 </el-form-item>
-                                電鍍電流計算公式:
-                                [電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{this.ppr_result[1].P_PlatingAmp}}
+                                <el-divider content-position="left">訊息提示</el-divider> 
+                                <el-row>
+                                    PTH孔縱橫比: {{ppr_data.RD05M335}} | 
+                                    鍍銅面積: {{ppr_data.RD05M49}} | 
+                                    最小鑽徑: {{ppr_data.RD05M146}} (mil) | 
+                                    成品孔銅: {{ppr_data.RD05M134}} (mil) | 
+                                </el-row>
+                                <el-row>
+                                    電鍍電流計算公式:
+                                    [電鍍電流(PlatingAmp){{ppr_data.PlatingAmp}} * 片數{{ppr_data.PlatingPnl}} ] + 10(Dummy) = {{this.ppr_result[1].P_PlatingAmp}}
+                                </el-row>
                             </el-form>
                         </el-row>
                         <el-divider content-position="left">換算實際套用結果</el-divider> 
@@ -237,7 +246,8 @@
                             <el-col :span="4" :offset="10">
                                 <el-button :disabled="isCallAGV" @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
                             </el-col>
-                        </el-row><el-row /><el-row />
+                        </el-row>
+                        <el-row /><el-row />
                         <el-row>
                             <el-col :span="4" :offset="10">
                                 <el-button type="warning" @click="storeDialogFormVisible = true" icon="el-icon-upload2">儲存參數</el-button>
@@ -331,6 +341,7 @@ export default {
             },
             ppr_data:
             {
+                RD05M335: "", //PTH孔縱橫比
                 RD05M136: "", //板厚
                 RD05M134 : "", //成品孔銅
                 RD05M146 : "",  //最小孔徑
@@ -738,6 +749,8 @@ export default {
                         this.ppr_data["RD05M48"] = 0 
                         this.ppr_data["RD05M47"] = 0 
                         this.ppr_data["PlatingTime"] = 0 
+                        this.ppr_data["TotalPnl"] = 0 
+                        this.ppr_data["PlatingPnl"] = 1 
                         if(await this.getRecipe())
                         {
                             for(let item of this.procdata.procprams.procpram)
@@ -746,6 +759,16 @@ export default {
                                 {
                                     this.ppr_data[item.procprammes] = +item.procvalue
                                 }
+                                this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
+                            }
+                            //自動判斷一鍍/二鍍
+                            if(this.ppr_data["PlatingTime"] < 100)
+                            {
+                                this.ppr_data.mode = "一鍍"
+                            }
+                            else
+                            {
+                                this.ppr_data.mode = "二鍍"
                             }
                             //取得板厚
                             await this.getRD05M136(this.lotdata)
@@ -798,6 +821,27 @@ export default {
             if(value == "一鍍")
             {
                 this.ppr_data["PlatingTime"] = 80
+            }
+            else if(value == "二鍍")
+            {
+                if(this.ppr_data["PlatingTime"] < 100)
+                {
+                    this.$confirm('魏課長建議二鍍電鍍時間大於100分鐘，是否繼續套用?', '提示',
+                    {
+                        confirmButtonText: '確認沒問題',
+                        cancelButtonText: '我看錯了',
+                        type: 'warning'
+                        })
+                        .then(() =>
+                        {
+                            this.$message({ type: 'success', message: '選擇二鍍!' })
+                        })
+                        .catch(() =>
+                        {
+                            this.$message({ type: 'info', message: '選擇一鍍' })    
+                            this.ppr_data.mode = '一鍍'
+                        })
+                }
             }
         },
         async prod_work()

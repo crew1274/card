@@ -33,7 +33,14 @@
                     動作
                 </template>
                 <template slot-scope="scope">
-                    <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
+                    <el-row :gutter="10">
+                        <el-col :span="12">
+                            <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-button size="mini" type="primary" @click="handleTimeline(scope.row)">Timeline</el-button>
+                        </el-col>
+                    </el-row>                
                 </template>
                 </el-table-column>
             </el-table>
@@ -185,6 +192,30 @@
                     <ve-line :data="chartData" />
                 </el-row>
             </el-dialog>
+            <el-dialog title="生產足跡" :visible.sync="timelineDialogVisible" width="80%" >
+                <el-row>
+                    <el-card header="批號資料" class="content">
+                        <el-row>
+                            <el-col :span="8">
+                                料號: {{row.lotdata.itemno}}
+                            </el-col>
+                            <el-col :span="8">
+                                批號: {{row.lotdata.no}}
+                            </el-col>
+                        </el-row>
+                    </el-card>
+                </el-row>
+                <el-timeline>
+                    <el-timeline-item v-for="(point, index) in timeline" :key="index" 
+                    size="large" type="primary" :timestamp="point.ppr_data.mode" placement="top">
+                        <el-card class="content">
+                            <p>設備: {{point.eqt}}</p>
+                            <p>生產時間: {{point.STARTDATETIME}} ~ {{point.ENDDATETIME}}</p>
+                            <p>片數: {{point.ppr_data.PlatingPnl}}</p>
+                        </el-card>
+                    </el-timeline-item>
+                </el-timeline>
+            </el-dialog>
         </el-main>
   </el-container>
 </template>
@@ -214,7 +245,14 @@ export default {
                 rows: []
             },
             result: "",
-            row: undefined,
+            timelineDialogVisible: false,
+            timeline: [],
+            row: {
+                lotdata : {
+                    no: "",
+                    itemno: "",
+                }
+            },
             pickerOptions:
             {
                 shortcuts: [ {
@@ -514,6 +552,56 @@ export default {
             .finally( () => {
                 this.loading = false
             })
+        },
+        async handleTimeline(row)
+        {
+            let timeline = []
+            this.loading = true
+            this.row = row
+            let response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-20/_api/cursor",
+                method: "POST",
+                payload: {
+                    'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + this.row["lotdata"]["no"] + "' RETURN doc"
+                },
+            })
+            response["result"].forEach( (element) =>
+            {
+                element["eqt"] = "VCP-20"
+                timeline.push(element)
+            })
+            response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-30/_api/cursor",
+                method: "POST",
+                payload: {
+                    'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + this.row["lotdata"]["no"] + "' RETURN doc"
+                },
+            })
+            response["result"].forEach( (element) =>
+            {
+                element["eqt"] = "VCP-30"
+                timeline.push(element)
+            })
+            response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-004/_api/cursor",
+                method: "POST",
+                payload: {
+                    'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + this.row["lotdata"]["no"] + "' RETURN doc"
+                },
+            })
+            response["result"].forEach( (element) =>
+            {
+                element["eqt"] = "VCP-40"
+                timeline.push(element)
+            })
+            
+            timeline = timeline.sort(function (a, b)
+            {
+                return a.STARTDATETIME > b.STARTDATETIME ? 1 : -1;
+            })
+            this.timeline = timeline
+            this.timelineDialogVisible = true
+            this.loading = false
         },
     }
 }

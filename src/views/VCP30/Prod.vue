@@ -972,6 +972,8 @@ export default {
                     {
                         if(await this.getRecipe())
                         {
+                            this.ppr_data["TotalPnl"] = 0 
+                            this.ppr_data["PlatingPnl"] = 1 
                             this.ppr_data.RD05M136 = await this.getRD05M136(this.lotdata)
                             for(let item of this.procdata.procprams.procpram)
                             {
@@ -980,6 +982,7 @@ export default {
                                     this.ppr_data[item.procprammes] = +item.procvalue
                                 }
                             }
+                            this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
                         }
                         else
                         {

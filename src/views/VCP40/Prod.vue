@@ -723,6 +723,8 @@ export default {
                         this.ppr_data["RD05M48"] = 0 
                         this.ppr_data["RD05M47"] = 0 
                         this.ppr_data["PlatingTime"] = 0 
+                        this.ppr_data["TotalPnl"] = 0 
+                        this.ppr_data["PlatingPnl"] = 1 
                         if(await this.getRecipe())
                         {
                             for(let item of this.procdata.procprams.procpram)
@@ -733,6 +735,7 @@ export default {
                                 }
                             }
                             //取得板厚
+                            this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
                             await this.getRD05M136(this.lotdata)
                         }
                         else

@@ -8,7 +8,7 @@ export default new Router({
     [
         {
             path: '/',
-            redirect: '/dashboard'
+            redirect: '/login'
         },
         {
             path: '/VCP-20',
@@ -141,8 +141,8 @@ export default new Router({
             component: () => import('@/views/Page/Login.vue')
         },
         {
-            path: '/404',
-            component: () => import('@/views/Page/404.vue')
+            path: '/admin',
+            component: () => import('@/views/Page/Admin.vue')
         },
         {
             path: '/403',

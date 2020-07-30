@@ -8,14 +8,17 @@
             element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
             <el-row :gutter="10">
                 <el-col :span="16">
-                <el-date-picker v-model="date_range" type="daterange" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"
-                    start-placeholder="開始日期" range-separator="至" end-placeholder="結束日期" 
-                    :picker-options="pickerOptions" @change="CheckData"
-                    size="large"/>
+                    <el-date-picker v-model="date_range" type="daterange" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"
+                        start-placeholder="開始日期" range-separator="至" end-placeholder="結束日期" 
+                        :picker-options="pickerOptions" @change="CheckData"
+                        size="large"/>
                 </el-col>
                 <el-col :span="4">
-                    <el-button type="primary" icon="el-icon-download" @click="download">匯出excel</el-button>
+                    <el-button type="primary" icon="el-icon-download" @click="download">匯出Excel</el-button>
                 </el-col>
+                <!-- <el-col :span="4">
+                    <el-button type="primary" icon="el-icon-download" @click="TimelineExport">匯出Timeline Excel</el-button>
+                </el-col> -->
             </el-row>
             <el-divider />
             <span>黃色表示正在電鍍中，請記得輸入飛靶編號及刀數。</span>
@@ -33,7 +36,14 @@
                     動作
                 </template>
                 <template slot-scope="scope">
-                    <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
+                    <el-row :gutter="10">
+                        <el-col :span="12">
+                            <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-button size="mini" type="primary" @click="handleTimeline(scope.row)">Timeline</el-button>
+                        </el-col>
+                    </el-row>
                 </template>
                 </el-table-column>
             </el-table>
@@ -109,6 +119,20 @@
                     </el-col>
                 </el-row>
                 <el-divider />
+                <div v-if="ppr_data.load_mode == 'manual'">
+                    <el-row :gutter="10">
+                        <el-card>
+                            <div slot="header" class="clearfix">
+                                使用手動上料的原因:
+                                <el-button style="float: right;" type="primary" @click="update_db">更新</el-button>
+                            </div>
+                            <el-row :gutter="10">
+                                <el-input v-model="ppr_data.reason" />
+                            </el-row>
+                        </el-card>
+                    </el-row>
+                    <el-divider />
+                </div>
                 <div v-if="ppr_data.carrier">
                     <el-row :gutter="10">
                         <el-card>
@@ -158,6 +182,30 @@
                 <el-divider />
                     <!-- <ve-line :data="chartData"></ve-line> -->
             </el-dialog>
+            <el-dialog title="生產足跡" :visible.sync="timelineDialogVisible" width="80%" >
+                <el-row>
+                    <el-card header="批號資料" class="content">
+                        <el-row>
+                            <el-col :span="8">
+                                料號: {{row.lotdata.itemno}}
+                            </el-col>
+                            <el-col :span="8">
+                                批號: {{row.lotdata.no}}
+                            </el-col>
+                        </el-row>
+                    </el-card>
+                </el-row>
+                <el-timeline>
+                    <el-timeline-item v-for="(point, index) in timeline" :key="index" 
+                    size="large" type="primary" :timestamp="point.ppr_data.mode" placement="top">
+                        <el-card class="content">
+                            <p>設備: {{point.eqt}}</p>
+                            <p>生產時間: {{point.STARTDATETIME}} ~ {{point.ENDDATETIME}}</p>
+                            <p>片數: {{point.ppr_data.PlatingPnl}}</p>
+                        </el-card>
+                    </el-timeline-item>
+                </el-timeline>
+            </el-dialog>
         </el-main>
   </el-container>
 </template>
@@ -178,6 +226,8 @@ export default {
             noteList: [],
             deleteDialogVisible: false,
             recipeDialogVisible: false,
+            timelineDialogVisible: false,
+            timeline: [],
             delete_name: "",
             ppr_data: "",
             lotdata: "",
@@ -187,7 +237,12 @@ export default {
                 rows: []
             },
             result: "",
-            row: undefined,
+            row: {
+                lotdata : {
+                    no: "",
+                    itemno: "",
+                }
+            },
             pickerOptions:
             {
                 shortcuts: [ {
@@ -273,6 +328,107 @@ export default {
                 return ''
             }
         },
+        async TimelineExport()
+        {
+            this.loading = true
+            let data = []
+            let timeline = []
+            let container = {}
+            this.list.forEach( async ele =>
+            {
+                let response = await this.$store.dispatch("_db", { 
+                    url: "_db/VCP-20/_api/cursor",
+                    method: "POST",
+                    payload: {
+                        'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + ele["lotdata"]["no"] + "' RETURN doc"
+                    },
+                })
+                response["result"].forEach( element =>
+                {
+                    element["eqt"] = "VCP-20"
+                    timeline.push(element)
+                })
+
+                response = await this.$store.dispatch("_db", { 
+                    url: "_db/VCP-30/_api/cursor",
+                    method: "POST",
+                    payload: {
+                        'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + ele["lotdata"]["no"] + "' RETURN doc"
+                    },
+                })
+                response["result"].forEach( (element) =>
+                {
+                    element["eqt"] = "VCP-30"
+                    timeline.push(element)
+                })
+
+                response = await this.$store.dispatch("_db", { 
+                    url: "_db/VCP-004/_api/cursor",
+                    method: "POST",
+                    payload: {
+                        'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + ele["lotdata"]["no"] + "' RETURN doc"
+                    },
+                })
+                response["result"].forEach( (element) =>
+                {
+                    element["eqt"] = "VCP-40"
+                    timeline.push(element)
+                })
+
+                timeline = timeline.sort(function (a, b)
+                {
+                    return a.STARTDATETIME > b.STARTDATETIME ? 1 : -1;
+                })
+
+                //欄位轉換
+                timeline.forEach( e => {
+                    let item = {}
+                    item["批號"] = ele["lotdata"]["itemno"]
+                    item["料號"] = ele["lotdata"]["no"]
+                    item["開始時間"] = ele["STARTDATETIME"]
+                    item["結束時間"] = ele["ENDDATETIME"]
+                    
+                    item["單片電鍍電流(A)"] = ele["ppr_data"]["PlatingAmp"]
+                    item["上料片數(不包含Dummy)"] = ele["ppr_data"]["PlatingPnl"]
+                    item["電鍍時間(分鐘)_DC模式下"] = ele["ppr_data"]["PlatingTime"]
+
+                    item["孔銅需求(mil)"] = ele["ppr_data"]["RD05M134"]
+                    item["最小孔徑(mil)"] = ele["ppr_data"]["RD05M146"]
+                    item["面積(SQIN)"] = ele["ppr_data"]["RD05M49"]
+                    item["板高(mm)"] = ele["ppr_data"]["RD05M47"]
+                    item["Dummy板高(mm)"] = ele["ppr_data"]["dummy_height"]
+                    item["板寬(mm)"] = ele["ppr_data"]["RD05M48"]
+                    item["上料模式"] = ele["ppr_data"]["load_mode"]
+                    item["電鍍模式"] = ele["ppr_data"]["PPR_or_DC"]
+                    item["電鍍需求"] = ele["ppr_data"]["mode"]
+
+                    item["起始電鍍_電鍍時間"] = ele["ppr_result"][0]["PlatingTime"]
+                    item["起始電鍍_正向電鍍電流"] = ele["ppr_result"][0]["P_PlatingAmp"]
+                    item["起始電鍍_反向電鍍電流"] = ele["ppr_result"][0]["N_PlatingAmp"]
+
+                    item["主電鍍_電鍍時間"] = ele["ppr_result"][1]["PlatingTime"]
+                    item["主電鍍_正向電鍍電流"] = ele["ppr_result"][1]["P_PlatingAmp"]
+                    item["主電鍍_反向電鍍電流"] = ele["ppr_result"][1]["N_PlatingAmp"]
+
+                    item["結束電鍍_電鍍時間"] = ele["ppr_result"][2]["PlatingTime"]
+                    item["結束電鍍_正向電鍍電流"] = ele["ppr_result"][2]["P_PlatingAmp"]
+                    item["結束電鍍_反向電鍍電流"] = ele["ppr_result"][2]["N_PlatingAmp"]
+                    data.push(item)
+                })
+                container[ ele["lotdata"]["no"] ] = data
+                data = []
+                timeline = []
+            })
+            const wbout = XLSX.utils.book_new()
+
+            // for (let [key, value] of Object.entries(container))
+            for(let key in container)
+            {
+                XLSX.utils.book_append_sheet(wbout, XLSX.utils.json_to_sheet(container[key]), key )
+            }
+            this.loading = false
+            XLSX.writeFile(wbout, '生產足跡.xlsx')
+        },
         async download()
         {
             this.loading = true
@@ -324,8 +480,9 @@ export default {
                 item["結束電鍍_反向電鍍電流"] = ele["ppr_result"][2]["N_PlatingAmp"]
                 data.push(item) 
             })
-            const ws = XLSX.utils.json_to_sheet(data)
             const wbout = XLSX.utils.book_new()
+            const ws = XLSX.utils.json_to_sheet(data)
+            
             XLSX.utils.book_append_sheet(wbout, ws, "生產履歷")
             this.loading = false
             XLSX.writeFile(wbout, 'VCP-20生產履歷.xlsx')
@@ -362,6 +519,56 @@ export default {
             {
                 this.$message({ message: "更新成功", type: "success"})
             }
+            this.loading = false
+        },
+        async handleTimeline(row)
+        {
+            let timeline = []
+            this.loading = true
+            this.row = row
+            let response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-20/_api/cursor",
+                method: "POST",
+                payload: {
+                    'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + this.row["lotdata"]["no"] + "' RETURN doc"
+                },
+            })
+            response["result"].forEach( (element) =>
+            {
+                element["eqt"] = "VCP-20"
+                timeline.push(element)
+            })
+            response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-30/_api/cursor",
+                method: "POST",
+                payload: {
+                    'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + this.row["lotdata"]["no"] + "' RETURN doc"
+                },
+            })
+            response["result"].forEach( (element) =>
+            {
+                element["eqt"] = "VCP-30"
+                timeline.push(element)
+            })
+            response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-004/_api/cursor",
+                method: "POST",
+                payload: {
+                    'query': "FOR doc IN History FILTER doc.`lotdata`.`no` == '" + this.row["lotdata"]["no"] + "' RETURN doc"
+                },
+            })
+            response["result"].forEach( (element) =>
+            {
+                element["eqt"] = "VCP-40"
+                timeline.push(element)
+            })
+            
+            timeline = timeline.sort(function (a, b)
+            {
+                return a.STARTDATETIME > b.STARTDATETIME ? 1 : -1;
+            })
+            this.timeline = timeline
+            this.timelineDialogVisible = true
             this.loading = false
         },
         async handleCheck(row)

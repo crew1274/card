@@ -3,6 +3,7 @@
         <el-card>
             <div slot="header" class="title">
                 <center>3F 產線設備入口</center>
+                <el-button type="text" icon="el-icon-s-marketing" @click="redricet('admin')" >後台</el-button>
             </div>
             <el-row>
                 <el-col :span="8">
@@ -103,10 +104,13 @@
                     }
                 }
             }
-            
         },
         methods: 
         {   
+            redricet(url)
+            {
+                this.$router.push(url)
+            },
             login()
             {
                 let user = this.user 

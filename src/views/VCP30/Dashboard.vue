@@ -6,6 +6,11 @@
       <el-main v-loading="loading" element-loading-text="拼命載入資料中"
       element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
         <el-row>
+          <el-col :span="8" :offset="16">
+              <el-button type="danger" @click="reconnect(1)" icon="el-icon-setting">設備主站重新連線</el-button>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-card header="上筆套用參數">
             <el-row>
               <el-card header="批號資料">
@@ -124,6 +129,35 @@ export default {
         this.$notify.warning({ title: 'Edge異常回報', message: err})
     })
   },
+  methods:
+  {
+    async reconnect(target)
+    {
+      this.loading = true
+      await fetch("http://10.11.30.61:9999/api/reconnect/" + target,
+      { method: 'GET'})
+      .then( response => {return response.json()})
+      .then( response =>
+      {
+          if(response["Exception"])
+          {
+            throw response["Exception"]
+          }
+          if(response["response"])
+          {
+            this.$message({ message: "重新連線成功", type: "success"})
+          }
+      })
+      .catch( err =>
+      {
+          this.$notify.warning({ title: 'Edge異常回報', message: err})
+      })
+      .finally( () =>
+      {
+          this.loading = false
+      })
+    },
+  }
 }
 </script>
 
