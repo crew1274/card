@@ -329,38 +329,41 @@ export default {
             let data = []
             this.list.forEach( ele =>
             {
-                let item = {}
-                item["批號"] = ele["lotdata"]["itemno"]
-                item["料號"] = ele["lotdata"]["no"]
-                item["開始時間"] = ele["STARTDATETIME"]
-                item["結束時間"] = ele["ENDDATETIME"]
-                
-                item["單片電鍍電流(A)"] = ele["ppr_data"]["PlatingAmp"]
-                item["上料片數(不包含Dummy)"] = ele["ppr_data"]["PlatingPnl"]
-                item["電鍍時間(分鐘)_DC模式下"] = ele["ppr_data"]["PlatingTime"]
+                if(ele["source"] != "PC")
+                {
+                    let item = {}
+                    item["批號"] = ele["lotdata"]["itemno"]
+                    item["料號"] = ele["lotdata"]["no"]
+                    item["開始時間"] = ele["STARTDATETIME"]
+                    item["結束時間"] = ele["ENDDATETIME"]
+                    
+                    item["單片電鍍電流(A)"] = ele["ppr_data"]["PlatingAmp"]
+                    item["上料片數(不包含Dummy)"] = ele["ppr_data"]["PlatingPnl"]
+                    item["電鍍時間(分鐘)_DC模式下"] = ele["ppr_data"]["PlatingTime"]
 
-                item["孔銅需求(mil)"] = ele["ppr_data"]["RD05M134"]
-                item["最小孔徑(mil)"] = ele["ppr_data"]["RD05M146"]
-                item["面積(SQIN)"] = ele["ppr_data"]["RD05M49"]
-                item["板高(mm)"] = ele["ppr_data"]["RD05M47"]
-                item["Dummy板高(mm)"] = ele["ppr_data"]["dummy_height"]
-                item["板寬(mm)"] = ele["ppr_data"]["RD05M48"]
-                item["上料模式"] = ele["ppr_data"]["load_mode"]
-                item["電鍍模式"] = ele["ppr_data"]["PPR_or_DC"]
-                item["電鍍需求"] = ele["ppr_data"]["mode"]
+                    item["孔銅需求(mil)"] = ele["ppr_data"]["RD05M134"]
+                    item["最小孔徑(mil)"] = ele["ppr_data"]["RD05M146"]
+                    item["面積(SQIN)"] = ele["ppr_data"]["RD05M49"]
+                    item["板高(mm)"] = ele["ppr_data"]["RD05M47"]
+                    item["Dummy板高(mm)"] = ele["ppr_data"]["dummy_height"]
+                    item["板寬(mm)"] = ele["ppr_data"]["RD05M48"]
+                    item["上料模式"] = ele["ppr_data"]["load_mode"]
+                    item["電鍍模式"] = ele["ppr_data"]["PPR_or_DC"]
+                    item["電鍍需求"] = ele["ppr_data"]["mode"]
 
-                item["起始電鍍_電鍍時間"] = ele["ppr_result"][0]["PlatingTime"]
-                item["起始電鍍_正向電鍍電流"] = ele["ppr_result"][0]["P_PlatingAmp"]
-                item["起始電鍍_反向電鍍電流"] = ele["ppr_result"][0]["N_PlatingAmp"]
+                    item["起始電鍍_電鍍時間"] = ele["ppr_result"][0]["PlatingTime"]
+                    item["起始電鍍_正向電鍍電流"] = ele["ppr_result"][0]["P_PlatingAmp"]
+                    item["起始電鍍_反向電鍍電流"] = ele["ppr_result"][0]["N_PlatingAmp"]
 
-                item["主電鍍_電鍍時間"] = ele["ppr_result"][1]["PlatingTime"]
-                item["主電鍍_正向電鍍電流"] = ele["ppr_result"][1]["P_PlatingAmp"]
-                item["主電鍍_反向電鍍電流"] = ele["ppr_result"][1]["N_PlatingAmp"]
+                    item["主電鍍_電鍍時間"] = ele["ppr_result"][1]["PlatingTime"]
+                    item["主電鍍_正向電鍍電流"] = ele["ppr_result"][1]["P_PlatingAmp"]
+                    item["主電鍍_反向電鍍電流"] = ele["ppr_result"][1]["N_PlatingAmp"]
 
-                item["結束電鍍_電鍍時間"] = ele["ppr_result"][2]["PlatingTime"]
-                item["結束電鍍_正向電鍍電流"] = ele["ppr_result"][2]["P_PlatingAmp"]
-                item["結束電鍍_反向電鍍電流"] = ele["ppr_result"][2]["N_PlatingAmp"]
-                data.push(item) 
+                    item["結束電鍍_電鍍時間"] = ele["ppr_result"][2]["PlatingTime"]
+                    item["結束電鍍_正向電鍍電流"] = ele["ppr_result"][2]["P_PlatingAmp"]
+                    item["結束電鍍_反向電鍍電流"] = ele["ppr_result"][2]["N_PlatingAmp"]
+                    data.push(item) 
+                }
             })
             const ws = XLSX.utils.json_to_sheet(data)
             const wbout = XLSX.utils.book_new()

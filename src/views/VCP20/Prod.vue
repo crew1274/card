@@ -227,13 +227,16 @@
                             <center><div class="err" v-show="err_msg">錯誤訊息[{{err_msg}}]</div></center>
                         </el-row>
                         <el-row>
-                            <el-col :span="4" :offset="10">
-                                <el-button @click="prod_work" type="primary" icon="el-icon-edit">參數寫入PLC</el-button>
+                            <el-col :span="4" :offset="4">
+                                <el-button @click="prod_work('master')" type="primary" icon="el-icon-edit">參數寫入主設備PLC</el-button>
+                            </el-col>
+                            <el-col :span="4" :offset="6">
+                                <el-button @click="prod_work('loader')" type="primary" icon="el-icon-edit">參數寫入自動上下料PLC</el-button>
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
                             <el-col :span="4" :offset="6">
-                                <el-button @click="prod_confrim" type="primary" icon="el-icon-switch-button">啟動自動模式</el-button>
+                                <el-button @click="prod_confrim" type="primary" icon="el-icon-switch-button">啟動主設備自動模式</el-button>
                             </el-col>
                             <el-col :span="8" :offset="2">
                                 <FeedModeSwitch />                          
@@ -844,7 +847,7 @@ export default {
                 }
             }
         },
-        async prod_work()
+        async prod_work(target)
         {
             this.loading = true
             // console.log({                    
@@ -856,7 +859,7 @@ export default {
             this.lotdata["source"] = "runcard"
             this.ppr_data["dummy_height"] = this.dummy_height
             this.ppr_data["load_mode"] = "manual"
-            await fetch("http://10.11.30.60:9999/api/PLC/temp",
+            await fetch("http://10.11.30.60:9999/api/PLC/" + target,
             {   method: 'POST',
                 body: JSON.stringify({
                     ppr_result: this.ppr_result, 
