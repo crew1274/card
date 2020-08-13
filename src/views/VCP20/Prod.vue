@@ -226,6 +226,9 @@
                         <el-row>
                             <center><div class="err" v-show="err_msg">錯誤訊息[{{err_msg}}]</div></center>
                         </el-row>
+                         <el-row>
+                             <center>如不使用自動上下料及AGV，只需投料到主設備(左按鈕)</center>
+                         </el-row>
                         <el-row>
                             <el-col :span="4" :offset="4">
                                 <el-button @click="prod_work('master')" type="primary" icon="el-icon-edit">參數寫入主設備PLC</el-button>
@@ -881,6 +884,16 @@ export default {
                     this.$notify.success({ title: '套用參數成功', message: "寫入暫存區及上下料區完成"})   
                 }
                 this.err_msg = ""
+                if(target == 'loader')
+                {
+                    this.$confirm('投入參數到自動上下料系統成功, 是否執行呼叫AGV?', '提示', {
+                    confirmButtonText: '呼叫AGV',
+                    type: 'info'
+                    }).then( async () =>
+                    {
+                        await this.callAGV()
+                    })
+                }
             })
             .catch( err =>
             {

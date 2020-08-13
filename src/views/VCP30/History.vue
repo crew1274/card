@@ -33,14 +33,15 @@
                     動作
                 </template>
                 <template slot-scope="scope">
-                    <el-row :gutter="10">
+                    <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
+                    <!-- <el-row :gutter="10">
                         <el-col :span="12">
                             <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
                         </el-col>
                         <el-col :span="12">
                             <el-button size="mini" type="primary" @click="handleTimeline(scope.row)">Timeline</el-button>
                         </el-col>
-                    </el-row>                
+                    </el-row>                 -->
                 </template>
                 </el-table-column>
             </el-table>
