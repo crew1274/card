@@ -10,7 +10,7 @@
                 <el-col :span="16">
                 <el-date-picker v-model="date_range" type="daterange" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"
                     start-placeholder="開始日期" range-separator="至" end-placeholder="結束日期" 
-                    :picker-options="pickerOptions" 
+                    :picker-options="pickerOptions"  @change="CheckData"
                     size="large"/>
                 </el-col>
                 <el-col :span="4">

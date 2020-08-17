@@ -832,7 +832,7 @@ export default {
             {
                 if(this.ppr_data["PlatingTime"] < 100)
                 {
-                    this.$confirm('魏課長建議二鍍電鍍時間大於100分鐘，是否繼續套用?', '提示',
+                    this.$confirm('課長建議二鍍電鍍時間大於100分鐘，是否繼續套用?', '提示',
                     {
                         confirmButtonText: '確認沒問題',
                         cancelButtonText: '我看錯了',
