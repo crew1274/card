@@ -1090,10 +1090,12 @@ export default {
         PPR_or_DC_confirm()
         {
             this.$confirm('確認切換?')
-            .then( () => {
+            .then( () => 
+            {
 
             })
-            .catch( () => {
+            .catch( () => 
+            {
                 this.ppr_data.PPR_or_DC == "PPR" ? this.ppr_data.PPR_or_DC = "DC" : this.ppr_data.PPR_or_DC = "PPR"
             })
         },
@@ -1114,7 +1116,8 @@ export default {
                     lotdata: this.lotdata,
                     procdata: this.procdata,
                     noteList: this.noteList,
-            })})
+                })
+            })
             .then( response => {return response.json()})
             .then( response =>
             {
