@@ -55,6 +55,12 @@
                     <router-view></router-view>
                 </transition>
         </el-container>
+        <el-dialog title="訊息通知" :visible.sync="centerDialogVisible" width="80%" center>
+            <div class="hello">偵測到生產履歷有手動上下料紀錄但未填寫理由，請記得輸入!</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="centerDialogVisible = false">我知道了</el-button>
+            </span>
+        </el-dialog>
     </el-container>
   </div>
 </template>
@@ -62,21 +68,25 @@
 <script>
   export default {
     name: 'layout',
-    components: { },
+    components: {},
     async mounted()
     {
         await this.get_token()
         this.timer = await setInterval( () => { this.get_token() }, 5000) //定期更新token
+        this.check_timer = await setInterval( () => { this.Check() }, 1000 * 60) //定期更新token
     },
     beforeDestroy()
     {
         clearInterval(this.timer)
+        clearInterval(this.check_timer)
     },
-    data: function()
+    data()
     {
         return {
             img_uri: require("@/assets/VCP20.png"),
             timer: undefined,
+            check_timer: undefined,
+            centerDialogVisible: false,
         }
     },
     computed:
@@ -122,6 +132,25 @@
                 location.reload()
             }
         },
+        async Check()
+        {
+            let response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-20/_api/cursor",
+                method: "POST",
+                payload: 
+                {
+                    "query" : " FOR doc IN History \
+                                FILTER ! doc.ENDDATETIME \
+                                FILTER doc.ppr_data.load_mode == 'manual' \
+                                FILTER ! doc.ppr_data.reason \
+                                RETURN doc "
+                },
+            })
+            if(response["result"])
+            {
+                this.centerDialogVisible = true
+            }
+        },
         async get_token()
         {
             await fetch("http://10.11.0.156:8529/_open/auth",
@@ -146,3 +175,9 @@
     }
   }
 </script>
+<style>
+.hello
+{
+    font-size: 26px;
+}
+</style>

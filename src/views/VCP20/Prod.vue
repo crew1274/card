@@ -313,10 +313,11 @@ export default {
             dialogVisible: false,
             ProdCheckList: [ {"key": "EDGE", "status": false, "label": "檢查Edge連線"}, {"key": "RFID", "status": false, "label": "檢查RFID連線"},
                 {"key": "PLC", "status": false, "label": "檢查PLC連線"}, {"key": "MES","status": false, "label": "檢查MES連線"} ,{"key": "MES","status": false, "label": "檢查PPR設備連線"}],  
-            LotNO: '',
-            Operator: '',
-            ProcSeq: '',
+            LotNO: '2020070304-1-1-1',
+            Operator: '2020070304-1-1-1',
+            ProcSeq: '15',
             loading: false,
+            isMatch: false,
             prod_step: 0,
             noteList: [],
             selectRecipe: "",
@@ -778,6 +779,9 @@ export default {
                             }
                             //取得板厚
                             await this.getRD05M136(this.lotdata)
+
+                            //取得checkin站點
+
                         }
                         else
                         {
@@ -821,6 +825,36 @@ export default {
                 this.$message({ message: "儲存失敗", type: "error"})
             }
             this.storeDialogFormVisible = false
+        },
+        async prod_work(lot)
+        {
+            this.loading = true
+            await fetch("http://10.11.50.33:19001/query_checkin_equipment_num_vcp/" + lot,
+            {   method: 'GET',
+            })
+            .then( response => {return response.json()})
+            .then( response =>
+            {
+                if(response["CheckInEquipmentNo"])
+                {
+                    if(response["CheckInEquipmentNo"] == "VCP-002")
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                }
+            })
+            .catch( err =>
+            {
+                this.$notify.warning({ title: '無法取得' + lot + 'Checkin資訊', message: err})
+            })
+            .finally( () =>
+            {
+                this.loading = false
+            })
         },
         mode_change(value)
         {
