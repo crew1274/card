@@ -983,6 +983,9 @@ export default {
                                 }
                             }
                             this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
+
+                            await this.prod_predict()
+                            this.pick_up()
                         }
                         else
                         {

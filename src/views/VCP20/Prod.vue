@@ -313,9 +313,9 @@ export default {
             dialogVisible: false,
             ProdCheckList: [ {"key": "EDGE", "status": false, "label": "檢查Edge連線"}, {"key": "RFID", "status": false, "label": "檢查RFID連線"},
                 {"key": "PLC", "status": false, "label": "檢查PLC連線"}, {"key": "MES","status": false, "label": "檢查MES連線"} ,{"key": "MES","status": false, "label": "檢查PPR設備連線"}],  
-            LotNO: '2020070304-1-1-1',
-            Operator: '2020070304-1-1-1',
-            ProcSeq: '15',
+            LotNO: '',
+            Operator: '',
+            ProcSeq: '',
             loading: false,
             isMatch: false,
             prod_step: 0,
@@ -780,8 +780,8 @@ export default {
                             //取得板厚
                             await this.getRD05M136(this.lotdata)
 
-                            //取得checkin站點
-
+                            await this.prod_predict()
+                            this.pick_up()
                         }
                         else
                         {
@@ -826,36 +826,39 @@ export default {
             }
             this.storeDialogFormVisible = false
         },
-        async prod_work(lot)
-        {
-            this.loading = true
-            await fetch("http://10.11.50.33:19001/query_checkin_equipment_num_vcp/" + lot,
-            {   method: 'GET',
-            })
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                if(response["CheckInEquipmentNo"])
-                {
-                    if(response["CheckInEquipmentNo"] == "VCP-002")
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                }
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: '無法取得' + lot + 'Checkin資訊', message: err})
-            })
-            .finally( () =>
-            {
-                this.loading = false
-            })
-        },
+        // async check_station(lot)
+        // {
+        //     this.loading = true
+        //     await fetch("http://10.11.50.33:19001/query_checkin_equipment_num_vcp/" + lot,
+        //     {   method: 'GET',
+        //     })
+        //     .then( response => {return response.json()})
+        //     .then( response =>
+        //     {
+        //         if(response["CheckInEquipmentNo"])
+        //         {
+        //             if(response["CheckInEquipmentNo"] == "VCP-002")
+        //             {
+        //                 //
+        //                 this.$message({ message: "站點比對正確，無需再預測", type: "success"})
+        //             }
+        //             else
+        //             {
+        //                 //
+        //                 this.$message({ message: "站點比對失敗，請手動預測", type: "error"})
+        //                 this.ppr_data.PlatingTime = 0
+        //             }
+        //         }
+        //     })
+        //     .catch( err =>
+        //     {
+        //         this.$notify.warning({ title: '無法取得' + lot + 'Checkin資訊', message: err})
+        //     })
+        //     .finally( () =>
+        //     {
+        //         this.loading = false
+        //     })
+        // },
         mode_change(value)
         {
             if(value == "一鍍")

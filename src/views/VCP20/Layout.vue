@@ -140,7 +140,7 @@
                 payload: 
                 {
                     "query" : " FOR doc IN History \
-                                FILTER ! doc.ENDDATETIME \
+                                FILTER doc.ENDDATETIME \
                                 FILTER doc.ppr_data.load_mode == 'manual' \
                                 FILTER ! doc.ppr_data.reason \
                                 RETURN doc "
