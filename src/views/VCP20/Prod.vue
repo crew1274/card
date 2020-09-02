@@ -779,7 +779,7 @@ export default {
                             }
                             //取得板厚
                             await this.getRD05M136(this.lotdata)
-
+                            
                             await this.prod_predict()
                             this.pick_up()
                         }
