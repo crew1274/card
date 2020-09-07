@@ -921,16 +921,6 @@ export default {
                     this.$notify.success({ title: '套用參數成功', message: "寫入暫存區及上下料區完成"})   
                 }
                 this.err_msg = ""
-                if(target == 'loader')
-                {
-                    this.$confirm('投入參數到自動上下料系統成功, 是否執行呼叫AGV?', '提示', {
-                    confirmButtonText: '呼叫AGV',
-                    type: 'info'
-                    }).then( async () =>
-                    {
-                        await this.callAGV()
-                    })
-                }
             })
             .catch( err =>
             {

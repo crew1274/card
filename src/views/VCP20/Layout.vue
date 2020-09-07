@@ -56,7 +56,7 @@
                 </transition>
         </el-container>
         <el-dialog title="訊息通知" :visible.sync="centerDialogVisible" width="80%" center>
-            <div class="hello">偵測到生產履歷有手動上下料紀錄但未填寫理由，請記得輸入!</div>
+            <div class="hello">檢查到生產履歷有手動上下料紀錄但未填寫理由，請記得輸入!</div>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="centerDialogVisible = false">我知道了</el-button>
             </span>
@@ -147,7 +147,7 @@
                                 RETURN doc "
                 },
             })
-            if(lenresponse["result"].length)
+            if(response["result"].length)
             {
                 this.centerDialogVisible = true
             }
