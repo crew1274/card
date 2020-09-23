@@ -39,6 +39,12 @@
                 <router-view></router-view>
             </transition>
         </el-container>
+        <el-dialog title="訊息通知" :visible.sync="centerDialogVisible" width="80%" center>
+            <div class="hello">檢查到生產履歷有手動上下料紀錄但未填寫理由，請記得輸入!</div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="centerDialogVisible = false">我知道了</el-button>
+            </span>
+        </el-dialog>
     </el-container>
   </div>
 </template>
@@ -50,17 +56,23 @@
     async mounted()
     {
         await this.get_token()
+        await this.Check()
         this.timer = await setInterval( () => { this.get_token() }, 5000) //定期更新token
+        this.check_timer = await setInterval( () => { this.Check() }, 1000 * 60 * 5) //定期更新token
+
     },
     beforeDestroy()
     {
         clearInterval(this.timer)
+        clearInterval(this.check_timer)
     },
     data: function()
     {
         return {
             img_uri: require("@/assets/VCP30.png"),
             timer: undefined,
+            check_timer: undefined,
+            centerDialogVisible: false,
         }
     },
     computed:
@@ -99,6 +111,25 @@
     },
     methods:
     {
+        async Check()
+        {
+            let response = await this.$store.dispatch("_db", { 
+                url: "_db/VCP-30/_api/cursor",
+                method: "POST",
+                payload: 
+                {
+                    "query" : " FOR doc IN History \
+                                FILTER doc.ENDDATETIME \
+                                FILTER doc.ppr_data.load_mode == 'manual' \
+                                FILTER ! doc.ppr_data.reason \
+                                RETURN doc "
+                },
+            })
+            if(response["result"].length)
+            {
+                this.centerDialogVisible = true
+            }
+        },
         handle(index)
         {
             if(index == 'logout')

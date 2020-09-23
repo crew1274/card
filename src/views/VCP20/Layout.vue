@@ -74,7 +74,7 @@
         await this.get_token()
         await this.Check()
         this.timer = await setInterval( () => { this.get_token() }, 5000) //定期更新token
-        this.check_timer = await setInterval( () => { this.Check() }, 1000 * 60) //定期更新token
+        this.check_timer = await setInterval( () => { this.Check() }, 1000 * 60 * 5) //定期更新token
     },
     beforeDestroy()
     {

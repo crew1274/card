@@ -368,6 +368,7 @@ export default {
                 payload: {
                     "query": "FOR doc IN History \
                      SORT doc.STARTDATETIME DESC \
+                     FILTER doc.`lotdata` \
                      FILTER doc.`STARTDATETIME` <= '"+ moment(this.date_range[1]).add(1,'d').format('YYYY-MM-DD') +"' \
                      AND  doc.`STARTDATETIME` > '"+ this.date_range[0] +"' RETURN doc"
                 },

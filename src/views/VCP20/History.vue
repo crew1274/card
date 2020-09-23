@@ -123,11 +123,19 @@
                     <el-row :gutter="10">
                         <el-card>
                             <div slot="header" class="clearfix">
-                                使用手動上料的原因:
+                                使用手動上料的原因(其餘原因則直接輸入):
                                 <el-button style="float: right;" type="primary" @click="update_db">更新</el-button>
                             </div>
                             <el-row :gutter="10">
-                                <el-input v-model="ppr_data.reason" />
+                                <el-col :span="24">
+                                    <el-select class="long" v-model="ppr_data.reason" placeholder="原因選擇/輸入" filterable allow-create>
+                                        <el-option v-for="reason in reasons" 
+                                            :key="reason.label"
+                                            :label="reason.label"
+                                            :value="reason.label">
+                                        </el-option>
+                                    </el-select>
+                                </el-col>
                             </el-row>
                         </el-card>
                     </el-row>
@@ -218,6 +226,15 @@ export default {
     data: function()
     {
         return {
+                reasons: [{
+                    label: '板尺寸超過極限(The board size exceeds the limit)'
+                    }, {
+                    label: '上下料機構異常(Abnormal loading and unloading mechanism)'
+                    }, {
+                    label: 'AGV異常，無法上料(AGV is abnormal and cannot be loaded)'
+                    }, {
+                    label: '網路連線異常(Internet connection is abnormal)'
+                    }],
             loading: false,
             date_range: [],
             search: "",
@@ -515,7 +532,7 @@ export default {
                 method: "PUT",
                 payload: this.result,
             })
-            if(!response)
+            if(response)
             {
                 this.$message({ message: "更新成功", type: "success"})
             }
@@ -674,7 +691,7 @@ export default {
 <style scoped>
 .el-table >>> .warning-row
 {
-background: #f2a202
+    background: #f2a202
 }
 .el-card
 {
@@ -683,5 +700,9 @@ background: #f2a202
 .content
 {
     font-size: 24px;
+}
+.long
+{
+    width: 100%;
 }
 </style>
