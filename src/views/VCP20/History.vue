@@ -40,9 +40,9 @@
                         <el-col :span="12">
                             <el-button size="mini" type="primary" @click="handleCheck(scope.row)">查看詳細</el-button>
                         </el-col>
-                        <el-col :span="12">
+                        <!-- <el-col :span="12">
                             <el-button size="mini" type="primary" @click="handleTimeline(scope.row)">Timeline</el-button>
-                        </el-col>
+                        </el-col> -->
                     </el-row>
                 </template>
                 </el-table-column>

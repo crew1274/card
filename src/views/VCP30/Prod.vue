@@ -983,7 +983,7 @@ export default {
                                 }
                             }
                             this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
-
+                            this.predict_result = 0
                             await this.prod_predict()
                             this.pick_up()
                         }

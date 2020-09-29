@@ -259,6 +259,8 @@ export default {
                 label: 'AGV異常，無法上料(AGV is abnormal and cannot be loaded)'
                 }, {
                 label: '網路連線異常(Internet connection is abnormal)'
+                }, {
+                label: '版厚超出機台極限(The plate thickness exceeds the limit of the machine)'
                 }],
             loading: false,
             date_range: [],

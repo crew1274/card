@@ -737,7 +737,7 @@ export default {
                             //取得板厚
                             this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
                             await this.getRD05M136(this.lotdata)
-
+                            this.predict_result = 0
                             await this.prod_predict()
                             this.pick_up()
                         }

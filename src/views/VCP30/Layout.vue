@@ -39,10 +39,11 @@
                 <router-view></router-view>
             </transition>
         </el-container>
-        <el-dialog title="訊息通知" :visible.sync="centerDialogVisible" width="80%" center>
-            <div class="hello">檢查到生產履歷有手動上下料紀錄但未填寫理由，請記得輸入!</div>
+        <el-dialog title="訊息通知" :visible.sync="centerDialogVisible" width="80%" :center="true" 
+            :close-on-click-modal="false" :close-on-press-escape="false"> 
+            <div class="hello"><center>檢查到生產履歷有手動上下料紀錄但未填寫理由，請記得輸入!</center></div>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="centerDialogVisible = false">我知道了</el-button>
+                <el-button type="primary" @click="close()">我知道了</el-button>
             </span>
         </el-dialog>
     </el-container>
@@ -111,6 +112,11 @@
     },
     methods:
     {
+        close()
+        {
+            this.centerDialogVisible = false
+            this.$router.push({ path: '/VCP-20/history'}) 
+        },
         async Check()
         {
             let response = await this.$store.dispatch("_db", { 
