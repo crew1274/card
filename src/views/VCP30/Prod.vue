@@ -894,6 +894,10 @@ export default {
                 {
                     throw res["mfdata"]["exception"]
                 }
+                if(! res["mfdata"]["procdata"]["procname"].includes("鍍銅"))
+                {
+                    throw "參數非鍍銅站參數"
+                }
                 this.lotdata = res["mfdata"]["lotdata"]
                 this.procdata = res["mfdata"]["procdata"]
                 this.$message({ message: "成功取得製程參數，如有缺少參數請手動填入", type: "success"})
@@ -984,12 +988,22 @@ export default {
                             }
                             this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
                             this.predict_result = 0
-                            await this.prod_predict()
-                            this.pick_up()
+                            if(await this.prod_predict())
+                            {
+                                this.pick_up()
+                            }
                         }
                         else
                         {
-                            this.$message({ message: "MES回應異常", type: "error"})
+                            this.$alert('MES回應異常，請多注意參數', '警告(warning)',
+                            {
+                                confirmButtonText: '我知道了',
+                                type: 'warning',
+                                center: true,
+                            })
+                            .then(() => {
+
+                            })
                         }
                     }
                 }
@@ -1154,12 +1168,22 @@ export default {
             })
             .catch( err =>
             {
-                this.$message({ message: err, type: "error"})
+                this.$alert(err, '警告(warning)',
+                {
+                    confirmButtonText: '我知道了',
+                    type: 'warning',
+                    center: true,
+                })
+                .then(() => {
+
+                    })
+                return false
             })
             .finally( () =>
             {
                 this.loading = false
             })
+            return true
         },
         pick_up()
         {

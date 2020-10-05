@@ -602,12 +602,22 @@ export default {
             })
             .catch( err =>
             {
-                this.$message({ message: err, type: "error"})
+                this.$alert(err, '警告(warning)',
+                {
+                    confirmButtonText: '我知道了',
+                    type: 'warning',
+                    center: true,
+                })
+                .then(() => {
+
+                    })
+                return false
             })
             .finally( () =>
             {
                 this.loading = false
             })
+            return true
         },
         pick_up()
         {
@@ -642,6 +652,10 @@ export default {
                 {
                     throw res["mfdata"]["exception"]
                 }
+                if(! res["mfdata"]["procdata"]["procname"].includes("鍍銅"))
+                {
+                    throw "參數非鍍銅站參數"
+                }
                 this.lotdata = res["mfdata"]["lotdata"]
                 this.procdata = res["mfdata"]["procdata"]
                 this.$message({ message: "成功取得製程參數，如有缺少參數請手動填入", type: "success"})
@@ -649,7 +663,15 @@ export default {
             })
             .catch( err =>
             {
-                this.$notify.warning({ title: 'MES回應異常', message: err})
+                this.$alert(err, '警告(warning)',
+                {
+                    confirmButtonText: '我知道了',
+                    type: 'warning',
+                    center: true,
+                })
+                .then(() => {
+
+                    })
                 return false
             })
         },
@@ -780,12 +802,22 @@ export default {
                             //取得板厚
                             await this.getRD05M136(this.lotdata)
                             this.predict_result = 0
-                            await this.prod_predict()
-                            this.pick_up()
+                            if(await this.prod_predict())
+                            {
+                                this.pick_up()
+                            }
                         }
                         else
                         {
-                            this.$message({ message: "MES回應異常", type: "error"})
+                            this.$alert("MES回應異常", '警告(warning)',
+                            {
+                                confirmButtonText: '我知道了',
+                                type: 'warning',
+                                center: true,
+                            })
+                            .then(() => {
+
+                                })
                         }
                     }
                 }

@@ -569,12 +569,22 @@ export default {
             })
             .catch( err =>
             {
-                this.$message({ message: err, type: "error"})
+                this.$alert(err, '警告(warning)',
+                {
+                    confirmButtonText: '我知道了',
+                    type: 'warning',
+                    center: true,
+                })
+                .then(() => {
+
+                    })
+                return false
             })
             .finally( () =>
             {
                 this.loading = false
             })
+            return true
         },
         pick_up()
         {
@@ -608,6 +618,10 @@ export default {
                 if(res["mfdata"]["exception"])
                 {
                     throw res["mfdata"]["exception"]
+                }
+                if(! res["mfdata"]["procdata"]["procname"].includes("鍍銅"))
+                {
+                    throw "參數非鍍銅站參數"
                 }
                 this.lotdata = res["mfdata"]["lotdata"]
                 this.procdata = res["mfdata"]["procdata"]
@@ -738,12 +752,22 @@ export default {
                             this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
                             await this.getRD05M136(this.lotdata)
                             this.predict_result = 0
-                            await this.prod_predict()
-                            this.pick_up()
+                            if(await this.prod_predict())
+                            {
+                                this.pick_up()
+                            }
                         }
                         else
                         {
-                            this.$message({ message: "MES回應異常", type: "error"})
+                            this.$alert('MES回應異常，請多注意參數', '警告(warning)',
+                            {
+                                confirmButtonText: '我知道了',
+                                type: 'warning',
+                                center: true,
+                            })
+                            .then(() => {
+
+                            })
                         }
                     }
                 }
