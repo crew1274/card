@@ -115,7 +115,7 @@
         close()
         {
             this.centerDialogVisible = false
-            this.$router.push({ path: '/VCP-20/history'}) 
+            this.$router.push({ path: '/VCP-30/history'}) 
         },
         async Check()
         {
