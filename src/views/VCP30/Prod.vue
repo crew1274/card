@@ -974,6 +974,9 @@ export default {
                     }
                     else
                     {
+                        this.ppr_data.PlatingTime_3_offset = 0
+                        this.ppr_data.PlatingTime_1_offset = 0
+                        this.ppr_data.PlatingTime_2_offset = 0
                         if(await this.getRecipe())
                         {
                             this.ppr_data["TotalPnl"] = 0 
