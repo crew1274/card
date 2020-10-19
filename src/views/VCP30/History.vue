@@ -61,6 +61,10 @@
                     </el-col>
                 </el-row>
                 <el-divider />
+                    <el-row>
+                        上料操作同仁: {{Operator}}
+                    </el-row>
+                <el-divider />
                 <el-row>    
                     <h3>   
                     <center>電鍍模式:{{ppr_data.PPR_or_DC}}</center>
@@ -267,6 +271,7 @@ export default {
             search: "",
             token: "",
             list : [],
+            Operator: "",
             noteList: [],
             deleteDialogVisible: false,
             recipeDialogVisible: false,
@@ -412,6 +417,7 @@ export default {
                 let item = {}
                 item["批號"] = ele["LOTNO"]
                 item["料號"] = ele["PARTNO"]
+                item["操作同仁"] = ele["Operator"]
                 item["開始時間"] = ele["STARTDATETIME"]
                 item["結束時間"] = ele["ENDDATETIME"]
                 item["孔銅需求(mil)"] = ele["detail"]["ppr_data"]["RD05M134"]
@@ -510,6 +516,7 @@ export default {
                 this.lotdata = response["lotdata"]
                 this.ppr_result = response["ppr_result"]
                 this.noteList = response["noteList"]
+                this.Operator = response["Operator"]
                 this.recipeDialogVisible = true
             }
             this.loading = false

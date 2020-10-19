@@ -64,6 +64,10 @@
                     </el-card>
                 </el-row>
                 <el-divider />
+                <el-row>
+                    上料操作同仁: {{Operator}}
+                </el-row>
+                <el-divider />
                 <el-row>    
                     <el-card header="參數資料" class="content">
                         <el-row>
@@ -243,6 +247,7 @@ export default {
             token: "",
             list : [],
             noteList: [],
+            Operator: "",
             deleteDialogVisible: false,
             recipeDialogVisible: false,
             timelineDialogVisible: false,
@@ -469,6 +474,7 @@ export default {
                 let item = {}
                 item["批號"] = ele["lotdata"]["itemno"]
                 item["料號"] = ele["lotdata"]["no"]
+                item["操作同仁"] = ele["Operator"]
                 item["開始時間"] = ele["STARTDATETIME"]
                 item["結束時間"] = ele["ENDDATETIME"]
                 
@@ -609,6 +615,7 @@ export default {
                 this.lotdata = response["lotdata"]
                 this.ppr_result = response["ppr_result"]
                 this.noteList = response["noteList"]
+                this.Operator = response["Operator"]
                 this.recipeDialogVisible = true
             }
             this.loading = false

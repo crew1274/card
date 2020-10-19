@@ -939,6 +939,7 @@ export default {
                     lotdata: this.lotdata,
                     procdata: this.procdata,
                     noteList: this.noteList,
+                    Operator: this.Operator,
                 })
             })
             .then( response => {return response.json()})

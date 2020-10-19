@@ -834,6 +834,7 @@ export default {
                     ppr_data: this.ppr_data,
                     lotdata: this.lotdata,
                     procdata: this.procdata,
+                    Operator: this.Operator,
                     noteList: this.noteList,
                 })
             })

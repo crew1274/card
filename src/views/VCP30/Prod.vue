@@ -1080,6 +1080,7 @@ export default {
                     ppr_result: this.ppr_result_convert, 
                     ppr_data: this.ppr_data,
                     lotdata: this.lotdata,
+                    Operator: this.Operator,
                     procdata: this.procdata,
                     noteList: this.noteList,
                 })
