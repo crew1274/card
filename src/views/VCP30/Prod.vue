@@ -991,13 +991,13 @@ export default {
                             }
                             this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
                             this.predict_result = 0
-                            // if(await this.prod_predict())
-                            // {
-                            //     this.pick_up()
-                            // }
+                            if(await this.prod_predict())
+                            {
+                                this.pick_up()
+                            }
                             //改用MES預測方式
-                            this.predict_result = this.ppr_data["PlatingTime"]
-                            this.pick_up()
+                            // this.predict_result = this.ppr_data["PlatingTime"]
+                            // this.pick_up()
                         }
                         else
                         {
@@ -1162,16 +1162,11 @@ export default {
         async prod_predict()
         {
             this.loading = true
-            await fetch('http://10.11.30.61:9999/api/predict/' + this.lotdata["no"], {method: 'GET' })
-            .then( response => {return response.json()})
-            .then( response =>
+            await this.axios.get("http://tyhadoop01.cht-pt.com.tw:19001/VCP-VM/" + this.LotNO + "?process_num=" + this.ProcSeq + "&eqpid=VCP-003")
+            .then((response) =>
             {
-                if(!response["response"])
-                {
-                    throw response["errorMessage"]
-                }
+                this.predict_result = Math.round(+response.data)
                 this.$message({ message: "預測成功", type: "success"})
-                this.predict_result = Math.round(+response["response"])
             })
             .catch( err =>
             {
@@ -1181,9 +1176,7 @@ export default {
                     type: 'warning',
                     center: true,
                 })
-                .then(() => {
-
-                    })
+                .then( () => {} )
                 return false
             })
             .finally( () =>

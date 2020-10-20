@@ -46,6 +46,7 @@
                 </el-table-column>
             </el-table>
             <el-dialog title="參數詳細資訊" :visible.sync="recipeDialogVisible" width="80%">
+                <div class="content">
                 <el-row>
                     <el-col :span="6">
                         <h3>料號:{{lotdata.itemno}}</h3>
@@ -218,8 +219,9 @@
                 <el-row>
                     <ve-line :data="chartData" />
                 </el-row>
+                </div>
             </el-dialog>
-            <el-dialog title="生產足跡" :visible.sync="timelineDialogVisible" width="80%" >
+            <el-dialog title="生產足跡" :visible.sync="timelineDialogVisible" width="80%" class="content">
                 <el-row>
                     <el-card header="批號資料" class="content">
                         <el-row>
@@ -388,73 +390,51 @@ export default {
         async download()
         {
             this.loading = true
-            let tres = []
-            await fetch("http://10.11.30.61:9999/api/mo_all",
-            {
-                method: "GET",
-            })
-            .then( response => {return response.json()})
-            .then( response =>
-            {
-                if(response["Exception"])
-                {
-                    throw response["Exception"]
-                }
-                tres = response["result"]
-            })
-            .catch( err =>
-            {
-                this.$notify.warning({ title: 'Edge資料庫存取異常', message: err})
-            })
-            .finally( () =>
-            {
-                this.loading = false
-            })
-            this.loading = true
             let data = []
-            tres.forEach( ele =>
+            this.list.forEach( ele =>
             {
                 let item = {}
-                item["批號"] = ele["LOTNO"]
-                item["料號"] = ele["PARTNO"]
+                item["批號"] = ele["lotdata"]["no"]
+                item["料號"] = ele["lotdata"]["itemno"]
+                item["製程序"] = ele["lotdata"]["procseq"]
                 item["操作同仁"] = ele["Operator"]
                 item["開始時間"] = ele["STARTDATETIME"]
                 item["結束時間"] = ele["ENDDATETIME"]
-                item["孔銅需求(mil)"] = ele["detail"]["ppr_data"]["RD05M134"]
-                item["最小孔徑(mil)"] = ele["detail"]["ppr_data"]["RD05M146"]
-                item["當站板厚(mm)"] = ele["detail"]["ppr_data"]["RD05M136"]
-                item["面積(SQIN)"] = ele["detail"]["ppr_data"]["RD05M49"]
-                item["板長(mm)"] = ele["detail"]["ppr_data"]["RD05M47"]
-                item["板寬(mm)"] = ele["detail"]["ppr_data"]["RD05M48"]
-                item["上料片數(不包含Dummy)"] = ele["detail"]["ppr_data"]["PlatingPnl"]
-                item["電鍍第一段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_1_offset"]
-                item["電鍍第二段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_2_offset"]
-                item["電鍍第三段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_3_offset"]
+                item["孔銅需求(mil)"] = ele["ppr_data"]["RD05M134"]
+                item["最小孔徑(mil)"] = ele["ppr_data"]["RD05M146"]
+                item["當站板厚(mm)"] = ele["ppr_data"]["RD05M136"]
+                item["面積(SQIN)"] = ele["ppr_data"]["RD05M49"]
+                item["板長(mm)"] = ele["ppr_data"]["RD05M47"]
+                item["板寬(mm)"] = ele["ppr_data"]["RD05M48"]
+                item["上料片數(不包含Dummy)"] = ele["ppr_data"]["PlatingPnl"]
+                item["電鍍第一段補償時間"] = ele["ppr_data"]["PlatingTime_1_offset"]
+                item["電鍍第二段補償時間"] = ele["ppr_data"]["PlatingTime_2_offset"]
+                item["電鍍第三段補償時間"] = ele["ppr_data"]["PlatingTime_3_offset"]
 
-                item["電鍍第一段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_1_offset"]
-                item["電鍍第二段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_2_offset"]
-                item["電鍍第三段補償時間"] = ele["detail"]["ppr_data"]["PlatingTime_3_offset"]
+                item["電鍍第一段補償時間"] = ele["ppr_data"]["PlatingTime_1_offset"]
+                item["電鍍第二段補償時間"] = ele["ppr_data"]["PlatingTime_2_offset"]
+                item["電鍍第三段補償時間"] = ele["ppr_data"]["PlatingTime_3_offset"]
 
-                item["電鍍時間(分鐘)_DC模式下"] = ele["detail"]["ppr_data"]["PlatingTime"]
+                item["電鍍時間(分鐘)_DC模式下"] = ele["ppr_data"]["PlatingTime"]
 
-                item["起始電鍍_電鍍時間"] = ele["detail"]["ppr_result"][0]["current_time"]
-                item["起始電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][0]["forward_current"]
-                item["起始電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][0]["forward_current_time"]
-                item["起始電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][0]["reverse_current"]
-                item["起始電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][0]["reverse_current_time"]
+                item["起始電鍍_電鍍時間"] = ele["ppr_result"][0]["current_time"]
+                item["起始電鍍_正向電鍍電流"] = ele["ppr_result"][0]["forward_current"]
+                item["起始電鍍_正向電鍍時間"] = ele["ppr_result"][0]["forward_current_time"]
+                item["起始電鍍_反向電鍍電流"] = ele["ppr_result"][0]["reverse_current"]
+                item["起始電鍍_反向電鍍時間"] = ele["ppr_result"][0]["reverse_current_time"]
                 for(let i=1; i<4; i++)
                 {
-                    item["第"+(i).toString()+"段電鍍_電鍍時間"] = ele["detail"]["ppr_result"][i]["current_time"]
-                    item["第"+(i).toString()+"段電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][i]["forward_current"]
-                    item["第"+(i).toString()+"段電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][i]["forward_current_time"]
-                    item["第"+(i).toString()+"段電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][i]["reverse_current"]
-                    item["第"+(i).toString()+"段電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][i]["reverse_current_time"]
+                    item["第"+(i).toString()+"段電鍍_電鍍時間"] = ele["ppr_result"][i]["current_time"]
+                    item["第"+(i).toString()+"段電鍍_正向電鍍電流"] = ele["ppr_result"][i]["forward_current"]
+                    item["第"+(i).toString()+"段電鍍_正向電鍍時間"] = ele["ppr_result"][i]["forward_current_time"]
+                    item["第"+(i).toString()+"段電鍍_反向電鍍電流"] = ele["ppr_result"][i]["reverse_current"]
+                    item["第"+(i).toString()+"段電鍍_反向電鍍時間"] = ele["ppr_result"][i]["reverse_current_time"]
                 }
-                item["結束電鍍_電鍍時間"] = ele["detail"]["ppr_result"][4]["current_time"]
-                item["結束電鍍_正向電鍍電流"] = ele["detail"]["ppr_result"][4]["forward_current"]
-                item["結束電鍍_正向電鍍時間"] = ele["detail"]["ppr_result"][4]["forward_current_time"]
-                item["結束電鍍_反向電鍍電流"] = ele["detail"]["ppr_result"][4]["reverse_current"]
-                item["結束電鍍_反向電鍍時間"] = ele["detail"]["ppr_result"][4]["reverse_current_time"]
+                item["結束電鍍_電鍍時間"] = ele["ppr_result"][4]["current_time"]
+                item["結束電鍍_正向電鍍電流"] = ele["ppr_result"][4]["forward_current"]
+                item["結束電鍍_正向電鍍時間"] = ele["ppr_result"][4]["forward_current_time"]
+                item["結束電鍍_反向電鍍電流"] = ele["ppr_result"][4]["reverse_current"]
+                item["結束電鍍_反向電鍍時間"] = ele["ppr_result"][4]["reverse_current_time"]
                 data.push(item) 
             })
             const ws = XLSX.utils.json_to_sheet(data)
@@ -660,5 +640,9 @@ export default {
     .long
     {
         width: 100%;
+    }
+    .content
+    {
+        font-size: 22px;
     }
 </style>
