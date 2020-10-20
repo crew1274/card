@@ -995,6 +995,9 @@ export default {
                             // {
                             //     this.pick_up()
                             // }
+                            //改用MES預測方式
+                            this.predict_result = this.ppr_data["PlatingTime"]
+                            this.pick_up()
                         }
                         else
                         {
