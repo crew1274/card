@@ -479,9 +479,9 @@ export default {
         dummy_height()
         {
             let a  = 25 *  Math.ceil(this.ppr_data.RD05M47 / 25)
-            if(a < 375 )
+            if(a < 350 )
             {
-                return 375
+                return 350
             }
             else if(a > 750)
             {
