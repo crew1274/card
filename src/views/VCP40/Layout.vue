@@ -36,9 +36,9 @@
                 <!-- <el-menu-item index="statistic" route="statistic">
                     <h1><i class="el-icon-s-data" />資料統計</h1>
                 </el-menu-item> -->
-                <!-- <el-menu-item index="abnormality" route="abnormality">
+                <el-menu-item index="abnormality" route="abnormality">
                     <h1><i class="el-icon-warning" />異常履歷</h1>
-                </el-menu-item> -->
+                </el-menu-item>
                 <!-- <el-menu-item index="document" route="document">
                     <h1><i class="el-icon-document" />使用說明</h1>
                 </el-menu-item> -->
