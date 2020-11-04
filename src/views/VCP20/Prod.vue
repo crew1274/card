@@ -147,6 +147,7 @@
                                         <el-radio label="一鍍" border>一鍍</el-radio>
                                         <el-radio label="二鍍" border>二鍍</el-radio>
                                         <el-radio label="重工" border>重工</el-radio>
+                                        <el-radio label="測試" border>測試</el-radio>
                                     </el-radio-group>
                                 </el-form-item>
                                 <el-divider content-position="left">訊息提示</el-divider> 

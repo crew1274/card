@@ -240,6 +240,8 @@ export default {
                     label: '網路連線異常(Internet connection is abnormal)'
                     }, {
                     label: '版厚超出機台極限(The plate thickness exceeds the limit of the machine)'
+                    }, {
+                    label: '測試用(For test)'
                     }],
             loading: false,
             date_range: [],

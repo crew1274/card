@@ -205,10 +205,11 @@
                                                         <el-input-number v-model="ppr_data.PlatingTime_3_offset" :min="-180" :max="180" size="large" />
                                                     </el-tooltip>
                                                 </el-form-item>
-                                                <el-form-item label="備註:">
+                                                <el-form-item label="電鍍需求:">
                                                     <el-radio-group v-model="ppr_data.mode">
                                                         <el-radio label="二鍍" border>二鍍</el-radio>
                                                         <el-radio label="重工" border>重工</el-radio>
+                                                        <el-radio label="測試" border>測試</el-radio>
                                                     </el-radio-group>
                                                 </el-form-item>
                                             </el-col>
