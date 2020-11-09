@@ -493,6 +493,7 @@ export default {
                 item["板寬(mm)"] = ele["ppr_data"]["RD05M48"]
                 item["板厚(mm)"] = ele["ppr_data"]["RD05M136"]
                 item["上料模式"] = ele["ppr_data"]["load_mode"]
+                item["手動原因"] = ele["ppr_data"]["reason"]
                 item["電鍍模式"] = ele["ppr_data"]["PPR_or_DC"]
                 item["電鍍需求"] = ele["ppr_data"]["mode"]
 
