@@ -178,6 +178,12 @@
                                                         <el-input-number v-model="ppr_data.RD05M47" size="large" />
                                                     </el-form-item>
                                                 </el-tooltip>
+                                                <!-- <el-form-item label="擺放方式:">
+                                                    <el-radio-group v-model="ppr_data.place">
+                                                        <el-radio label="直放" border>直放</el-radio>
+                                                        <el-radio label="橫放" border>橫放</el-radio>
+                                                    </el-radio-group>
+                                                </el-form-item> -->
                                                 <el-tooltip class="item" effect="dark" content="此參數影響推桿位置" placement="left">
                                                     <el-form-item label="板寬(mm):">
                                                         <el-input-number v-model="ppr_data.RD05M48" size="large" />
@@ -207,9 +213,10 @@
                                                 </el-form-item>
                                                 <el-form-item label="電鍍需求:">
                                                     <el-radio-group v-model="ppr_data.mode">
-                                                        <el-radio label="二鍍" border>二鍍</el-radio>
-                                                        <el-radio label="重工" border>重工</el-radio>
-                                                        <el-radio label="測試" border>測試</el-radio>
+                                                        <el-radio label="二鍍" border>二鍍(CU II)</el-radio>
+                                                        <el-radio label="重工-孔銅不足" border>重工-孔銅不足(rework-Hole Copper)</el-radio>
+                                                        <el-radio label="重工-切片不足" border>重工-面銅不足(rework-Surface Copper)</el-radio>
+                                                        <el-radio label="測試" border>測試(test)</el-radio>
                                                     </el-radio-group>
                                                 </el-form-item>
                                             </el-col>
@@ -466,26 +473,26 @@ export default {
     {
         is_predictable()
         {
-            if(this.ppr_data.mode == '重工')
+            if(this.ppr_data.mode == '二鍍')
             {
-                return true
+                return false
             }
             else
             {
-                return false
+                return true
             }
         },
         is_pick_up()
         {
             if(this.predict_result)
             {
-                if(this.ppr_data.mode == '重工')
+                if(this.ppr_data.mode == '二鍍')
                 {
-                    return true
+                    return false
                 }
                 else
                 {
-                    return false
+                    return true
                 }
             }
             else

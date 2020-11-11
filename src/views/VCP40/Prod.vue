@@ -137,9 +137,11 @@
                                 </el-form-item>
                                 <el-form-item label="電鍍需求:">
                                     <el-radio-group v-model="ppr_data.mode" @change="mode_change">
-                                        <el-radio label="一鍍" border>一鍍</el-radio>
-                                        <el-radio label="二鍍" border>二鍍</el-radio>
-                                        <el-radio label="重工" border>重工</el-radio>
+                                        <el-radio label="一鍍" border>一鍍(CU I)</el-radio>
+                                        <el-radio label="二鍍" border>二鍍(CU II)</el-radio>
+                                        <el-radio label="重工-孔銅不足" border>重工-孔銅不足(rework)</el-radio>
+                                        <el-radio label="重工-切片不足" border>重工-切片不足(rework)</el-radio>
+                                        <el-radio label="測試" border>測試(test)</el-radio>
                                     </el-radio-group>
                                 </el-form-item>
                                 電鍍電流計算公式:
@@ -416,26 +418,26 @@ export default {
         },
         is_predictable()
         {
-            if(this.ppr_data.mode == '一鍍' || this.ppr_data.mode == '重工')
+            if(this.ppr_data.mode == '二鍍')
             {
-                return true
+                return false
             }
             else
             {
-                return false
+                return true
             }
         },
         is_pick_up()
         {
             if(this.predict_result)
             {
-                if(this.ppr_data.mode == '一鍍' || this.ppr_data.mode == '重工')
+                if(this.ppr_data.mode == '二鍍')
                 {
-                    return true
+                    return false
                 }
                 else
                 {
-                    return false
+                    return true
                 }
             }
             else

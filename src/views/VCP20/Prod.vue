@@ -106,13 +106,8 @@
                         <el-row>
                             <el-form ref="form" :model="ppr_data">
                                 <el-tooltip class="item" effect="dark" content="如超過8mm無法使用自動上下料" placement="right">
-                                    <el-form-item label="版厚(mm):">
+                                    <el-form-item label="板厚(mm):">
                                         <el-input-number v-model="ppr_data.RD05M136" size="large" />
-                                    </el-form-item>
-                                </el-tooltip>
-                                <el-tooltip class="item" effect="dark" content="此參數影響推桿位置，請務必確認靶寬必須小於版寬" placement="right">
-                                    <el-form-item label="版寬(mm):">
-                                        <el-input-number v-model="ppr_data.RD05M48" size="large" />
                                     </el-form-item>
                                 </el-tooltip>
                                 <el-row>
@@ -127,6 +122,17 @@
                                         使用Dummy板高: {{dummy_height}}
                                     </el-col>
                                 </el-row>
+                                <el-form-item label="擺放方式:">
+                                    <el-radio-group v-model="ppr_data.place" @change="place_change" >
+                                        <el-radio label="直放" border>直放</el-radio>
+                                        <el-radio label="橫放" border>橫放</el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                                <el-tooltip class="item" effect="dark" content="此參數影響推桿位置，請務必確認靶寬必須小於板寬" placement="right">
+                                    <el-form-item label="板寬(mm):">
+                                        <el-input-number v-model="ppr_data.RD05M48" size="large" />
+                                    </el-form-item>
+                                </el-tooltip>
                                 <el-tooltip class="item" effect="dark" content="此參數影響電鍍時間" placement="right">
                                     <el-form-item label="電鍍時間(分鐘):">
                                         <el-input-number v-model="ppr_data.PlatingTime" size="large"/>
@@ -144,10 +150,11 @@
                                 </el-form-item>
                                 <el-form-item label="電鍍需求:">
                                     <el-radio-group v-model="ppr_data.mode" @change="mode_change">
-                                        <el-radio label="一鍍" border>一鍍</el-radio>
-                                        <el-radio label="二鍍" border>二鍍</el-radio>
-                                        <el-radio label="重工" border>重工</el-radio>
-                                        <el-radio label="測試" border>測試</el-radio>
+                                        <el-radio label="一鍍" border>一鍍(CU I)</el-radio>
+                                        <el-radio label="二鍍" border>二鍍(CU II)</el-radio>
+                                        <el-radio label="重工-孔銅不足" border>重工-孔銅不足(rework-Hole Copper)</el-radio>
+                                        <el-radio label="重工-切片不足" border>重工-面銅不足(rework-Surface Copper)</el-radio>
+                                        <el-radio label="測試" border>測試(test)</el-radio>
                                     </el-radio-group>
                                 </el-form-item>
                                 <el-divider content-position="left">訊息提示</el-divider> 
@@ -235,7 +242,7 @@
                                 <el-button @click="prod_work('master')" type="primary" icon="el-icon-edit">參數寫入主設備PLC</el-button>
                             </el-col>
                             <el-col :span="4" :offset="6">
-                                <el-button @click="prod_work('loader')" type="primary" icon="el-icon-edit">參數寫入自動上下料PLC</el-button>
+                                <el-button :disabled="isCallAGV" @click="prod_work('loader')" type="primary" icon="el-icon-edit">參數寫入自動上下料PLC</el-button>
                             </el-col>
                         </el-row><el-row /><el-row />
                         <el-row>
@@ -248,7 +255,7 @@
                         </el-row><el-row /><el-row />
                         <el-row>
                             <div v-show="isCallAGV">
-                                <center>板厚超出規格(0~8mm)無法使用自動上下料</center>
+                                <div class="err"><center>{{isCallAGV}}</center></div>
                             </div>
                             <el-col :span="4" :offset="10">
                                 <el-button :disabled="isCallAGV" @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
@@ -441,7 +448,11 @@ export default {
         {
             if(this.ppr_data.RD05M136 > 8|| this.ppr_data.RD05M136 <= 0)
             {
-                return true
+                return "板厚超出規格(0mm~8mm)無法使用自動上下料"
+            }
+            else if(this.ppr_data.RD05M48 > 610|| this.ppr_data.RD05M48 < 410)
+            {
+                return "板寬超出規格(610mm~410mm)無法使用自動上下料"
             }
             else
             {
@@ -450,26 +461,26 @@ export default {
         },
         is_predictable()
         {
-            if(this.ppr_data.mode == '一鍍' || this.ppr_data.mode == '重工')
+            if(this.ppr_data.mode == '二鍍')
             {
-                return true
+                return false
             }
             else
             {
-                return false
+                return true
             }
         },
         is_pick_up()
         {
             if(this.predict_result)
             {
-                if(this.ppr_data.mode == '一鍍' || this.ppr_data.mode == '重工')
+                if(this.ppr_data.mode == '二鍍')
                 {
-                    return true
+                    return false
                 }
                 else
                 {
-                    return false
+                    return true
                 }
             }
             else
@@ -790,6 +801,7 @@ export default {
                                     this.ppr_data[item.procprammes] = +item.procvalue
                                 }
                                 this.ppr_data["PlatingPnl"] = this.ppr_data["TotalPnl"]
+                                this.ppr_data["place"] = "直放"
                             }
                             //自動判斷一鍍/二鍍
                             if(this.ppr_data["PlatingTime"] < 100)
@@ -1037,6 +1049,12 @@ export default {
             this.result = response["result"]
             this.loading = false
         },
+        place_change()
+        {
+            let RD05M47 = this.ppr_data.RD05M47
+            this.ppr_data.RD05M47 = this.ppr_data.RD05M48
+            this.ppr_data.RD05M48 = RD05M47
+        }
     }
 }
 </script>
