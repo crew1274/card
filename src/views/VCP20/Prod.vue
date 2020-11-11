@@ -255,7 +255,7 @@
                         </el-row><el-row /><el-row />
                         <el-row>
                             <div v-show="isCallAGV">
-                                <div class="err"><center>{{isCallAGV}}</center></div>
+                                <div class="err"><center>{{war_msg}}</center></div>
                             </div>
                             <el-col :span="4" :offset="10">
                                 <el-button :disabled="isCallAGV" @click="callAGV" type="success" icon="el-icon-phone">呼叫AGV</el-button>
@@ -330,6 +330,7 @@ export default {
             noteList: [],
             selectRecipe: "",
             err_msg: "",
+            war_msg: "",
             payload:
             {
                 mfdata:
@@ -448,11 +449,13 @@ export default {
         {
             if(this.ppr_data.RD05M136 > 8|| this.ppr_data.RD05M136 <= 0)
             {
-                return "板厚超出規格(0mm~8mm)無法使用自動上下料"
+                this.war_msg = "板厚超出規格(0mm~8mm)無法使用自動上下料"
+                return true 
             }
             else if(this.ppr_data.RD05M48 > 610|| this.ppr_data.RD05M48 < 410)
             {
-                return "板寬超出規格(610mm~410mm)無法使用自動上下料"
+                this.war_msg = "板寬超出規格(610mm~410mm)無法使用自動上下料"
+                return true
             }
             else
             {
