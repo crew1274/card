@@ -927,11 +927,6 @@ export default {
                         {
                             this.$message({ type: 'success', message: '選擇二鍍!' })
                         })
-                        .catch(() =>
-                        {
-                            this.$message({ type: 'info', message: '選擇一鍍' })    
-                            this.ppr_data.mode = '一鍍'
-                        })
                 }
             }
         },
